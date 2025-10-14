@@ -4,5 +4,6 @@ public enum CharacterEnum
 {
     Wizard,
     Healer,
-    Warrior
+    Warrior,
+    Enemy
 }

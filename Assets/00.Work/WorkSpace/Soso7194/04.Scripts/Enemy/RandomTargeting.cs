@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -42,16 +43,17 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 
             foreach (var enemy in _enemies)
             {
+                Sequence seq = DOTween.Sequence();
                 Vector3 startPos = enemy.transform.position;
 
                 int targetIndex = Random.Range(0, targets.Count);
-                enemy.transform.position = targets[targetIndex].transform.position + new Vector3(0.5f, 0, 0);
+                seq.Append(enemy.transform.DOMove(targets[targetIndex].transform.position + new Vector3(0.5f, 0, 0), 0.3f));
                 Debug.Log($"{enemy.name} 때림");
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(1f);
 
-                enemy.transform.position = startPos;
-                yield return new WaitForSeconds(0.5f);
+                seq.Append(enemy.transform.DOMove(startPos, 0.3f));
+                yield return new WaitForSeconds(1f);
             }
 
             _stop = false;

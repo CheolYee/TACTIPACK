@@ -6,27 +6,46 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 {
     public class Enemy : MonoBehaviour
     {
-        private int _hp;
+        public int CurrentHP { get; set; }
+        
+        private int _maxHp;
         private int _attack;
         private EnemiesSpawn _spawner;
 
-        public void Setup(EnemySO data, EnemiesSpawn spawner)
+        public void Setup(CharacterDataSO data, EnemiesSpawn spawner)
         {
-            _hp = data.maxHP;
-            _attack = data.attack;
+            _maxHp = data.maxHP;
+            _attack = data.attackPower;
             _spawner = spawner;
             gameObject.name = data.name;
         }
 
         public void TakeDamage(int damage)
         {
-            _hp -= damage;
-            if (_hp <= 0)
+            CurrentHP -= damage;
+            if (CurrentHP <= 0)
             {
                 Die();
             }
         }
 
+
+        [field:SerializeField] public CharacterDataSO Data { get; set; }
+        public void Attack()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void EatHealItem()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void EnemySkill()
+        {
+            throw new System.NotImplementedException();
+        }
+        
         private void Die()
         {
             _spawner.RemoveEnemy(gameObject);

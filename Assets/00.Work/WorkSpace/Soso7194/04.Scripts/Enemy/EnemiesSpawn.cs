@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using _00.Work.WorkSpace.Soso7194._04.Scripts.SO;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
@@ -9,10 +12,12 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         public List<GameObject> SpawnedEnemies { get; private set; }
         
         [Header("적 SO")]
-        [SerializeField] private List<EnemySO> enemyDatas;
+        [SerializeField] private List<CharacterDataSO> enemyDatas;
         
         [Header("적 스폰 포인트")]
         [SerializeField] private List<Transform> enemiesSpawnPos;
+
+        private static string EnemySavePath => Application.persistentDataPath + "/enemyData.json";
 
         private void Start()
         {
@@ -24,13 +29,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 
             for (int i = 0; i < spawnCount; i++)
             {
-                EnemySO data = enemyDatas[Random.Range(0, enemyDatas.Count)];
+                CharacterDataSO data = enemyDatas[Random.Range(0, enemyDatas.Count)];
 
                 int index = Random.Range(0, availablePositions.Count);
                 Transform spawnPos = availablePositions[index];
                 availablePositions.RemoveAt(index);
 
-                GameObject enemy = Instantiate(data.prefab, spawnPos.position, spawnPos.rotation);
+                GameObject enemy = Instantiate(ComponentHolderProtocol.GameObject(data), spawnPos.position, spawnPos.rotation);
 
                 Enemy enemyCompo = enemy.GetComponent<Enemy>();
                 if (enemyCompo != null)
@@ -42,6 +47,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             }
             
             Debug.Log($"적 {SpawnedEnemies.Count}명 스폰 완료");
+            //LoadEnemies();
         }
 
         public void RemoveEnemy(GameObject enemy)
@@ -49,7 +55,35 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             if (SpawnedEnemies.Contains(enemy))
             {
                 SpawnedEnemies.Remove(enemy);
+                if (SpawnedEnemies.Count == 0)
+                {
+                    File.Delete(File.Exists(EnemySavePath).ToString());
+                }
+                else
+                {
+                    //SaveEnemies();
+                }
             }
         }
+
+        /*private void LoadEnemies()
+        {
+            if (File.Exists(EnemySavePath))
+            {
+                var json = File.ReadAllText(EnemySavePath);
+                SpawnedEnemies = JsonUtility.FromJson<List<GameObject>>(json);
+            }
+            else
+            {
+                SaveEnemies();
+            }
+        }
+        
+        private void SaveEnemies()
+        {
+            string json = JsonUtility.ToJson(EnemySavePath);
+            File.WriteAllText(EnemySavePath, json);
+            Debug.Log(EnemySavePath);
+        }*/
     }
 }

@@ -23,3 +23,8 @@ public interface IWarrior : ICharacter
 {
     void WarriorSkill();
 }
+
+public interface IEnemy : ICharacter
+{
+    void EnmeySkill();
+}
