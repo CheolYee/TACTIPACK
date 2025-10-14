@@ -9,6 +9,7 @@ public class Wizard : MonoBehaviour, ICharacter, IWizard
 
     private void Start()
     {
+        Data.maxHP = 70;
         CurrentHP = Data.maxHP;
     }
     public void Attack()

@@ -10,6 +10,7 @@ public class Healer :MonoBehaviour, ICharacter, IHealer
 
     private void Start()
     {
+        Data.maxHP = 50;
         CurrentHP = Data.maxHP;
     }
     public void Attack()

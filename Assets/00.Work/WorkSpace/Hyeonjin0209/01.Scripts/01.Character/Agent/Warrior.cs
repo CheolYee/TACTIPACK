@@ -7,6 +7,7 @@ public class Warrior : MonoBehaviour, ICharacter , IWarrior
 
     public void Attack()
     {
+        Data.maxHP = 150;
         CurrentHP = Data.maxHP;
     }
 
