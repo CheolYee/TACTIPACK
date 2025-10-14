@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public class Warrior : ICharacter , IWarrior
+public class Warrior : MonoBehaviour, ICharacter , IWarrior
 {
-    public CharacterDataSO Data { get ; set ; }
+    [field: SerializeField] public CharacterDataSO Data { get ; set ; }
     public int CurrentHP { get ; set; }
 
     public void Attack()
     {
-       
+        CurrentHP = Data.maxHP;
     }
 
     public void EatHealItem()

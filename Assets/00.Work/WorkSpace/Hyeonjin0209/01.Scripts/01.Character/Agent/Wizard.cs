@@ -2,11 +2,15 @@
 
 
 
-public class Wizard : ICharacter , IWizard
+public class Wizard : MonoBehaviour, ICharacter, IWizard
 {
-    public CharacterDataSO Data { get ; set; }
-    public int CurrentHP { get ; set ; }
+    [field: SerializeField] public CharacterDataSO Data { get ; set; }
+    public int CurrentHP { get; set; }
 
+    private void Start()
+    {
+        CurrentHP = Data.maxHP;
+    }
     public void Attack()
     {
         

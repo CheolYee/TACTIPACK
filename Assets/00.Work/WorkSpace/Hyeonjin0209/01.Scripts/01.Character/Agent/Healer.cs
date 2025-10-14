@@ -1,13 +1,17 @@
 ﻿
+using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class Healer : ICharacter, IHealer
+public class Healer :MonoBehaviour, ICharacter, IHealer
 {
-    public CharacterDataSO Data { get ; set ; }
-    public int CurrentHP { get; set ; }
+    [field:SerializeField] public CharacterDataSO Data { get ; set ; }
+    public int CurrentHP { get ; set ;}
 
-
+    private void Start()
+    {
+        CurrentHP = Data.maxHP;
+    }
     public void Attack()
     {
      

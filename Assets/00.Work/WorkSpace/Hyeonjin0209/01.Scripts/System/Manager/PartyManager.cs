@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PartyManager : MonoBehaviour
 {
-    public List<ICharacter> partySlot = new List<ICharacter>(3);
+    public List<ICharacter> partySlot = new(3);
     Wizard wizard = new Wizard();
     Warrior warrior = new Warrior();
     Healer Healer = new Healer();
