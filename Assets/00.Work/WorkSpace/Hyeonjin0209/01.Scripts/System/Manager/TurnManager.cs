@@ -39,7 +39,7 @@ public class TurnManager : MonoBehaviour
         _isPlayerTurn = false;
         for (int i = 0; i < dropSlots.Length; i++)
         {
-            if (dropSlots[i].transform.childCount > 0)
+            if (dropSlots[i].transform.childCount > 0 && dropSlots[i] != null)
             {
                 GameObject icon = dropSlots[i].transform.GetChild(0).gameObject;
                 string characterName = icon.name; 

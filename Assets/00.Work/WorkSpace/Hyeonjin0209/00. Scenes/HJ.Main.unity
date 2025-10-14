@@ -330,6 +330,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57182741}
   m_CullTransparentMesh: 1
+--- !u!1 &163234310 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5518784893284126180, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+  m_PrefabInstance: {fileID: 1857587396}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &197714700
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -881,6 +886,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: IconSlot (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: icons.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 163234310}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1780626887}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[2]'
+      value: 
+      objectReference: {fileID: 568174280}
     - target: {fileID: 8803150830282687567, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1253,6 +1274,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1755180913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &568174280 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5518784893284126180, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+  m_PrefabInstance: {fileID: 1261216003}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &691978179
 GameObject:
   m_ObjectHideFlags: 0
@@ -1780,6 +1806,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: IconSlot (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: icons.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 163234310}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1780626887}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[2]'
+      value: 
+      objectReference: {fileID: 568174280}
     - target: {fileID: 8803150830282687567, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2686,6 +2728,11 @@ Transform:
   - {fileID: 412187813}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1780626887 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5518784893284126180, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+  m_PrefabInstance: {fileID: 485575735}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1784279592
 GameObject:
   m_ObjectHideFlags: 0
@@ -2793,6 +2840,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: IconSlot
       objectReference: {fileID: 0}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: icons.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 163234310}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1780626887}
+    - target: {fileID: 5960743463253392359, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
+      propertyPath: 'icons.Array.data[2]'
+      value: 
+      objectReference: {fileID: 568174280}
     - target: {fileID: 8803150830282687567, guid: 3cf6f9aca52b3f94d942af145fa8e995, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
