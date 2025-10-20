@@ -44,7 +44,7 @@ namespace _00.Work.Resource.Scripts.Managers
             });
         }
 
-        public void FadeIn(System.Action onFadeComplete = null)
+        public void FadeIn(Action onFadeComplete = null)
         {
             if (fadeImage == null)
             {
@@ -55,7 +55,7 @@ namespace _00.Work.Resource.Scripts.Managers
             fadeImage.DOFade(5f, fadeDuration).OnComplete(() =>
             {
                 onFadeComplete?.Invoke();
-                FadeManager.Instance.FadeOut();
+                Instance.FadeOut();
             });
         }
         
