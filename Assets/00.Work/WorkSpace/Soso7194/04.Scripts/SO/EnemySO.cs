@@ -16,6 +16,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.SO
         
         private void OnValidate()
         {
+            if(enemyName == null) return;
 #if UNITY_EDITOR
             string path = AssetDatabase.GetAssetPath(this);
             AssetDatabase.RenameAsset(path, enemyName);

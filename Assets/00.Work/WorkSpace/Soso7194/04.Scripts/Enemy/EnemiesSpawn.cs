@@ -12,7 +12,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         public List<GameObject> SpawnedEnemies { get; private set; }
         
         [Header("적 SO")]
-        [SerializeField] private List<CharacterDataSO> enemyDatas;
+        [SerializeField] private List<EnemySO> enemyDatas;
         
         [Header("적 스폰 포인트")]
         [SerializeField] private List<Transform> enemiesSpawnPos;
@@ -29,13 +29,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 
             for (int i = 0; i < spawnCount; i++)
             {
-                CharacterDataSO data = enemyDatas[Random.Range(0, enemyDatas.Count)];
+                EnemySO data = enemyDatas[Random.Range(0, enemyDatas.Count)];
 
                 int index = Random.Range(0, availablePositions.Count);
                 Transform spawnPos = availablePositions[index];
                 availablePositions.RemoveAt(index);
 
-                GameObject enemy = Instantiate(ComponentHolderProtocol.GameObject(data), spawnPos.position, spawnPos.rotation);
+                GameObject enemy = Instantiate(data.prefab, spawnPos.position, spawnPos.rotation);
 
                 Enemy enemyCompo = enemy.GetComponent<Enemy>();
                 if (enemyCompo != null)

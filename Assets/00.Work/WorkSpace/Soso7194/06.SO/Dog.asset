@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Dog
   prefab: {fileID: 2399920206547640464, guid: 6456b374d4a3bdf4097d88145f187fb9, type: 3}
-  maxHP: 0
-  attack: 0
+  maxHP: 20
+  attack: 2
