@@ -15,12 +15,15 @@ MonoBehaviour:
   itemId: 1
   itemName: test2
   itemClass: 1
-  icon: {fileID: 21300000, guid: 33e1e6147b08d6d4ab5a134dd49ed962, type: 3}
+  icon: {fileID: -275383979, guid: a35a60425b54ada468545ef88cba3cd8, type: 3}
   shape: {x: 3, y: 1}
   rotatable: 1
   shapeOffsets: []
-  pivot: {x: 0, y: 0}
-  gridPreviewSprite: {fileID: 21300000, guid: 35f23c48db908de47a926c4bb1831818, type: 3}
+  pivot: {x: 1, y: 0}
+  cellSprites:
+  - {fileID: -7863123961144735272, guid: a1c6b36485667af49ad9948ac947b07d, type: 3}
+  - {fileID: -730810256, guid: a1c6b36485667af49ad9948ac947b07d, type: 3}
+  - {fileID: -550007957, guid: a1c6b36485667af49ad9948ac947b07d, type: 3}
   description: "\uC804\uBC29\uC758 \uB2E8\uC77C \uC801\uC744 \uACF5\uACA9\uD569\uB2C8\uB2E4"
   cooldownTurns: 3
   skillPrefab: {fileID: 0}

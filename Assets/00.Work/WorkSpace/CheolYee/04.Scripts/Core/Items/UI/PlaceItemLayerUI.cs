@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using UnityEngine;
@@ -9,7 +8,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
     public class PlaceItemLayerUI : MonoBehaviour
     {
         [Header("References")] 
-        public GridInventoryManager grid; //좌표변환용
+        public GridInventoryUIManager grid; //좌표변환용
         public RectTransform parentTransform; //랜더 부모
         public Image tileTemplate; //한칸 타일
         public Sprite fallbackSprite; //프리뷰 없을 때 대체
@@ -23,25 +22,69 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         }
 
         //화면에 아이템을 그리기
-        public void ShowItem(ItemInstance inst, ItemDataSo data, List<Vector2Int> absCalls)
+        public void ShowItem(ItemInstance inst, ItemDataSo data, List<Vector2Int> absCalls, List<int> localIndices, int rotation = 0)
         {
             HideItem(inst); //기존 잔여물 제거
+
+            if (tileTemplate is null || parentTransform is null || grid is null)
+            {
+                Debug.LogWarning("참조가 누락되었습니다.");
+                return;
+            }
             
             List<Image> tiles = new List<Image>(absCalls.Count); //타일 컨테이너
             //현재 데이터에 스프라이트가 존재한다면 데이터꺼 쓰고 아니면 임시 스프라이트 쓰기
-            Sprite sprite = data.gridPreviewSprite != null ? data.gridPreviewSprite : fallbackSprite;
 
-            foreach (Vector2Int cell in absCalls)
+            for (int i = 0; i < absCalls.Count; i++)
             {
-                Image img = Instantiate(tileTemplate, parentTransform); //타일 한개 생성
-                img.gameObject.SetActive(true);
-                img.raycastTarget = false; //마우스 포인터 간섭 없애기
+                Vector2Int cell = absCalls[i];
+                int idx = (i < localIndices.Count) ? localIndices[i] : i;
+
+                Sprite sprite = null;
+                if (data != null && data.cellSprites != null && idx >= 0 && idx < data.cellSprites.Count)
+                {
+                    //만약 데이터도 있고 스프라이트도 있으며 인덱스가 0보다 크고 적절하다면
+                    sprite = data.cellSprites[idx]; //스프라이트 설정
+                }
+
+                if (sprite == null)
+                {
+                    sprite = fallbackSprite;
+                }
+                
+                //모든 예외처리를 통과했다면 이미지 생성하기
+                Image img = Instantiate(tileTemplate, parentTransform); //생성 (나중에 풀링으로 바꿈
+                img.gameObject.SetActive(true); //이미지 켜주기
+                img.raycastTarget = false; //레이케스트 제거 (불필요한 이벤트 발생 줄이기)
                 img.sprite = sprite; //스프라이트 설정
-                RectTransform rt = (RectTransform)img.transform;
-                rt.sizeDelta = new Vector2(grid.cellSizePx, grid.cellSizePx); //이미지 사이즈 맞추기
-                tiles.Add(img); //세팅 끝나면 타일에 추가
+                img.type = Image.Type.Simple; //타입은 그냥 심플로
+                img.preserveAspect = false; //크기 딱맞게 조정
+
+                RectTransform rt = (RectTransform)img.transform; //피벗에 맞게 위치 조정
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); //셀 중앙값
+                rt.sizeDelta = new Vector2(grid.cellSizePx, grid.cellSizePx); //사이즈를 현재 칸의 픽셀만큼 조정
+                rt.anchoredPosition = grid.CellToAnchoredPos(cell); //셀 중심
+                rt.localEulerAngles = new Vector3(0, 0, rotation);
+                
+                tiles.Add(img);
             }
-            _rendered[inst.instanceId] = tiles; //모두 설정 끝나면 딕셔너리에 추가
+            _rendered[inst.instanceId] = tiles; //모두 설정 끝나면 딕셔너리에 추가 (캐싱)
+        }
+        
+        //이미 그려진 아이템을 새 셀 목록으로 이동
+        public void MoveItem(ItemInstance inst, List<Vector2Int> absCells)
+        {
+            //이미 그려져 있다면
+            if (!_rendered.TryGetValue(inst.instanceId, out List<Image> tiles))
+                return;
+
+            //칸 수가 변할 수도 있다면 ShowItem으로 다시 그리는 게 안전
+            int n = Mathf.Min(tiles.Count, absCells.Count);
+            for (int i = 0; i < n; i++)
+            {
+                RectTransform rt = (RectTransform)tiles[i].transform;
+                rt.anchoredPosition = grid.CellToAnchoredPos(absCells[i]); //각 칸의 중심으로 이동
+            }
         }
 
         //아이템 제거 시 타일도 제거

@@ -8,7 +8,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
     public class HoverCellUI : MonoBehaviour
     {
         [Header("References")] 
-        public GridInventoryManager grid; //좌표변환
+        public GridInventoryUIManager grid; //좌표변환
         public RectTransform hoverRect; //하이라이트 박스
         public Image hoverImage; //색과 알파 관리
         public Color color = new Color(1f, 1f, 1f, 0.08f);

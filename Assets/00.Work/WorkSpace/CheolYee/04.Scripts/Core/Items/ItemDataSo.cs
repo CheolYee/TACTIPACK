@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
@@ -18,8 +19,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         public Vector2Int[] shapeOffsets; //개별 셀 오프셋 목록 (pivot 기준)
         public Vector2Int pivot = Vector2Int.zero;  //중심 기준점 (회전 기준)
 
-        [Header("시각적 표현")]
-        public Sprite gridPreviewSprite; //그리드 인벤토리에서 표시할 미리보기 스프라이트
+        [Header("셀별 이미지")]
+        public List<Sprite> cellSprites;
 
         [Header("기타")]
         [TextArea] public string description; //아이템 설명
@@ -42,6 +43,26 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
             }
             return rectOffsets;
         }
+        
+        #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            Vector2Int[] offs = GetShapeOffsets();
+            int need = offs != null ? offs.Length : shape.x * shape.y;
+            if (need < 0) need = 0;
+
+            if (cellSprites == null) cellSprites = new List<Sprite>();
+            if (cellSprites.Count < need) //만약 필요한 개수보다 이미지가 적다면
+            {
+                int add = need - cellSprites.Count; //추가할 개수 계산
+                for (int i = 0; i < add; i++) cellSprites.Add(null); //나머지를 임시로 fallback이미지 사용
+            }
+            else if (cellSprites.Count > need)
+            {
+                cellSprites.RemoveRange(need, cellSprites.Count - need); //필요한 개수보다 이미지가 많이 들어있다면 지움
+            }
+        }
+        #endif
     }
 
     [CreateAssetMenu(fileName = "newActiveItem", menuName = "SO/Item/ActiveItem", order = 0)]

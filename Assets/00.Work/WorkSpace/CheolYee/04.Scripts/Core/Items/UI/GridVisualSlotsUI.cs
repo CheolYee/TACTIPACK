@@ -7,7 +7,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
     public class GridVisualSlotsUI : MonoBehaviour
     {
         [Header("Refs")] 
-        public GridInventoryManager grid; //그리드 좌표, 치수 치환용 
+        public GridInventoryUIManager grid; //그리드 좌표, 치수 치환용 
         public RectTransform parentRect; //슬롯이 담길 부모 오브젝트 위치
         public Image slotTemplate; //슬롯 이미지 템플릿(프리팹)
 
