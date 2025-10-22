@@ -221,9 +221,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 944274965}
   parentRect: {fileID: 356788950}
-  slotTemplate: {fileID: 6431690828092631538, guid: 633e3cc9dabd8a841a768aa03a817997, type: 3}
-  emptyColor: {r: 1, g: 1, b: 1, a: 0.06}
-  occupedColor: {r: 1, g: 1, b: 1, a: 0.16}
+  slotTemplate: {fileID: 6431690828092631538, guid: e6904b6e07f76704db8c70b492c40517, type: 3}
+  emptyColor: {r: 1, g: 1, b: 1, a: 0.78431374}
+  occupedColor: {r: 0.745283, g: 0.745283, b: 0.745283, a: 1}
 --- !u!1 &406616529
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,7 +918,7 @@ MonoBehaviour:
   height: 6
   gridRect: {fileID: 944274962}
   cellSizePx: 64
-  cellPaddingPx: {x: 5, y: 5}
+  cellPaddingPx: {x: 0, y: 0}
   pivotAsCell: {x: 0, y: 0}
   debugScreenToCell: 0
 --- !u!222 &944274967

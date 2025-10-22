@@ -51,8 +51,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   root: {fileID: 0}
   tileTemplate: {fileID: 6855404155669853240}
-  okColor: {r: 0, g: 1, b: 0, a: 0.45}
-  badColor: {r: 1, g: 0, b: 0, a: 0.45}
+  okColor: {r: 0, g: 1, b: 0, a: 0.78431374}
+  badColor: {r: 1, g: 0, b: 0, a: 0.78431374}
   cellSize: {x: 64, y: 64}
 --- !u!1001 &460138440875924938
 PrefabInstance:

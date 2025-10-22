@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6315882034476089282}
   - component: {fileID: 6431690828092631538}
   m_Layer: 5
-  m_Name: GhostPrefab
+  m_Name: SlotPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
