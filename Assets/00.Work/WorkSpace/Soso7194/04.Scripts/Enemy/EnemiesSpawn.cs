@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using _00.Work.WorkSpace.Soso7194._04.Scripts.SO;
-using Unity.VisualScripting;
 using UnityEngine;
-
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 {
     public class EnemiesSpawn : MonoBehaviour
@@ -16,9 +13,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         
         [Header("적 스폰 포인트")]
         [SerializeField] private List<Transform> enemiesSpawnPos;
-
+        
+        [Header("적 HP바")]
+        [SerializeField] private GameObject prefabHpBar;
+        [SerializeField] private GameObject hpBarParent;
+        
         private static string EnemySavePath => Application.persistentDataPath + "/enemyData.json";
-
+        
         private void Start()
         {
             SpawnedEnemies = new List<GameObject>();
@@ -41,6 +42,12 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 if (enemyCompo != null)
                 {
                     enemyCompo.Setup(data, this);
+                    
+                    // HP바 생성 및 설정
+                    GameObject hpBarObj = Instantiate(prefabHpBar, hpBarParent.transform);
+                    RectTransform hpBarRect = hpBarObj.GetComponent<RectTransform>();
+                    
+                    enemyCompo.SetHpBar(hpBarRect);
                 }
 
                 SpawnedEnemies.Add(enemy);
@@ -49,7 +56,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             Debug.Log($"적 {SpawnedEnemies.Count}명 스폰 완료");
             //LoadEnemies();
         }
-
+        
         public void RemoveEnemy(GameObject enemy)
         {
             if (SpawnedEnemies.Contains(enemy))
@@ -65,7 +72,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 }
             }
         }
-
+        
         /*private void LoadEnemies()
         {
             if (File.Exists(EnemySavePath))
@@ -78,7 +85,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 SaveEnemies();
             }
         }
-        
+
         private void SaveEnemies()
         {
             string json = JsonUtility.ToJson(EnemySavePath);
