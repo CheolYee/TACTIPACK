@@ -46,7 +46,6 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 
             foreach (var enemy in enemiesCopy)
             {
-                // 적이 이미 파괴되었는지 확인
                 if (enemy == null)
                 {
                     Debug.Log("적이 이미 파괴됨, 스킵");
@@ -54,7 +53,6 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 }
 
                 var enemyScript = enemy.GetComponent<Enemy>();
-                
                 Sequence seq = DOTween.Sequence();
                 Vector3 startPos = enemy.transform.position;
 
@@ -64,8 +62,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 Debug.Log($"{enemy.name} 때림");
 
                 yield return new WaitForSeconds(1f);
-
-                // 데미지를 입은 후에도 살아있는지 다시 확인
+                
                 if (enemy != null)
                 {
                     seq.Append(enemy.transform.DOMove(startPos, 0.3f));
