@@ -1,28 +1,31 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TurnOrderDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+/// <summary>
+/// 드래그 가능한 캐릭터 아이콘 UI 제어 스크립트
+/// </summary>
+public class DragAbleUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 
-    private Transform _canvas;
-    private Transform _previousParent;
-    private RectTransform _rect;
+    public Transform Canvas { get; private set; } //가장 상단에 위치한 캔바스
+    public Transform previousParent; // 이전 부모를 저장
+    private RectTransform _rect; //현재 위치
     private CanvasGroup _canvasGroup;
 
 
     private void Awake()
     {
-        _canvas = FindFirstObjectByType<Canvas>().transform;
+        Canvas = FindFirstObjectByType<Canvas>().transform;
         _rect = GetComponent<RectTransform>();
         _canvasGroup = GetComponent<CanvasGroup>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        _previousParent = transform.parent;
+        previousParent = transform.parent; //이전 부모에 저장
 
-        transform.SetParent(_canvas);
-        transform.SetAsLastSibling();
+        transform.SetParent(Canvas); //부모 변경
+        transform.SetAsLastSibling();//하이라키 창 가장 마지막으로 배치
 
         _canvasGroup.alpha = 0.5f;  
         _canvasGroup.blocksRaycasts = false;
@@ -33,12 +36,12 @@ public class TurnOrderDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
     }
     public void OnEndDrag(PointerEventData eventData)
     {
-       if(transform.parent == _canvas)
+       if(transform.parent == Canvas)
         {
-            transform.SetParent(_previousParent);
-            _rect.position = _previousParent.GetComponent<RectTransform>().position;
+            transform.SetParent(previousParent);   
+            _rect.position = previousParent.GetComponent<RectTransform>().position;
         }
-        _canvasGroup.alpha = 1f;
+            _canvasGroup.alpha = 1f;
         _canvasGroup.blocksRaycasts = true;
     }
 }

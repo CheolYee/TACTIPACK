@@ -3,7 +3,18 @@ using UnityEngine;
 
 public class PartyManager : MonoBehaviour
 {
-    public List<ICharacter> partySlot = new(3);
+    public static PartyManager Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else Destroy(gameObject);
+    }
+
+    public List<ICharacter> partySlot = new();
     Wizard wizard = new Wizard();
     Warrior warrior = new Warrior();
     Healer Healer = new Healer();
@@ -11,8 +22,7 @@ public class PartyManager : MonoBehaviour
     private void Start()
     {
         PlayerPartySet();
-    }
-        
+    }  
     public void PlayerPartySet()
     {
         Debug.Log("파티 구성");

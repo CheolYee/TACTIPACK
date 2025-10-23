@@ -9,40 +9,31 @@ public class DropAbleUI : MonoBehaviour, IPointerEnterHandler, IDropHandler , IP
     private Image _image;
     private RectTransform _rect;
 
-    public GameObject[] icons;
-    private Transform[] startPoint;
-
     private void Awake()
     {
          _image = GetComponent<Image>();
         _rect = GetComponent<RectTransform>();
-    }
-
-    private void Start()
-    {
-        startPoint = new Transform[icons.Length];
-        for (int i = 0; i < icons.Length; i++)
-        {
-            startPoint[i] = icons[i].transform;
-        }
 
     }
-
     public void OnDrop(PointerEventData eventData)
     {
         if(eventData.pointerDrag != null)
         {
-            GameObject draggedIcon = eventData.pointerDrag;
+            DragAbleUI draggedIcon = eventData.pointerDrag.GetComponent<DragAbleUI>();
 
-            eventData.pointerDrag.transform.SetParent(transform);
-            eventData.pointerDrag.GetComponent<RectTransform>().position = _rect.position;
-            for (int i = 0; i < icons.Length; i++)
-            {
-                if(draggedIcon.name == icons[i].name)
-                {
-                    Instantiate(icons[i], startPoint[i].transform.position, Quaternion.identity);
-                }
-            }
+            DragAbleUI copy =
+                Instantiate(draggedIcon.gameObject, draggedIcon.Canvas).GetComponent<DragAbleUI>();
+
+            copy.gameObject.name = draggedIcon.gameObject.name;
+
+            copy.previousParent = draggedIcon.previousParent;
+            copy.OnEndDrag(eventData);
+
+            draggedIcon.transform.SetParent(transform);
+            draggedIcon.GetComponent<RectTransform>().position = _rect.position;
+            if (transform.childCount > 1)
+                for (int i = 0; i < transform.childCount - 1; i++)
+                    Destroy(transform.GetChild(0).gameObject);
         }
     }
 
