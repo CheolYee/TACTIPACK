@@ -15,9 +15,9 @@ public class PartyManager : MonoBehaviour
     }
 
     public List<ICharacter> partySlot = new();
-    Wizard wizard = new Wizard();
+    Wizard wizard = new Wizard(); //현재는 파티 구성을 위해 객체만 생성 해 주었고, 추후 수정하며 인스턴스화를 할 예정
     Warrior warrior = new Warrior();
-    Healer Healer = new Healer();
+    Healer healer = new Healer();
 
     private void Start()
     {
@@ -28,6 +28,6 @@ public class PartyManager : MonoBehaviour
         Debug.Log("파티 구성");
         partySlot.Add(wizard);
         partySlot.Add(warrior);
-        partySlot.Add(Healer);
+        partySlot.Add(healer);
     }
 }

@@ -1,7 +1,4 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using TMPro;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterSelectManager : MonoBehaviour
@@ -18,7 +15,6 @@ public class CharacterSelectManager : MonoBehaviour
         }
         else Destroy(gameObject);
     }
-
     public List<CharacterType> _choiceCharacter = new List<CharacterType>(3);
 
     public bool SelecteCharacter(CharacterType type)
@@ -33,7 +29,6 @@ public class CharacterSelectManager : MonoBehaviour
             if (_choiceCharacter.Count < 3)
                 _choiceCharacter.Add(type);
             return true;
-        }
-           
+        }     
     }
 }
