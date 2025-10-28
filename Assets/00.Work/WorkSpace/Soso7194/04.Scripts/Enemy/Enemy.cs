@@ -12,6 +12,11 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         public int CurrentHP { get; set; }
         public CharacterDataSO Data { get; set; }
         
+        public Sprite characterSprite { get; private set; }
+        public int maxHP { get; private set; }
+        public int attackPower { get; private set; }
+        public int criticalHitChance { get; private set; }
+
         private RectTransform _hpBarRect;
         private Image _hpFillImage;
         private Camera _mainCamera;
