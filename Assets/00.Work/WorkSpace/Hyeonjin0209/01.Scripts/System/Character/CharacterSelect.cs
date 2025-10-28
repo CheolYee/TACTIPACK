@@ -25,8 +25,16 @@ public class CharacterSelect : MonoBehaviour
 
     public void PointerDown()
     {
-        _image.color = Color.gray;
-        CharacterSelectManager.Instance.SelecteCharacter(characterType);
 
+        if (CharacterSelectManager.Instance._choiceCharacter.Count >= 3) return;
+
+        if(!CharacterSelectManager.Instance._choiceCharacter.Contains(characterType))
+        {
+            bool isSelected = CharacterSelectManager.Instance.SelecteCharacter(characterType);
+            if (isSelected)
+                _image.color = Color.gray;
+            else
+                _image.color = Color.white;
+        }
     }
 }

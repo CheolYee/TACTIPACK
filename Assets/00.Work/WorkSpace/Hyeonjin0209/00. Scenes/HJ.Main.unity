@@ -2978,6 +2978,8 @@ MonoBehaviour:
   - {fileID: 2113843896}
   - {fileID: 859839814}
   - {fileID: 52321428}
+  prefabHpBar: {fileID: 0}
+  hpBarParent: {fileID: 0}
 --- !u!114 &1119161876
 MonoBehaviour:
   m_ObjectHideFlags: 0

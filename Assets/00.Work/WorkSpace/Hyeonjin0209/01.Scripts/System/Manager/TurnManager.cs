@@ -25,7 +25,7 @@ public class TurnManager : MonoBehaviour
     {
         enemyTargeting.OnEnemyTurnEnd -= OnEnemyTurnFinished;
     }
-    public void OnTurnStart()
+    public void OnTurnStart()//시작 버튼
     {
         if (!_isPlayerTurn) return;
         if (dropSlots == null) return;
@@ -35,18 +35,22 @@ public class TurnManager : MonoBehaviour
     private IEnumerator PlayerAttackRoutine()
     {
         Debug.Log("=== 플레이어 턴 시작 ===");
-        _isPlayerTurn = false;
-        for (int i = 0; i < dropSlots.Length; i++)
+        _isPlayerTurn = false;//플레이어 턴 시작 됐으니 false
+        for (int i = 0; i < dropSlots.Length; i++)//할당한 dropSlots 만큼 순회
         {
-            if (dropSlots[i].transform.childCount > 0)
+            if (dropSlots[i].transform.childCount > 0) //자식이 있는지 없는지 체크
             {
-                GameObject icon = dropSlots[i].transform.GetChild(0).gameObject;
-                string characterName = icon.name; 
-                Debug.Log($"{characterName} : 공격!");
+                //있다면?
+                GameObject icon = dropSlots[i].transform.GetChild(0).gameObject;// 아이콘에 dropSlots의 첫번째 자식 게임 오브젝트의 정보를 담음
+                string characterName = icon.name; //스트링 지역 변수 하나 선언하고 icon 오브젝트의 이름으로 설정
+                Debug.Log($"{characterName} : 공격");// 누가 공격 했는지 출력
             }
             else
                 Debug.Log($"슬롯 {i + 1} : 비어 있음");
-              yield return new WaitForSeconds(0.5f); 
+              yield return new WaitForSeconds(0.5f); while (transform.childCount > 1)
+            {
+                Destroy(transform.GetChild(0).gameObject);
+            }
         }
         Debug.Log("=== 플레이어 턴 종료 ===");
         enemyTargeting.StartTargeting();
