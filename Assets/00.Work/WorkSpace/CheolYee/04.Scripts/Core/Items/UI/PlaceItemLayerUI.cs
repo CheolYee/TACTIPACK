@@ -31,7 +31,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 return;
             }
 
+            //셀을 담을 타일 이미지 리스트
             List<Image> tiles = new List<Image>(absCalls.Count);
+            
+            //셀 개수만큼 생성
             for (int i = 0; i < absCalls.Count; i++)
             {
                 int idx = (localIndices != null && i < localIndices.Count) ? localIndices[i] : i;
@@ -49,20 +52,22 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                     sprite = fallbackSprite;
                 }
                 
-                Image img = Instantiate(tileTemplate, parentTransform);
-                img.gameObject.SetActive(true);
-                img.raycastTarget = false;
-                img.sprite = sprite;
-                img.type = Image.Type.Simple;
-                img.preserveAspect = false;
+                //이미지 설정
+                Image img = Instantiate(tileTemplate, parentTransform); //이미지 생성
+                img.gameObject.SetActive(true); //이미지 켜기
+                img.raycastTarget = false; //쓸모없는 레이케스트 끄기 (최적화)
+                img.sprite = sprite; //스프라이트 설정
+                img.type = Image.Type.Simple; //이미지 타입 설정
+                img.preserveAspect = false; //이미지 타일에 꽉차게
 
-                RectTransform rt = (RectTransform)img.transform;
-                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = new Vector2(grid.cellSizePx, grid.cellSizePx);
-                rt.anchoredPosition = grid.CellToAnchoredPos(cell);
-                rt.localEulerAngles = new Vector3(0,0,rotation);
+                //위치 설정
+                RectTransform rt = (RectTransform)img.transform; //위치 (명시적 형변환)
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); //엥커 조정
+                rt.sizeDelta = new Vector2(grid.cellSizePx, grid.cellSizePx); //사이즈 직접 조정 (한칸 사이즈)
+                rt.anchoredPosition = grid.CellToAnchoredPos(cell); //셀 포지션 자동 설정
+                rt.localEulerAngles = new Vector3(0,0,rotation); //각도를 현재 돌려진 각도만큼 돌리기
 
-                tiles.Add(img);
+                tiles.Add(img); //다 만들었으면 
             }
 
             _rendered[inst.instanceId] = tiles;

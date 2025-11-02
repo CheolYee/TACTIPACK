@@ -9,8 +9,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         [Header("Visual")] 
         public RectTransform root; //유령 타일들을 배치할 부모 위치
         public Image tileTemplate; //슬롯 표현용 이미지 프리팹
-        public Color okColor = new(0f, 1f, 0f, 0.45f);    //가능(초록 반투명)
-        public Color badColor = new Color(1f, 0f, 0f, 0.45f);   //불가능(빨강 반투명)
+        public Color okColor = new(0f, 1f, 0f, 0.45f); //가능(초록 반투명)
+        public Color badColor = new Color(1f, 0f, 0f, 0.45f); //불가능(빨강 반투명)
         public Vector2 cellSize =  new Vector2(64f, 64f); //한 칸 크기
         
         private readonly List<Image> _tiles = new(); //이미지 캐싱
@@ -46,7 +46,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 Image img = _tiles[i]; //타일
                 RectTransform rt = (RectTransform)img.transform; //캐스팅
                 rt.anchoredPosition = anchoredPositions[i]; //셀 포지션 지정
-                rt.sizeDelta = cellSize; //셀 사이즈 설정
+                rt.sizeDelta = cellSize; //셀 사이즈 설정 
             }
         }
         

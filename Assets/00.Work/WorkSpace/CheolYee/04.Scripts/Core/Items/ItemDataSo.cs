@@ -5,25 +5,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
 {
     public abstract class ItemDataSo : ScriptableObject
     {
-        [Header("기본 정보")]
+        [Header("References")]
         public string itemId; //아이템 고유 ID
         public string itemName; //아이템 이름
         public ItemClass itemClass; //어떤 클래스가 사용하는 아이템인가?
         public Sprite icon; //인벤토리 아이콘
+        [TextArea] public string description; //아이템 설명
 
-        [Header("기본 형태 설정")]
+        [Header("Default Shape Settings")]
         public Vector2Int shape = new(1, 1); //기본 사각형 크기
         public bool rotatable = true; //회전 가능한지 여부
 
-        [Header("테트리스형 모양 설정 (shapeOffsets가 존재하면 shape는 무시됨)")]
+        [Header("Free Shape Settings")]
         public Vector2Int[] shapeOffsets; //개별 셀 오프셋 목록 (pivot 기준)
         public Vector2Int pivot = Vector2Int.zero;  //중심 기준점 (회전 기준)
 
-        [Header("셀별 이미지")]
+        [Header("Image By Cell")]
         public List<Sprite> cellSprites;
 
-        [Header("기타")]
-        [TextArea] public string description; //아이템 설명
 
         //shapeOffsets가 비어 있으면 사각형 셀로 변환하여 반환
         public Vector2Int[] GetShapeOffsets()

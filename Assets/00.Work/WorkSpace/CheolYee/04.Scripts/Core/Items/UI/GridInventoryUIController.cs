@@ -1,12 +1,16 @@
 using System.Collections.Generic;
+using _00.Work.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem.SIdeInventoryItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
 {
-    public class GridInventoryUIController : MonoBehaviour
+    public class GridInventoryUIController : MonoSingleton<GridInventoryUIController>
     {
         [Header("Refs")]
         public GridInventoryUIManager grid; //그리드 로직/UI 좌표 변환
@@ -22,7 +26,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         public PlaceItemLayerUI placedLayer; //배치된 아이템 렌더
         public HoverCellUI hover; //호버 하이라이트
         
+        [Header("Drag SideInventory")]
+        [SerializeField] private SideInventoryManager sideManager;
+        [SerializeField] private Image dragIconPrefab;
+        
+        private Image _dragIcon;
+        
         private GridItemGhostUI _ghost; //런타임 인스턴스
+        private DragOrigin _dragOrigin = DragOrigin.None;
+        private SideInventoryManager _sideManagerForRefund; //사이드 출처면 환불 대상
+        private bool _pendingRefund; //설치 실패/취소 시 환불할지
 
         // 드래그 상태
         private ItemInstance _dragItem; // 드래그 중인 아이템 인스턴스
@@ -37,7 +50,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
 
         private void Start()
         {
-            _ghost = Instantiate(ghostPrefab, grid.gridRect); //그리드 패널 아래에 생성
+            if (_ghost == null) _ghost = Instantiate(ghostPrefab, grid.gridRect); //그리드 패널 아래에 생성
             _ghost.Hide(); //시작 시 다 숨김
             
             database.Initialize(); //내부 딕셔너리 구성
@@ -53,6 +66,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 gridSlots.BuildSlots(); //슬롯 생성
                 gridSlots.RefreshColors(); //색 초기화
             }
+            
+            //드래그 아이콘 준비
+            if (dragIconPrefab != null && _dragIcon == null)
+            {
+                _dragIcon = Instantiate(dragIconPrefab, canvas.transform);
+                _dragIcon.gameObject.SetActive(false);
+            }
         }
 
         [ContextMenu("Pick RandomItem")] //랜덤 아이템을 잡아와요
@@ -61,26 +81,66 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             if (database.allItems == null || database.allItems.Count == 0) return; //데이터 없으면 리턴
             ItemDataSo so = database.allItems[Random.Range(0, database.allItems.Count)]; //랜덤 so 하나 고름
             
-            StartDrag(new ItemInstance(so.itemId), so, 0);
+            StartDrag(new ItemInstance(so.itemId), so, 0, DragOrigin.Grid, null);
         }
 
-        private void StartDrag(ItemInstance itemInstance, ItemDataSo data, int rotation)
+        public void PickItem(ItemDataSo so)
+        {
+            StartDrag(new ItemInstance(so.itemId), so, 0, DragOrigin.Grid, null);
+        }
+
+        private void StartDrag(ItemInstance itemInstance, ItemDataSo data, int rotation
+            , DragOrigin dragOrigin, SideInventoryManager sideManagerOrNull)
         {
             _dragItem = itemInstance; //드래드 인스턴스 설정
             _dragData = data; //데이터 설정
             _dragRotation = rotation; //회전값 설정
+            
+            _dragOrigin = dragOrigin;
+            _sideManagerForRefund = sideManagerOrNull;
+            
             _ghost.gameObject.SetActive(true); //유령 표시
             _lastAnchor = new Vector2Int(int.MinValue, int.MinValue); //강제 갱신 유도
             
             if (hover != null) hover.Hide(); //드래그 중일 때는 호버 없애기
+
+            if (_dragIcon != null)
+            {
+                _dragIcon.sprite = _dragData != null ? _dragData.icon : null;
+                _dragIcon.gameObject.SetActive(false);
+            }
+        }
+        
+        // 사이드 슬롯에서 시작하는 진입점 (신규)
+        public void StartDragFromSide(ItemDataSo so, SideInventoryManager sideManager)
+        {
+            // 새 인스턴스 생성(설치 성공 시 그리드가 소유)
+            var inst = new ItemInstance(so.itemId);
+            StartDrag(inst, so, 0, DragOrigin.Side, sideManager);
+
+            //사이드에서 꺼낼 때, 시작하자마자 사이드에서 1개 차감은
+            //SideItemSlotView.BeginDragFromSide에서 이미 수행했음.
+            //여기서는 "환불 대기"만 켜둔다.
+            _pendingRefund = true;
         }
 
         //드래그 끝
         private void StopDrag()
         {
-            _dragItem = null; //해제
-            _dragData = null; //해제
-            _ghost.Hide(); //숨김
+            if (_pendingRefund && _dragOrigin == DragOrigin.Side && _sideManagerForRefund != null && _dragData != null)
+            {
+                _sideManagerForRefund.AddItem(_dragData);
+            }
+
+            _pendingRefund = false;
+            _sideManagerForRefund = null;
+            _dragOrigin = DragOrigin.None;
+
+            _dragItem = null;
+            _dragData = null;
+
+            _ghost.Hide();
+            if (_dragIcon != null) _dragIcon.gameObject.SetActive(false);
         }
 
         private void Update()
@@ -98,7 +158,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 else
                 {
                     // 드래그 중이 아닐 때만 호버 표시
-                    var cell = grid.ScreenToCell(uiCamera, Input.mousePosition, out var oob);
+                    Vector2Int cell = grid.ScreenToCell(uiCamera, Input.mousePosition, out bool oob);
                     if (!oob) hover.ShowAt(cell); else hover.Hide();
                 }
             }
@@ -120,23 +180,43 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 if (outOfBounds)
                 {
                     _ghost.Hide();
-                    if (Input.GetMouseButtonDown(0)) { /* 무시 */ }
-                    if (Input.GetMouseButtonDown(1))  { StopDrag(); } // 우클릭 취소는 허용
+                    UpdateDragIconFollow(true);
+
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        if (_dragOrigin == DragOrigin.Side)
+                        {
+                            StopDrag();
+                        }
+                        else if (_dragOrigin == DragOrigin.Grid)
+                        {
+                            if (sideManager != null && _dragData != null)
+                            {
+                                sideManager.AddItem(_dragData);
+                            }
+                            StopDrag();
+                        }
+                    }
+
+                    if (Input.GetMouseButtonUp(1))
+                    {
+                        StopDrag();
+                    }
                     return;
                 }
                 
+                UpdateDragIconFollow(false);
                 UpdateGhost(cell, true); //유령 위치 & 색 갱신
 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonUp(0))
                 {
                     TryPlace(cell, true); //셀 안이라면 설치 시도
                 }
-
+                
                 if (Input.GetMouseButtonUp(1))
                 {
-                    StopDrag(); //우클릭 시 드래그 종료
+                    StopDrag();
                 }
-                
                 return; //드래그 처리 끝
             }
             
@@ -158,9 +238,27 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                     if (gridSlots != null) gridSlots.RefreshColors();
 
                     //드래그 시작(기존 회전 유지)
-                    StartDrag(picked, so, picked.rotation);
+                    StartDrag(picked, so, picked.rotation, DragOrigin.Grid, null);
                 }
             }
+        }
+        
+        private void UpdateDragIconFollow(bool show)
+        {
+            if (_dragIcon == null) return;
+            if (!show)
+            {
+                if (_dragIcon.gameObject.activeSelf) _dragIcon.gameObject.SetActive(false);
+                return;
+            }
+
+            if (!_dragIcon.gameObject.activeSelf) _dragIcon.gameObject.SetActive(true);
+
+            //화면 좌표 그대로 따라가기
+            RectTransform t = (RectTransform)_dragIcon.transform;
+            Vector2 screenPos = Input.mousePosition;
+            
+            t.position = screenPos; 
         }
 
         private void UpdateGhost(Vector2Int anchorCell, bool inside)
@@ -210,6 +308,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             //배치가 가능한가?
             if (grid.CanPlace(_dragItem, _dragData, anchorCell, _dragRotation))
             {
+                //설치가 성공하면 환불 금지
+                _pendingRefund = false;
+                
                 //배치한다
                 grid.Place(_dragItem, _dragData, anchorCell, _dragRotation);
                 

@@ -64,7 +64,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             EnsureGrid();
             int w = _cells.GetLength(0);
             int h = _cells.GetLength(1);
-
+            
             int free = 0;
             for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
@@ -100,72 +100,26 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         //스크린 좌표를 셀 인덱스로 변환 (그리드 밖이면 outOfBounds = true)
         public Vector2Int ScreenToCell(Camera uiCamera, Vector2 screenPos, out bool outOfBounds)
         {
-            outOfBounds = true;                                         // 기본값: 바깥으로 가정
-            if (gridRect == null)
-                return new Vector2Int(-1, -1);
+            //먼저 스크린좌표를 셀 인덱스 좌표로 변환
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                gridRect, screenPos, uiCamera, out Vector2 local); //local은 중심점 기준
 
-            // 1) 스크린 → gridRect 로컬 좌표(pivot 원점)
-            //    Screen Space - Camera 모드라면 반드시 Canvas.worldCamera를 넘겨야 하지만,
-            //    여기서는 Contains 사전체크를 안 쓰고, local→rect.Contains로 판정하므로 훨씬 안전.
-            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    gridRect, screenPos, uiCamera, out var local))
-            {
-                if (debugScreenToCell) Debug.Log("[Grid] ScreenPointToLocalPointInRectangle 실패");
-                return new Vector2Int(-1, -1);
-            }
+            //좌하단 기준으로 보정
+            Vector2 g = LocalToGridSpace(local); //좌하단 기준 좌표
 
-            // 2) gridRect의 로컬 좌표계에서 “내부 판정”
-            //    rect는 pivot 원점 기준으로 min/max를 제공 → local이 rect 내부인지 직접 판정
-            Rect r = gridRect.rect;                                    // min/max 포함
-            bool inside = r.Contains(local);                           // Canvas 스케일/피벗과 무관하게 정확
-            if (!inside)
-            {
-                if (debugScreenToCell)
-                {
-                    Debug.Log($"[Grid] local={local}, rect.min={r.min}, rect.max={r.max} → 패널 밖");
-                }
-                return new Vector2Int(-1, -1);
-            }
+            //셀+패딩 크기
+            float stepX = cellSizePx + cellPaddingPx.x; //X축 한 칸 간격
+            float stepY = cellSizePx + cellPaddingPx.y; //Y축 한 칸 간격
 
-            // 3) 좌하단(0,0) 기준으로 보정
-            //    local은 pivot 원점 → 좌하단 원점 좌표 g = local - rect.min (rect.min = -size * pivot)
-            Vector2 g = local - r.min;                                  // 좌하단 기준 좌표
+            //셀 인덱스 계산
+            int cellX = Mathf.FloorToInt(g.x / stepX);
+            int cellY = Mathf.FloorToInt(g.y / stepY);
 
-            // 4) 셀 스텝 계산
-            float stepX = cellSizePx + cellPaddingPx.x;
-            float stepY = cellSizePx + cellPaddingPx.y;
-
-            // (선택) 패널 크기 vs 셀 총합 불일치 경고
-            float totalW = width * stepX;
-            float totalH = height * stepY;
-            const float warnEps = 0.5f;
-            Vector2 size = r.size;
-            if (Mathf.Abs(size.x - totalW) > warnEps || Mathf.Abs(size.y - totalH) > warnEps)
-            {
-                if (debugScreenToCell)
-                    Debug.LogWarning($"[Grid] gridRect size({size}) != cells total({totalW},{totalH}). " +
-                                     $"패널 크기와 셀 합계를 맞추거나 스텝을 조정하세요.");
-            }
-
-            // 5) 경계/부동소수점 보정(끝선에서 floor 튀는 것 방지)
-            const float eps = 0.0001f;
-            float gx = Mathf.Clamp(g.x, 0f, Mathf.Max(0f, totalW - eps));
-            float gy = Mathf.Clamp(g.y, 0f, Mathf.Max(0f, totalH - eps));
-
-            // 6) 셀 인덱스(floor = 셀 시작선 기준)
-            int cellX = (stepX > 0f) ? Mathf.FloorToInt(gx / stepX) : -1;
-            int cellY = (stepY > 0f) ? Mathf.FloorToInt(gy / stepY) : -1;
-
-            // 7) 최종 바운드
+            //경계 검사
+            //셀 계산 방법: 0,0은 좌하단이며 그걸 기준으로 넘었는지 감지함
             outOfBounds = (cellX < 0 || cellY < 0 || cellX >= width || cellY >= height);
-
-            if (debugScreenToCell)
-            {
-                Debug.Log($"[Grid] screen={screenPos}, local={local}, g={g}, step=({stepX},{stepY}), " +
-                          $"cell=({cellX},{cellY}), size={size}, total=({totalW},{totalH}), oob={outOfBounds}");
-            }
-
-            return outOfBounds ? new Vector2Int(-1, -1) : new Vector2Int(cellX, cellY);
+            
+            return new Vector2Int(cellX, cellY); //결과 반환
         }
 
         //셀 인덱스를 gridRect 로컬 좌표(좌하단 원점)로 변환
@@ -234,7 +188,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             }
         }
 
-        private bool InBounds(Vector2Int cell)
+        //현재 그리드를 벗어나지 않았는가?
+        public bool InBounds(Vector2Int cell)
         {
             EnsureGrid();
             int w = _cells.GetLength(0);
@@ -319,11 +274,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             return _cells[cell.x, cell.y]; //차지된 칸 인스턴스 반환
         }
 
+        //셀 크기를 현재 설정된 가로 세로와 동기화
         private void EnsureGrid()
         {
+            //셀이 만들어지지 않았거나, 가로, 세로가 설정된것과 다르다면
             if (_cells == null || _cells.GetLength(0) != width || _cells.GetLength(1) != height)
             {
+                //잘못된 셀이니 새로 생성한다.
                 _cells = new ItemInstance[width, height];
+                
+                //기존 정보 초기화
                 _occupiedMap.Clear();
             }
         }
