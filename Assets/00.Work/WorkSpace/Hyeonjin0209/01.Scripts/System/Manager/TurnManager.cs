@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy;
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +11,12 @@ public class TurnManager : MonoBehaviour
 {
     [Header("Drop Slot")]
     public DropAbleUI[] dropSlots;
+
+    [Header("Manager")]
+
+    public RectTransform[] dragAbleUI; 
+
+    private CharacterSelectManager _CharacterSelectManager;
     
     [Header("적 타겟팅 시스템")]
     [SerializeField] private RandomTargeting enemyTargeting;
@@ -15,7 +24,12 @@ public class TurnManager : MonoBehaviour
     public event Action OnPlayerTurnEnd;
     
     private bool _isPlayerTurn = true;
-    
+
+    private void Awake()
+    {
+        _CharacterSelectManager = GetComponent<CharacterSelectManager>();
+    }
+
     private void OnEnable()
     {
         enemyTargeting.OnEnemyTurnEnd += OnEnemyTurnFinished;
@@ -28,7 +42,7 @@ public class TurnManager : MonoBehaviour
     public void OnTurnStart()//시작 버튼
     {
         if (!_isPlayerTurn) return;
-        if (dropSlots == null) return;
+        if (_CharacterSelectManager == null) return;
 
         StartCoroutine(PlayerAttackRoutine());
     }
@@ -63,10 +77,35 @@ public class TurnManager : MonoBehaviour
 
     public void ResetSlot()
     {
-        for (int i = 0; i < dropSlots.Length; i++)
+        for (int i = 0; i < dropSlots.Length; i ++)
         {
             if (dropSlots[i].transform.childCount > 0)
                 Destroy(dropSlots[i].transform.GetChild(0).gameObject);
+        }
+    }
+    public void SelectComplected()
+    {
+        Debug.Log("버튼 실행 됨");
+
+        for (int i = 0; i < _CharacterSelectManager.choiceCharacter.Count; i++)
+        {
+            var count = _CharacterSelectManager.choiceCharacter[i];//복제 할 거
+            var parent = dragAbleUI[i].transform;//위치 
+
+            var clone = Instantiate(count, parent, false);//선택한 캐릭터를 드래그 가능한 UI로 복제
+
+            var rect = clone.GetComponent<RectTransform>();// 복제한 녀석에게서 컴포넌트를 가져오고
+            
+            if (rect != null)
+            {
+                rect.position = parent.transform.position;
+                rect.localRotation = Quaternion.identity;
+                rect.localScale = parent.localScale * 1.5f;
+                clone.AddComponent<DragAbleUI>();
+                Destroy(clone.GetComponent<CharacterSelect>());
+                clone.GetComponent<Image>().color = Color.white;
+            }
+            Debug.Log($"{clone.name} 소환 완료 (부모: {parent.name})");
         }
     }
 }
