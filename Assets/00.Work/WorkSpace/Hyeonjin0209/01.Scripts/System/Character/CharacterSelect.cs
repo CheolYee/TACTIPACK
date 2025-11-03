@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-
 public enum CharacterType
 {
     wizard,//마법사
@@ -26,15 +25,21 @@ public class CharacterSelect : MonoBehaviour
     public void PointerDown()
     {
 
-        if (CharacterSelectManager.Instance._choiceCharacter.Count >= 3) return;
+        var chmanager = CharacterSelectManager.Instance;
 
-        if(!CharacterSelectManager.Instance._choiceCharacter.Contains(characterType))
+        if (chmanager.choiceCharacter.Contains(this))
         {
-            bool isSelected = CharacterSelectManager.Instance.SelecteCharacter(characterType);
+            chmanager.choiceCharacter.Remove(this);
+            _image.color = Color.white;
+            return;
+        }
+        if (chmanager.choiceCharacter.Count >= 3) return;
+
+        if(!chmanager.choiceCharacter.Contains(this))
+        {
+            bool isSelected = chmanager.SelectCharacter(this);
             if (isSelected)
                 _image.color = Color.gray;
-            else
-                _image.color = Color.white;
         }
     }
 }

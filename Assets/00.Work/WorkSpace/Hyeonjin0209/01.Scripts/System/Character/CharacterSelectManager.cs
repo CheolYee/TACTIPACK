@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class CharacterSelectManager : MonoBehaviour
 {
-    private CharacterType _type;
-
     public static CharacterSelectManager Instance;
 
     private void Awake()
@@ -15,19 +13,19 @@ public class CharacterSelectManager : MonoBehaviour
         }
         else Destroy(gameObject);
     }
-    public List<CharacterType> _choiceCharacter = new List<CharacterType>(3);
+    public List<CharacterSelect> choiceCharacter = new List<CharacterSelect>();
 
-    public bool SelecteCharacter(CharacterType type)
+    public bool SelectCharacter(CharacterSelect type)
     {
-        if (_choiceCharacter.Contains(type))
+        if (choiceCharacter.Contains(type))
         {
-            _choiceCharacter.Remove(type);
+            choiceCharacter.Remove(type);
             return false;
         }
         else
         {
-            if (_choiceCharacter.Count < 3)
-                _choiceCharacter.Add(type);
+            if (choiceCharacter.Count < 3)
+                choiceCharacter.Add(type);
             return true;
         }     
     }
