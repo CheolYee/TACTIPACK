@@ -31,7 +31,7 @@ public class DropAbleUI : MonoBehaviour, IPointerEnterHandler, IDropHandler, IPo
 
             copy.gameObject.name = draggedIcon.gameObject.name;   // 이름 동일하게
             copy.previousParent = draggedIcon.previousParent;      // 부모 정보 복사
-            copy.OnEndDrag(eventData);                             // 드래그 종료 처리
+            copy.OnEndDrag(eventData);                             // 드래그 종료 처리  
 
             // 실제 드래그된 아이콘을 이 슬롯으로 이동
             draggedIcon.transform.SetParent(transform);
