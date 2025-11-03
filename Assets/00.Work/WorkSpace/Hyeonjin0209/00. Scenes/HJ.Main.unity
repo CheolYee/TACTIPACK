@@ -3253,6 +3253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf3fec886b888e4f84a3af231ac06c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemySpawns: 1
   enemyDatas:
   - {fileID: 11400000, guid: ab33ea669d7c3d14fb637fc3506c7df4, type: 2}
   - {fileID: 11400000, guid: 5cffc5363f06d5d4fba8394baa64ec15, type: 2}
@@ -5143,6 +5144,10 @@ MonoBehaviour:
   - {fileID: 485575736}
   - {fileID: 1261216004}
   enemyTargeting: {fileID: 1119161873}
+  spawnedEnemies:
+  - {fileID: 1720918155}
+  - {fileID: 487625029}
+  - {fileID: 563091718}
 --- !u!114 &1897245638
 MonoBehaviour:
   m_ObjectHideFlags: 0

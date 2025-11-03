@@ -24,6 +24,9 @@ public class TurnManager : MonoBehaviour
     public event Action OnPlayerTurnEnd;
     
     private bool _isPlayerTurn = true;
+    
+    [Header("스폰 위치")]
+    [SerializeField] private List<GameObject> spawnedEnemies = new List<GameObject>();
 
     private void Awake()
     {
@@ -98,14 +101,14 @@ public class TurnManager : MonoBehaviour
             
             if (rect != null)
             {
-                rect.position = parent.transform.position;
+                rect.position = spawnedEnemies[i].transform.position;
                 rect.localRotation = Quaternion.identity;
                 rect.localScale = parent.localScale * 1.5f;
                 clone.AddComponent<DragAbleUI>();
                 Destroy(clone.GetComponent<CharacterSelect>());
                 clone.GetComponent<Image>().color = Color.white;
             }
-            Debug.Log($"{clone.name} 소환 완료 (부모: {parent.name})");
+            Debug.Log($"{clone.name} 소환 완료 (부모: {spawnedEnemies[i].name})");
         }
     }
 }

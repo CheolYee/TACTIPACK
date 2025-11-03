@@ -7,6 +7,9 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
     public class EnemiesSpawn : MonoBehaviour
     {
         public List<GameObject> SpawnedEnemies { get; private set; } // 에너미 저장
+
+        [Range(1, 3)]
+        [SerializeField] private int enemySpawns = 1;
         
         [Header("적 SO")]
         [SerializeField] private List<EnemySO> enemyDatas; // 에너미 SO
@@ -25,13 +28,10 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             // 저장 초기화
             SpawnedEnemies = new List<GameObject>();
 
-            // 스폰할 에너미 갯수를 랜덤으로 지정
-            int spawnCount = Random.Range(1, 4);
-
             // 스폰 포인트를 리스트로 저장
             List<Transform> availablePositions = new List<Transform>(enemiesSpawnPos);
 
-            for (int i = 0; i < spawnCount; i++)
+            for (int i = 0; i < enemySpawns; i++)
             {
                 // SO에서 에너미 데이터 랜덤으로 1개 가저옴
                 EnemySO data = enemyDatas[Random.Range(0, enemyDatas.Count)];
