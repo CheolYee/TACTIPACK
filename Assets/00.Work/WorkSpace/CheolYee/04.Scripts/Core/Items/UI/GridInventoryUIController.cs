@@ -112,11 +112,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         }
         
         // 사이드 슬롯에서 시작하는 진입점 (신규)
-        public void StartDragFromSide(ItemDataSo so, SideInventoryManager sideManager)
+        public void StartDragFromSide(ItemDataSo so, SideInventoryManager sideInventoryManager)
         {
             // 새 인스턴스 생성(설치 성공 시 그리드가 소유)
             var inst = new ItemInstance(so.itemId);
-            StartDrag(inst, so, 0, DragOrigin.Side, sideManager);
+            StartDrag(inst, so, 0, DragOrigin.Side, sideInventoryManager);
 
             //사이드에서 꺼낼 때, 시작하자마자 사이드에서 1개 차감은
             //SideItemSlotView.BeginDragFromSide에서 이미 수행했음.
@@ -212,9 +212,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 {
                     TryPlace(cell, true); //셀 안이라면 설치 시도
                 }
-                
+            
                 if (Input.GetMouseButtonUp(1))
                 {
+                    if (_dragOrigin == DragOrigin.Grid)
+                    {
+                        if (sideManager != null && _dragData != null)
+                        {
+                            sideManager.AddItem(_dragData);
+                        }
+                    }
                     StopDrag();
                 }
                 return; //드래그 처리 끝
