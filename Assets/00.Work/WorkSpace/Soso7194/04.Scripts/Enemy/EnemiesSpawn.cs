@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using System.IO;
 using _00.Work.WorkSpace.Soso7194._04.Scripts.SO;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 {
     public class EnemiesSpawn : MonoBehaviour
@@ -12,7 +13,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         [SerializeField] private int enemySpawns = 1;
         
         [Header("적 SO")]
-        [SerializeField] private List<EnemySO> enemyDatas; // 에너미 SO
+        [SerializeField] private List<EnemySO> enemyData; // 에너미 SO
         
         [Header("적 스폰 포인트")]
         [SerializeField] private List<Transform> enemiesSpawnPos; // 에너미 스폰포인트
@@ -22,6 +23,16 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         [SerializeField] private GameObject hpBarParent; // 캔버스 선택
         
         // private static string EnemySavePath => Application.persistentDataPath + "/enemyData.json";
+        
+        private RandomTargeting _targeting;
+        
+        private void Awake()
+        {
+            // 같은 오브젝트 안의 RandomTargeting 가져오기
+            _targeting = GetComponent<RandomTargeting>();
+            if (_targeting == null)
+                Debug.LogWarning("[EnemiesSpawn] 같은 오브젝트에 RandomTargeting 컴포넌트가 없습니다.");
+        }
         
         private void Start()
         {
@@ -34,7 +45,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             for (int i = 0; i < enemySpawns; i++)
             {
                 // SO에서 에너미 데이터 랜덤으로 1개 가저옴
-                EnemySO data = enemyDatas[Random.Range(0, enemyDatas.Count)];
+                EnemySO data = enemyData[Random.Range(0, enemyData.Count)];
 
                 // 스폰할 위치를 지정된 스폰포인트중 랜덤으로 지정
                 int index = Random.Range(0, availablePositions.Count);
@@ -70,6 +81,11 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             }
             
             Debug.Log($"적 {SpawnedEnemies.Count}명 스폰 완료");
+            if (_targeting != null)
+            {
+                _targeting.SetEnemies(SpawnedEnemies);
+                Debug.Log("[EnemiesSpawn] RandomTargeting에 적 리스트 전달 완료");
+            }
             //LoadEnemies();
         }
         

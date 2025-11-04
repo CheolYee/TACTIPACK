@@ -1,16 +1,17 @@
-using UnityEngine;
+ using System;
+ using UnityEngine;
 
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 {
     public class EnemyManager : MonoBehaviour
     {
-        [SerializeField] private EnemiesSpawn spawner;
-        [SerializeField] private RandomTargeting targeting;
-
-        // 스폰하고 타겟팅 연결
-        private void Start()
+        private EnemiesSpawn spawner; 
+        private RandomTargeting targeting;
+        
+        private void Awake()
         {
-            targeting.SetEnemies(spawner.SpawnedEnemies);
+            spawner = GetComponent<EnemiesSpawn>();
+            targeting = GetComponent<RandomTargeting>();
         }
     }
 }
