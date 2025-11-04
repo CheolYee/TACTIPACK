@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ea2764135b1408187844aebefe6551c, type: 3}
-  m_Name: Cat
+  m_Name: Orc_Axe
   m_EditorClassIdentifier: 
-  enemyName: Cat
-  prefab: {fileID: 2399920206547640464, guid: 6456b374d4a3bdf4097d88145f187fb9, type: 3}
-  maxHP: 15
-  attack: 3
+  enemyName: Orc_Axe
+  prefab: {fileID: 1970242842706879035, guid: 55743b2792d22d840853f95db7371ff1, type: 3}
+  maxHP: 10
+  attack: 5
+  isBoss: 0
+  skillTurn: 0
+  skillDamage: 0

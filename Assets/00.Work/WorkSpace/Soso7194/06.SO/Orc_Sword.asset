@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ea2764135b1408187844aebefe6551c, type: 3}
-  m_Name: Dog
+  m_Name: Orc_Sword
   m_EditorClassIdentifier: 
-  enemyName: Dog
-  prefab: {fileID: 2399920206547640464, guid: 6456b374d4a3bdf4097d88145f187fb9, type: 3}
-  maxHP: 20
-  attack: 2
+  enemyName: Orc_Sword
+  prefab: {fileID: 1970242842706879035, guid: e1dcb490512a15f49ad41d370d12aff9, type: 3}
+  maxHP: 15
+  attack: 3
+  isBoss: 0
+  skillTurn: 0
+  skillDamage: 0
