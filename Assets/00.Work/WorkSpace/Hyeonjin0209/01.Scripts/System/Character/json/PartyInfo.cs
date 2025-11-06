@@ -20,18 +20,17 @@ public class PartyInfo
         Debug.Log("Save Success: " + saveFilePath); //저장 성공 했는지 디버깅
     }
 
-    public static SaveData Load(string saveFileName)//데이터 로드
+    public static T Load<T>(string saveFileName)//데이터 로드
     {
         string saveFilePath = SavePath + saveFileName + ".json";
 
         if (!File.Exists(saveFilePath))
         {
             Debug.LogError("No such saveFile exists");
-            return null;
         }
 
         string saveFile = File.ReadAllText(saveFilePath);
-        SaveData saveData = JsonUtility.FromJson<SaveData>(saveFile);
+        T saveData = JsonUtility.FromJson<T>(saveFile);
         return saveData;
     }
 }
