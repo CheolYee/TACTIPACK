@@ -13,7 +13,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         public CharacterDataSO Data { get; set; }
         
         public Sprite characterSprite { get; private set; }
-        public int maxHP { get; private set; }
+        public int maxHP { get; set; }
         public int attackPower { get; private set; }
         public int criticalHitChance { get; private set; }
 
@@ -90,13 +90,20 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         
         public void TakeDamage(int damage)
         {
-            CurrentHP -= damage;
-            _targetFillAmount = CurrentHP / (float) _maxHp;
-            
-            Debug.Log(gameObject.name + " 대미지 입음! " + damage);
-            if (CurrentHP <= 0)
+            try
             {
-                Die();
+                CurrentHP -= damage;
+                _targetFillAmount = CurrentHP / (float) _maxHp;
+                
+                Debug.Log(gameObject.name + " 대미지 입음! " + damage);
+                if (CurrentHP <= 0)
+                {
+                    Die();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[Enemy] {gameObject.name}의 TakeDamage 중 오류 발생: {e.Message}");
             }
         }
 
@@ -108,15 +115,31 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         // 죽었을때
         private void Die()
         {
-            //스폰한 적 리스트에서 제거
-            _spawner.RemoveEnemy(gameObject);
-
-            if (_hpBarRect != null)
+            try
             {
-                Destroy(_hpBarRect.gameObject);
+                //스폰한 적 리스트에서 제거
+                if (_spawner != null)
+                {
+                    _spawner.RemoveEnemy(gameObject);
+                }
+                else
+                {
+                    Debug.LogWarning($"[Enemy] {gameObject.name}의 _spawner가 null입니다.");
+                }
+
+                if (_hpBarRect != null)
+                {
+                    Destroy(_hpBarRect.gameObject);
+                }
+                
+                Destroy(gameObject, 0.1f);
             }
-            
-            Destroy(gameObject, 0.1f);
+            catch (Exception e)
+            {
+                Debug.LogError($"[Enemy] {gameObject?.name}의 Die 중 오류 발생: {e.Message}");
+                // 그래도 오브젝트는 파괴 시도
+                Destroy(gameObject, 0.1f);
+            }
         }
     }
 }
