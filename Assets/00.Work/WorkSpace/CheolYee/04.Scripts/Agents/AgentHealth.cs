@@ -1,98 +1,46 @@
-using System.Collections.Generic;
+using System;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
 {
-    public class AgentHealth : MonoBehaviour
+    public class AgentHealth : MonoBehaviour, IAgentComponent, IDamageable
     {
-        public UnityEvent onHit;
-        public UnityEvent onDeath;
+        [field: SerializeField] public float MaxHealth { get; private set; } //최대체력
 
-        private float _maxHealth = 150f;
-        private float _currentHealth;
+        private float _currentHealth; //현재체력
+        private Agent _owner; //소유자
 
-        private Dictionary<string, float> _healthMultipliers = new();
+        //데미지등 다양한 체력 데이터를 표시하기 위해 데이터를 넘겨줌
+        public delegate void HealthChange(float prevHealth, float currentHealth, float maxHealth); 
+        public event HealthChange OnHealthChange; //체력 변경 이벤트
+        public event Action OnDeath; //죽음 이벤트
 
-        public float CurrentHealth => _currentHealth;
-
-        public float MaxHealth => _maxHealth * TotalMultiplier;
-
-        public float NormalizedHealth => _currentHealth / MaxHealth;
-
-
-        private Agents.Agent _owner;
-
-        public void Initialize(Agents.Agent owner, float health)
+        public void Initialize(Agent agent) //초기화 함수
         {
-            _maxHealth = health;
-            _owner = owner;
-            ResetHealth();
-        }
-        private float TotalMultiplier
-        {
-            get
-            {
-                float result = 1f;
-                foreach (var kv in _healthMultipliers)
-                    result += kv.Value;
-                return result;
-            }
-        }
-
-        public void AddMultiplier(string source, float multiplier)
-        {
-            _healthMultipliers[source] = multiplier;
-            RecalculateHealth();
-        }
-
-        public void RemoveMultiplier(string source)
-        {
-            if (_healthMultipliers.ContainsKey(source))
-                _healthMultipliers.Remove(source);
-            RecalculateHealth();
-        }
-
-        private void RecalculateHealth()
-        {
-            float ratio = _currentHealth / MaxHealth; // 현재 비율 유지
-            _currentHealth = MaxHealth * ratio;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
-        }
-
-
-        public void ResetHealth()
-        {
+            _owner = agent;
             _currentHealth = MaxHealth;
         }
 
-        public void Heal(float healAmount)
+        public void InitHealth(float health)
         {
-            _currentHealth = Mathf.Clamp(_currentHealth + healAmount, 0, MaxHealth);
-        }
-        public void HealPer(float percent)
-        {
-            float healAmount = MaxHealth * percent;
-            Heal(healAmount);
+             MaxHealth = health;
+             _currentHealth = MaxHealth;
         }
 
-        public void TakeDamage(float amount, Vector2 normal, float kbPower, Agents.Agent attacker = null)
+        //데미지를 주기 위한 메서드 (데미지만 줌)
+        public void ApplyDamage(AttackDataSo attackData)
         {
-            Debug.Assert(_owner != null, $"{nameof(_owner)} 의 체력이 초기화되지 않았습니다.");
+            float prevHealth = _currentHealth; //이전체력을 맞기 전의 현재체력으로 설정
+            //0보다 작지 않도록, 최대체력보다 크지 않도록 조정
+            _currentHealth = Mathf.Clamp(_currentHealth - attackData.Damage, 0, MaxHealth);
 
-            _currentHealth -= amount;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
-            onHit?.Invoke();
+            //맞았으니 이벤트 실행 (이전 체력, 현재 체력, 최대 체력)
+            OnHealthChange?.Invoke(prevHealth, _currentHealth, MaxHealth);
 
-            if (kbPower > 0)
+            if (Mathf.Approximately(_currentHealth, 0)) //만약 0과 현재체력이 근사치라면 죽은것으로 판단
             {
-                //노말은 피격지점의 수직인 벡터니까 -1을 곱하면 피격 방향 벡텀가 나오게 된다
-                _owner.MovementComponent.GetKnockBack(normal * -1, kbPower);
-            }
-
-            if (CurrentHealth <= 0)
-            {
-                onDeath?.Invoke();
+                OnDeath?.Invoke(); //죽음 이벤트 발생
             }
         }
     }

@@ -1,82 +1,99 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
 {
-    public class Agent : MonoBehaviour
+    public class Agent : MonoBehaviour, IDamageable
     {
-        //움직이는 생명체가 가질 기본 설정을 저장하고 있습니다.;
-
-        [Header("Settings")]
-        [SerializeField] private float extraGravity = 200f; //플레이어가 공중에 떠 있을 때 일정 시간 후 떨어지는 속도의 중력값
-        [SerializeField] private float gravityDelay = 0.15f; //공중에 떠 있는 시간
-
-        private bool _isFacingRight = true;
-        public AgentMovement MovementComponent { get; private set; } //이동 담당
-        public AgentHealth HealthComponent { get; private set; } //체력 담당
-
-        public SpriteRenderer SpriteRendererComponent { get; private set; } //스프라이트 담당
-
-        public Animator AnimatorComponent { get; private set; }
-
-
-        public bool isDead; // 캐릭터가 죽었는가?
-        public bool isFliping;
-
-        private float _timeInAir; // 캐릭터가 공중에 떠 있는 시간
+        protected Dictionary<Type, IAgentComponent> ComponentDict; //Agent 컴포넌트 시스템을 담을 딕셔너리
+        
+        public AgentHealth Health { get; protected set; } //체력 시스템 (모든 생명체는 체력이 존재함
+        public bool IsDead { get; private set; } //죽었나 안 죽었나 표시
+        public AgentActionData ActionData; //공격 데이터를 전달하기 위한 구조체
+        
+        public UnityEvent onAgentHit; //공격 받았을 떄 실행
+        public UnityEvent onAgentDeath; //죽었을 떄 실행
+        
         protected virtual void Awake()
         {
-            MovementComponent = GetComponentInChildren<AgentMovement>(); //무브먼트 가져오기
-            HealthComponent = GetComponentInChildren<AgentHealth>(); //체력 가져오기
-            AnimatorComponent = GetComponentInChildren<Animator>(); //애니메이터 가져오기
-            SpriteRendererComponent = GetComponentInChildren<SpriteRenderer>(); //렌더러 가져오기
-        }
+            //자식 오브젝트에서 IAgentComponent를 구현하고 있는 모든 컴포넌트를 가져와 딕셔너리에 저장한다.
+            ComponentDict = GetComponentsInChildren<IAgentComponent>(true).ToDictionary(compo => compo.GetType());
 
-        protected void CalculateInAirTime() //공중에 있는 시간 계산
+            InitComponents();
+            AfterInitializeComponent();
+        }
+        //모든 AgentComponent를 초기화 시킵니다.
+        protected virtual void InitComponents()
         {
-            // 만약 바닥에 닿아있지 않다면 공중 시간 누적
-            if (MovementComponent.IsGround.Value == false)
+            foreach (IAgentComponent compo in ComponentDict.Values)
             {
-                //델타타임 더하는걸로 떠있는 시간 측정
-                _timeInAir += Time.deltaTime;
+                compo.Initialize(this);
             }
-            else
-            {
-                // 땅에 닿아있으면 공중 시간 초기화
-                _timeInAir = 0;
-            }
+            
+            Health = GetCompo<AgentHealth>();
         }
 
-        protected void ApplyExtraGravity() //떨어지는 속도 증가 계산
+        //모든 AgentComponent를 초기화 시킨 후 실행될 두번째 초기 설정 함수입니다.
+        protected virtual void AfterInitializeComponent()
         {
-            // 공중에 떠 있는 시간이 일정 시간 이상이면 추가 중력을 적용
-            if (_timeInAir > gravityDelay && MovementComponent.RbCompo.linearVelocityY < 0)
-            {
-                // 아래 방향으로 중력을 추가로 적용
-                MovementComponent.AddGravity(Vector2.down * extraGravity);
-            }
+            ComponentDict.Values.OfType<IAfterInitialize>()
+                .ToList()
+                .ForEach(compo => compo.AfterInitialize());
+
+            Health.OnDeath += HandleAgentDeath;
+            Health.OnHealthChange += HandleHealthChange;
         }
-
-        #region Flip Controller
-
-        // 타겟 위치에 따라 캐릭터의 방향(스프라이트)을 좌우 반전
-        public void HandleSpriteFlip(Vector3 targetPosition)
+        
+        //체력이 변경되었다면 이벤트를 발생시킨다.
+        protected virtual void HandleHealthChange(float prevHealth, float currentHealth, float maxHealth)
         {
-            if (isFliping) return;
-            //만약에 타겟(마우스, 플레이어 등 움직이는 것)의 x좌표가 자신보다 크다면(오른쪽에 있다면)
-            float dir = targetPosition.x - transform.position.x;
-
-            if (dir > 0.1 && !_isFacingRight) // 타겟이 오른쪽에 있음
-            {
-                transform.eulerAngles = Vector3.zero; // 오른쪽 바라봄
-                _isFacingRight = true;
-            }
-            else if (dir < -0.1 && _isFacingRight) // 타겟이 왼쪽에 있음
-            {
-                transform.eulerAngles = new Vector3(0, 180f, 0); // 왼쪽 바라봄
-                _isFacingRight = false;
-            }
+            if (prevHealth > currentHealth)
+                onAgentHit.Invoke();
+        }
+        
+        //체력 이벤트에 구독해놨던 것을 바인드 해제합니다.
+        protected virtual void OnDestroy()
+        {
+            Health.OnDeath -= HandleAgentDeath;
+            Health.OnHealthChange -= HandleHealthChange;
+        }
+        
+        //상속받은 다른 객체들이 구현
+        protected virtual void HandleAgentDeath()
+        {
+            
         }
 
-        #endregion
+        //IAgentComponent 한정 GetComponent와 비슷한 기능을 하는 메서드입니다.
+        public T GetCompo<T>()
+        {
+            //T타입이 정확이 딕셔너리에 키로 들어가 있다면
+            //그 T 타입을 반환합니다.
+            if (ComponentDict.TryGetValue(typeof(T), out IAgentComponent component)
+                && component is T compo)
+            {
+                return compo;
+            }
+            
+            //만약 T가 정확히 키가 아니라면 (인터페이스나 상속으로 찾는다면)
+            //딕셔너리에 T로 대입 가능한지 검사해 찾은 첫번째 타입을 반환합니다.
+            IAgentComponent findComponent = ComponentDict.Values.FirstOrDefault(type => type is T);
+            if(findComponent is T findCompo)
+                return findCompo;
+            
+            //그럼에도 찾지 못했다면 기본 타입을 반환합니다. (실패)
+            return default(T);
+        }
+
+        //Agent에 데미지를 주기 위함입니다. AgentHealth와 연결됩니다
+        public void ApplyDamage(AttackDataSo attackData)
+        {
+            ActionData.LastAttackData = attackData;
+            Health.ApplyDamage(attackData);
+        }
     }
 }
