@@ -1744,10 +1744,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf3fec886b888e4f84a3af231ac06c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyDatas:
-  - {fileID: 11400000, guid: ab33ea669d7c3d14fb637fc3506c7df4, type: 2}
-  - {fileID: 11400000, guid: 5cffc5363f06d5d4fba8394baa64ec15, type: 2}
-  - {fileID: 11400000, guid: 99bde527f8b88db4d916236294205747, type: 2}
+  enemySpawns: 1
+  enemyData: []
   enemiesSpawnPos:
   - {fileID: 2113843896}
   - {fileID: 859839814}
@@ -1766,8 +1764,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 712d3030727ac5f47b4b23e92c9411d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawner: {fileID: 1119161875}
-  targeting: {fileID: 1119161873}
 --- !u!1001 &1261216003
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3060,7 +3056,9 @@ MonoBehaviour:
   - {fileID: 197714702}
   - {fileID: 500073592}
   - {fileID: 1539438289}
+  dragAbleUI: []
   enemyTargeting: {fileID: 1119161873}
+  spawnedEnemies: []
 --- !u!114 &1897245638
 MonoBehaviour:
   m_ObjectHideFlags: 0

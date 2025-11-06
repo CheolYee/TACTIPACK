@@ -84,8 +84,8 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             // 월드 좌표계를 스크린 좌표계로 변경
             Vector3 screenPos = _mainCamera.WorldToScreenPoint(transform.position);
 
-            // 지금은 에너미 크기가 같아서 이렇게 지정했지만, 나중에는 HP바 위치 지정해서 할 예정
-            _hpBarRect.position = screenPos + new Vector3(0, 150, 0);
+            // 에너미 HP바 위치 설정
+            _hpBarRect.position = screenPos + new Vector3(20, -150, 0);
         }
         
         public void TakeDamage(int damage)
