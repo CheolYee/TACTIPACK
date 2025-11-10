@@ -11,6 +11,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
     {
         protected Dictionary<Type, IAgentComponent> ComponentDict; //Agent 컴포넌트 시스템을 담을 딕셔너리
         
+        public Rigidbody2D RbCompo { get; protected set; }
         public AgentHealth Health { get; protected set; } //체력 시스템 (모든 생명체는 체력이 존재함
         public bool IsDead { get; private set; } //죽었나 안 죽었나 표시
         public AgentActionData ActionData; //공격 데이터를 전달하기 위한 구조체
@@ -35,6 +36,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             }
             
             Health = GetCompo<AgentHealth>();
+            RbCompo = GetComponent<Rigidbody2D>();
         }
 
         //모든 AgentComponent를 초기화 시킨 후 실행될 두번째 초기 설정 함수입니다.

@@ -29,8 +29,10 @@ MonoBehaviour:
   - {fileID: -1830001547, guid: 7fffb12c5afebfe4891c4d800ba2a970, type: 3}
   - {fileID: 21300000, guid: ce78f7d8d44604c228345c2d58fa2da4, type: 3}
   cooldownTurns: 3
-  skillPrefab: {fileID: 0}
-  <Damage>k__BackingField: 0
-  <DefaultAttackData>k__BackingField: {fileID: 0}
-  <IsAreaAttack>k__BackingField: 0
-  <SkillDelay>k__BackingField: 0
+  skillPrefab: {fileID: 4522179616117690071, guid: af7ca96517e01a74f9b347f59bbb5521, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 895f58b9a9f8b4842b96e1337fe44c7c, type: 2}
+  <Index>k__BackingField: 0
+  <SkillDelay>k__BackingField: 1
+  <TargetingMode>k__BackingField: 0
+  <DefaultStance>k__BackingField: 1
+  <ApproachOffset>k__BackingField: 15

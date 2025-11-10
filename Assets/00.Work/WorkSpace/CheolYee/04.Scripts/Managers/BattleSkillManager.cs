@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
@@ -7,9 +8,9 @@ using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
 {
-    public class BattleSkillManager : MonoBehaviour
+    public class BattleSkillManager : MonoSingleton<BattleSkillManager>
     {
-        private readonly List<AgentHealth> _targets = new();
+        [SerializeField] private List<AgentHealth> _targets = new();
 
         //시전 시 모든 타겟을 지정할 메서드
         public void SetTargets(IEnumerable<AgentHealth> targets)

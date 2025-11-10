@@ -15,6 +15,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         
         private AgentStateMachine _stateMachine;
         
+        
         public AgentState CurrentState => _stateMachine.CurrentState;
 
         protected override void AfterInitializeComponent()

@@ -20,26 +20,34 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
 
         public virtual ISkillHandler ActiveWithSkillContent(SkillContent ctx)
         {
+            //스킬 프리팹 (이펙트) 가 있나?
             if (skillPrefab != null)
             {
-                var go = Object.Instantiate(skillPrefab, ctx.CastPoint, Quaternion.identity);
+                //있다면 생성 후 스킬 핸들러 반환
+                var go = Instantiate(skillPrefab, ctx.CastPoint, Quaternion.identity);
                 go.TryGetComponent(out ISkillHandler handler);
                 
                 return handler;
             }
-
+            
+            //데미지는 무조건 들어감
             ApplyDamageNow(ctx);
+            //아니라면 널 반환
             return null;
         }
 
+        //스킬 데이터를 돌며 데미지 주기
         private void ApplyDamageNow(SkillContent ctx)
         {
+            //타겟모드가 싱글이고 0보다 타겟이 많다면
             if (ctx.TargetingMode == TargetingMode.Single && ctx.Targets.Count > 0)
             {
+                //해당 타겟에게 데미지를 준다
                 ctx.Targets[Index].ApplyDamage(DefaultAttackData);
             }
-            else
+            else //아니라면
             {
+                //모든 타겟을 돌며 AgentHEalth를 가져와 데미지를 준다
                 foreach (AgentHealth target in ctx.Targets)
                 {
                     target.ApplyDamage(DefaultAttackData);   
