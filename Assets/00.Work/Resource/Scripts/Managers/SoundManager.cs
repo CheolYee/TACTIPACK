@@ -118,7 +118,6 @@ namespace _00.Work.Scripts.Managers
         {
             if (File.Exists(SoundSavePath))
             {
-                Debug.Log(SoundSavePath);
                 var json = File.ReadAllText(SoundSavePath);
                 _settings = JsonUtility.FromJson<SoundSettings>(json);
             }

@@ -16,16 +16,21 @@ MonoBehaviour:
   itemName: test2
   itemClass: 1
   icon: {fileID: -275383979, guid: a35a60425b54ada468545ef88cba3cd8, type: 3}
+  description: "\uC804\uBC29\uC758 \uB2E8\uC77C \uC801\uC744 \uACF5\uACA9\uD569\uB2C8\uB2E4"
   shape: {x: 3, y: 1}
   rotatable: 1
-  shapeOffsets: []
+  shapeOffsets:
+  - {x: 0, y: 0}
+  - {x: 1, y: 1}
   pivot: {x: 1, y: 0}
   cellSprites:
   - {fileID: -7863123961144735272, guid: a1c6b36485667af49ad9948ac947b07d, type: 3}
-  - {fileID: -730810256, guid: a1c6b36485667af49ad9948ac947b07d, type: 3}
-  - {fileID: -550007957, guid: a1c6b36485667af49ad9948ac947b07d, type: 3}
-  description: "\uC804\uBC29\uC758 \uB2E8\uC77C \uC801\uC744 \uACF5\uACA9\uD569\uB2C8\uB2E4"
+  - {fileID: 0}
   cooldownTurns: 3
   skillPrefab: {fileID: 0}
-  isAreaAttack: 0
-  areaRadius: 0
+  <DefaultAttackData>k__BackingField: {fileID: 0}
+  <Index>k__BackingField: 0
+  <SkillDelay>k__BackingField: 0
+  <TargetingMode>k__BackingField: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 0

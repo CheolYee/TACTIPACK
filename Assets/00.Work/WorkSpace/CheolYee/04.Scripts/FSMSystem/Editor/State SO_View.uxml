@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="Container" style="flex-grow: 1;">
+        <ui:TextField label="State Name" placeholder-text="상태 이름을 입력하세요" name="StateNameField" binding-path="stateName" />
+        <ui:DropdownField label="ClassName" name="ClassDropDownField" binding-path="className" />
+        <ui:TextField label="StateIndex" placeholder-text="인덱스가 존재하지 않습니다." readonly="true" name="StateIndex" hide-placeholder-on-focus="false" binding-path="stateIndex" />
+        <uie:ObjectField label="AnimParam" name="AnimParamField" type="_00.Work.WorkSpace.CheolYee._04.Scripts.Core.AnimatorSystem.AnimParamSo, Assembly-CSharp" binding-path="paramSo" />
+        <ui:Label text="Not Selected" name="ClassNameLabel" binding-path="className" />
+    </ui:VisualElement>
+</ui:UXML>

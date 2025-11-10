@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.Utils;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
@@ -73,8 +74,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         
         [Tooltip("스킬 프리팹 (프로젝타일, 이펙트 등)")]
         public GameObject skillPrefab;
-
-        public virtual void Activate(GameObject user, GameObject target = null) {}
     }
 
     [CreateAssetMenu(fileName = "newPassiveItem", menuName = "SO/Item/PassiveItem", order = 1)]

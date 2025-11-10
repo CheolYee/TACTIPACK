@@ -15,7 +15,7 @@ TagManager:
   - Enemy
   - Projectile
   - Slot
-  - 
+  - Player
   - 
   - 
   - 
@@ -38,14 +38,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BackGround
+    uniqueID: 396294213
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Turret
+  - name: Player
     uniqueID: 829679227
-    locked: 0
-  - name: Top
-    uniqueID: 396294213
     locked: 0
   m_RenderingLayers:
   - Default
