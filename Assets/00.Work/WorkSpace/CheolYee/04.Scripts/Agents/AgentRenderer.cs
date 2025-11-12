@@ -6,7 +6,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
 {
     public class AgentRenderer : MonoBehaviour, IAgentComponent, IAgentRenderer, IAnimationTrigger
     {
-        [SerializeField] private bool lookToTheLeft; //처음 시작 시 왼쪽을 보는가 아닌가
+        [field: SerializeField] public bool LookToTheLeft { get; set; } //처음 시작 시 왼쪽을 보는가 아닌가
         
         public event Action OnAnimationEnd; //애니메이션 종료 이벤트
         public event Action OnAnimationFire; //타격 시점 이벤트
@@ -23,7 +23,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             _animator = GetComponent<Animator>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
             
-            if (lookToTheLeft) Flip();
+            if (LookToTheLeft) Flip();
         }
 
         //파라미터 오버로딩

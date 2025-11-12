@@ -1,6 +1,7 @@
 
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems
@@ -18,53 +19,65 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
         [field: SerializeField] public AttackStance DefaultStance { get; private set; } 
         [field: SerializeField] public float ApproachOffset { get; private set; }
 
+
+        [Header("Damage Timing")] [SerializeField]
+        private bool damageOnImpactEvent = true; //허용 시 애니메이션 이벤트에서 데미지 처리
+        //비허용이라면 스폰 즉시 들어감
         public virtual ISkillHandler ActiveWithSkillContent(SkillContent ctx)
         {
             //스킬 프리팹 (이펙트) 가 있나?
             if (skillPrefab != null)
             {
                 //있다면 생성 후 스킬 핸들러 반환
-                var go = Instantiate(skillPrefab, ctx.CastPoint, Quaternion.identity);
-                go.TryGetComponent(out ISkillHandler handler);
+                GameObject go = Instantiate(skillPrefab, ctx.CastPoint, Quaternion.identity);
+                if (!go.TryGetComponent(out ISkillHandler handler)) //스킬 핸들러가 없다면 자동 생성
+                {
+                    ISkillHandler skillHandler = go.AddComponent<SkillEffectController>();
+                    handler = skillHandler;
+                }
+                
+                handler.Init(ctx, this);
+                
+                if (!damageOnImpactEvent) //이벤트 사용 유무 판단
+                    ApplyDamageNow(ctx);
                 
                 return handler;
             }
             
-            //데미지는 무조건 들어감
+            //아니라면 널 반환 후 데미지 즉시처리
             ApplyDamageNow(ctx);
-            //아니라면 널 반환
             return null;
         }
 
         //스킬 데이터를 돌며 데미지 주기
-        private void ApplyDamageNow(SkillContent ctx)
+        public void ApplyDamageNow(SkillContent ctx)
         {
             //타겟모드가 싱글이고 0보다 타겟이 많다면
-            if (ctx.TargetingMode == TargetingMode.Single && ctx.Targets.Count > 0)
+            switch (ctx.TargetingMode)
             {
-                //해당 타겟에게 데미지를 준다
-                ctx.Targets[Index].ApplyDamage(DefaultAttackData);
+                case TargetingMode.Single:
+                    //싱글일때에는 한놈만 받아 처리하므로 0번쨰 인덱스를 가져옴
+                    if (ctx.Targets.Count > 0)
+                        ctx.Targets[0]
+                        .ApplyDamage(DefaultAttackData);
+                    break;
+                case TargetingMode.Random:
+                    if (ctx.Targets.Count > 0)
+                    {
+                        //타겟이 1명이라도 있으면 렌덤을 돌려 한명에게 데미지를 준다
+                        int randomIndex = Random.Range(0, ctx.Targets.Count);
+                        ctx.Targets[randomIndex].ApplyDamage(DefaultAttackData);
+                    }
+                    break;
+                
+                //범위라면 모든 타겟을 순회하며 데미지를 준다
+                case TargetingMode.Area:
+                    foreach (AgentHealth target in ctx.Targets)
+                    {
+                        target.ApplyDamage(DefaultAttackData);
+                    }
+                    break;
             }
-            else //아니라면
-            {
-                //모든 타겟을 돌며 AgentHEalth를 가져와 데미지를 준다
-                foreach (AgentHealth target in ctx.Targets)
-                {
-                    target.ApplyDamage(DefaultAttackData);   
-                }
-            }
-        }
-
-        //스킬 프리팹을 생성해 이펙트 처리, ISkillHandler가 있다면 리턴 아니면 null 반환
-        public virtual ISkillHandler ActiveAndGetSkillHandler(GameObject user, GameObject target = null)
-        {
-            if (skillPrefab == null || target == null) return null;
-
-            Transform userTrm = user.transform;
-            GameObject skillGo = Instantiate(skillPrefab, target.gameObject.transform.position, target.gameObject.transform.rotation);
-            
-            skillGo.TryGetComponent(out ISkillHandler handler);
-            return handler;
         }
     }
 }

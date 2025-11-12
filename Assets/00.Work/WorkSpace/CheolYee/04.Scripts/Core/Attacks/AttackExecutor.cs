@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using UnityEngine;
@@ -41,15 +42,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
                 while (!done) yield return null;
                 handle.OnComplete -= OnDone;
             }
-            else
+            
+            //후처리를 위해 애니메이션이 끝나고도 잠시 대기하기
+            float t = 0f;
+            while (t < item.SkillDelay)
             {
-                //핸들이 없으면 SkillDelay로 폴백
-                float t = 0f;
-                while (t < item.SkillDelay)
-                {
-                    t += Time.deltaTime;
-                    yield return null;
-                }
+                t += Time.deltaTime;
+                yield return null;
             }
         }
     }

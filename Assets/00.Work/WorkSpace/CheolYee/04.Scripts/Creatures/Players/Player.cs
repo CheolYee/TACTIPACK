@@ -52,5 +52,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
             
             ChangeState(PlayerStates.ATTACK);
         }
+
+        public void ChangeHit()
+        {
+            ChangeState(PlayerStates.HIT);
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem
             Agent = agent;
             StateParam = stateParam;
             Renderer = agent.GetCompo<AgentRenderer>();
+            
         }
 
         public virtual void Enter() //진입

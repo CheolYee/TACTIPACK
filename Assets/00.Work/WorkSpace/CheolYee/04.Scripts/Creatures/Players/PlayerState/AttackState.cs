@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Resource.Scripts.Utils;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.AnimatorSystem;
@@ -92,6 +93,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx.Stance));
             if (_isExiting) yield break;
 
+            SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
             //만약 캐릭터가 움직이는 상태였다면
             if (ctx.Stance == AttackStance.StepForward || ctx.Stance == AttackStance.DashToTarget)
             {
@@ -102,12 +104,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 if (_isExiting) yield break;
             }
 
+            yield return new WaitForSeconds(0.5f);
+            
+            SkillCameraManager.Instance.Reset();
             //공격이 모두 끝날 시 IDle로 전환
             Player.ChangeState(PlayerStates.IDLE);
         }
 
         public override void Exit()
         {
+            _isExiting = true;
+            
             //퇴장 시 구독 해제 처리
             if (_agentRenderer != null)
             {
@@ -125,6 +132,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             // 트윈 정리
             _moveTween?.Kill();
             _moveTween = null;
+            
+            SkillCameraManager.Instance.Reset();
 
             base.Exit();
         }
@@ -139,31 +148,45 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             
         }
         
+        [StanceHandler(AttackStance.Stationary)]
+        private Tween HandleStationary(SkillContent ctx)
+        {
+            SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
+            SkillCameraManager.Instance.ZoomTo(4f, 0.3f);
+            return null;
+        }
+        
         [StanceHandler(AttackStance.CustomPoint)]
         private Tween HandleCustomPoint(SkillContent ctx)
         {
-            //필요 시 커스텀 이동 작성, 없으면 null
             return null;
         }
 
         [StanceHandler(AttackStance.StepForward)]
         private Tween HandleStepForward(SkillContent ctx)
         {
+            Debug.Log("전진 실행");
             var from = Agent.transform.position;
             var dir  = (ctx.CastPoint - from).normalized;
             var step = from + dir * ctx.ApproachOffset;
 
-            // 필요시 약간의 준비 지연을 트윈으로 처리 (코루틴 X)
+            
+            //필요시 약간의 준비 지연을 트윈으로 처리
             var seq = DOTween.Sequence();
             seq.AppendInterval(0.5f);
-            seq.Append(Agent.transform.DOMove(step, 0.15f).SetEase(Ease.OutSine));
+            seq.Append(Agent.transform.DOMove(step, 0.5f).SetEase(Ease.OutSine));
+            SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
+            SkillCameraManager.Instance.ZoomTo(4f, 0.3f);
             return seq;
         }
 
         [StanceHandler(AttackStance.DashToTarget)]
         private Tween HandleDashToTarget(SkillContent ctx)
         {
-            return Agent.transform.DOMove(ctx.CastPoint, 0.2f).SetEase(Ease.OutSine);
+            SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
+            SkillCameraManager.Instance.ZoomTo(4f, 1f);
+            
+            return Agent.transform.DOMove(ctx.CastPoint, 0.25f).SetEase(Ease.OutSine);
         }
         
     }
