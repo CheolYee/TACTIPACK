@@ -20,8 +20,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         private RectTransform _hpBarRect;
         private Image _hpFillImage;
         private Camera _mainCamera;
-        
-        private int _maxHp;
+
         private int _attack;
         private int _skillTurn;
         private int _skillDamage;
@@ -52,10 +51,10 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         // 처음 세팅 적용하기
         public void Setup(EnemySO data, EnemiesSpawn spawner)
         {
-            _maxHp = data.maxHP;
+            maxHP = data.maxHP;
             _attack = data.attack;
             _spawner = spawner;
-            CurrentHP = _maxHp;
+            CurrentHP = maxHP;
             _targetFillAmount = 1f;
             gameObject.name = data.name;
         }
@@ -93,7 +92,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             try
             {
                 CurrentHP -= damage;
-                _targetFillAmount = CurrentHP / (float) _maxHp;
+                _targetFillAmount = CurrentHP / (float) maxHP;
                 
                 Debug.Log(gameObject.name + " 대미지 입음! " + damage);
                 if (CurrentHP <= 0)

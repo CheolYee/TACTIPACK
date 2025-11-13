@@ -44,7 +44,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
             // 저장 초기화
             SpawnedEnemies = new List<GameObject>();
 
-            // 저장된 데이터가 있으면 로드, 없으면 새로 스폰
+            // 저장된 데이터가 있으면 로드하고, 없으면 새로 스폰한다
             if (_enemySave.HasSaveData())
             {
                 LoadSavedEnemies();
@@ -82,7 +82,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 spawnIndex++;
 
                 // SO에서 프리팹 가져와서 생성 (스폰 포인트의 자식으로)
-                GameObject enemy = Instantiate(savedEnemy.enemySO.prefab, savedEnemy.position, savedEnemy.rotation, spawnPos);
+                GameObject enemy = Instantiate(savedEnemy.enemySO.prefab, savedEnemy.position, Quaternion.identity, spawnPos);
 
                 // 에너미 정보를 에너미 코드에 저장 및 HP바 생성
                 Enemy enemyCompo = enemy.GetComponent<Enemy>();
@@ -92,8 +92,9 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                     enemyCompo.Setup(savedEnemy.enemySO, this);
                     
                     // 저장된 HP 값으로 덮어쓰기
+                    Debug.Log($"적 로드: {savedEnemy.enemySOName}, 현재HP: {savedEnemy.currentHP}, 최대HP: {savedEnemy.maxHp}");
                     enemyCompo.maxHP = savedEnemy.maxHp;
-                    enemyCompo.CurrentHP = savedEnemy.currentHp;
+                    enemyCompo.CurrentHP = savedEnemy.currentHP;
                     
                     // HP바 생성 및 설정
                     GameObject hpBarObj = Instantiate(prefabHpBar, hpBarParent.transform);
@@ -101,6 +102,9 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                     
                     // 에너미 HP바 설정
                     enemyCompo.SetHpBar(hpBarRect);
+                    
+                    // HP바 업데이트 (현재 HP에 맞춰)
+                    //enemyCompo.TakeDamage(0); // HP바를 현재 HP에 맞춰 갱신
                 }
                 else
                 {
@@ -132,7 +136,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 availablePositions.RemoveAt(index);
 
                 // 에너미 생성 (스폰 포인트의 자식으로)
-                GameObject enemy = Instantiate(data.prefab, spawnPos.position, spawnPos.rotation, spawnPos);
+                GameObject enemy = Instantiate(data.prefab, spawnPos.position, Quaternion.identity, spawnPos);
 
                 // 에너미 정보를 에너미 코드에 저장 및 HP바 생성
                 Enemy enemyCompo = enemy.GetComponent<Enemy>();
@@ -165,15 +169,20 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
         
         public void RemoveEnemy(GameObject enemy)
         {
+            // 리스트에 적이 있으면
             if (SpawnedEnemies.Contains(enemy))
             {
+                // 받아온 적을 리스트에서 지운다.
                 SpawnedEnemies.Remove(enemy);
+                // 만약 적이 다 지워젔다면
                 if (SpawnedEnemies.Count == 0)
                 {
+                    // JSON 파일을 삭제한다.
                     _enemySave.DeleteSaveFile();
                 }
                 else
                 {
+                    // 아니면 이 정보를 저장한다.
                     _enemySave.SaveEnemies(SpawnedEnemies, enemyData);
                 }
             }
