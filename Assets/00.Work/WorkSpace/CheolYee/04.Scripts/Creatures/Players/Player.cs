@@ -38,6 +38,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
             ChangeState(PlayerStates.IDLE);
         }
 
+        private void Update()
+        {
+            _stateMachine.UpdateMachine();
+        }
+
         public void ChangeState(PlayerStates newState)
         {
             _stateMachine.ChangeState((int)newState);
@@ -51,11 +56,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
             ActionData.CurrentAttackItem = item;
             
             ChangeState(PlayerStates.ATTACK);
-        }
-
-        public void ChangeHit()
-        {
-            ChangeState(PlayerStates.HIT);
         }
     }
 }

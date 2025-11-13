@@ -8,6 +8,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         event Action OnComplete;
         void Init(SkillContent ctx, AttackItemSo item);
         void NotifyImpact();
+        
+        void AnimApplyDamageNow();
         void NotifyEnd();
     }
 }

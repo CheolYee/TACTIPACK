@@ -19,6 +19,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         [field: SerializeField] public int CharacterId {get; private set;} //캐릭터의 아이디
         [field: SerializeField] public CharacterClass CharacterClass {get; private set;} //캐릭터의 직업 클래스
         
+        [Header("UI")]
+        [field: SerializeField] public Sprite CharacterIcon {get; private set;}
+        
         [Header("Settings")]
         [field: SerializeField] public float MaxHp {get; private set;} //HP
         [field: SerializeField] public float DefaultDamage {get; private set;} //기본 데미지

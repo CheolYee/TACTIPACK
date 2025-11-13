@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 94ca6713c4e54d709acfd369c0097340, type: 3}
-  m_Name: Elf
+  m_Name: Mage
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: "\uC5D8\uD504"
-  <CharacterId>k__BackingField: 0
-  <CharacterClass>k__BackingField: 3
-  <CharacterIcon>k__BackingField: {fileID: 5948503406558905044, guid: 492be66bd28e2914bb6745da4891e9dc, type: 3}
+  <CharacterName>k__BackingField: "\uBBF8\uBC25\uC2DC 1"
+  <CharacterId>k__BackingField: 1
+  <CharacterClass>k__BackingField: 2
+  <CharacterIcon>k__BackingField: {fileID: -4682600014010829006, guid: 7f4491047ec812b4f875a0ef6d476abb, type: 3}
   <MaxHp>k__BackingField: 100
   <DefaultDamage>k__BackingField: 20
   <DefaultCritChance>k__BackingField: 10

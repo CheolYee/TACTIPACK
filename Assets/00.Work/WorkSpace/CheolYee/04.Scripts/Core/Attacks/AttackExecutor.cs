@@ -46,7 +46,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
             //후처리를 위해 애니메이션이 끝나고도 잠시 대기하기
             float t = 0f;
             while (t < item.SkillDelay)
-            {
+            {   
                 t += Time.deltaTime;
                 yield return null;
             }

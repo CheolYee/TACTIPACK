@@ -61,14 +61,21 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             }
         }
 
-        public void NotifyImpact()
+        public void NotifyImpact() //애니메이션 시작을 알리는 함수
         {
             if (_impacted) return;
             _impacted = true;
-            if (_item != null) _item.ApplyDamageNow(_ctx);
         }
 
-        public void NotifyEnd()
+        public void AnimApplyDamageNow() //이벤트에서 데미지를 주는 함수
+        {
+            if (_item != null)
+            {
+                _item.ApplyDamageNow(_ctx);
+            }
+        }
+
+        public void NotifyEnd() //애니메이션 종료를 알리는 함수
         {
             if (_completed) return;
             _completed = true;
@@ -76,6 +83,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             Destroy(gameObject);
         }
 
+        //스폰 위치에 따라 고정 위치를 찾고, 카메라를 설정함
         private Vector3 GetAnchorPosition(SkillContent ctx, EffectSpawnAnchor spawnAnchor)
         {
             switch (spawnAnchor)

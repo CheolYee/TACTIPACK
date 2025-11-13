@@ -7,7 +7,7 @@ using UnityEngine;
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems
 {
     [CreateAssetMenu(fileName = "newAttackItem", menuName = "SO/Item/ActiveItem/AttackItem", order = 0)]
-    public class AttackItemSo : ActiveItemDataSo
+    public class AttackItemSo : ActiveItemDataSo, IAttacker
     {
         [Header("Attack")]
         [field: SerializeField] public AttackDataSo DefaultAttackData { get; private set; }
@@ -21,9 +21,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
 
 
         [Header("Damage Timing")] [SerializeField]
-        private bool damageOnImpactEvent = true; //허용 시 애니메이션 이벤트에서 데미지 처리
+        private bool damageOnImpactEvent; //허용 시 애니메이션 이벤트에서 데미지 처리
         //비허용이라면 스폰 즉시 들어감
-        public virtual ISkillHandler ActiveWithSkillContent(SkillContent ctx)
+        public ISkillHandler ActiveWithSkillContent(SkillContent ctx)
         {
             //스킬 프리팹 (이펙트) 가 있나?
             if (skillPrefab != null)
@@ -44,14 +44,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
                 return handler;
             }
             
-            //아니라면 널 반환 후 데미지 즉시처리
-            ApplyDamageNow(ctx);
             return null;
         }
 
         //스킬 데이터를 돌며 데미지 주기
         public void ApplyDamageNow(SkillContent ctx)
         {
+            Debug.Log("ApplyDamageNow");
             //타겟모드가 싱글이고 0보다 타겟이 많다면
             switch (ctx.TargetingMode)
             {

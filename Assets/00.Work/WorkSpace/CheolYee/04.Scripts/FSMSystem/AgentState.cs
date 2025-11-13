@@ -27,6 +27,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem
             IsTriggerCall = false;
         }
 
+        public virtual void ReEnter()
+        {
+            
+        }
+
         public virtual void Update() {} //업데이터
 
         public virtual void Exit() //변경

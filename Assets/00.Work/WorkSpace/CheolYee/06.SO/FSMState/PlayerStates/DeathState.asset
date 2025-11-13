@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateName: DEATH
   className: _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState.DeathState
-  stateIndex: 3
+  stateIndex: 2
   paramSo: {fileID: 11400000, guid: 5149a5500cf13174386b41ca703126c3, type: 2}
