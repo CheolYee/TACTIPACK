@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
@@ -42,11 +43,33 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         private ItemDataSo _dragData; // 드래그하는 아이템의 SO
         private int _dragRotation; //드래그 중 회전(0/90/180/270)
         private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); //유령 위치 캐시
+        
+        //바인딩 모드
+        private bool _bindingMode;
+        private Action<ItemInstance> _onBindingItemSelected;
 
         // 데이터 캐시
         private readonly Dictionary<string, ItemDataSo> _dataCache = new();
         private readonly List<Vector2Int> _abs = new();
         private readonly List<int> _idxs = new();
+
+        #region BindingMode
+
+        //바인딩 시작
+        public void EnterBindingMode(Action<ItemInstance> onItemSelected)
+        {
+            _bindingMode = true;
+            _onBindingItemSelected = onItemSelected;
+        }
+
+        public void ExitBindingMode()
+        {
+            _bindingMode = false;
+            _onBindingItemSelected = null;
+        }
+
+
+        #endregion
 
         private void Start()
         {
@@ -166,6 +189,21 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
 
         private void HandleInput()
         {
+            Vector2Int cell = grid.ScreenToCell(uiCamera, Input.mousePosition, out bool outOfBounds); //셀 좌표 추출
+
+            //바인딩 모드
+            if (_bindingMode)
+            {
+                if (!outOfBounds && Input.GetMouseButtonDown(0))
+                {
+                    ItemInstance picked = grid.GetItemAtCell(cell);
+                    _onBindingItemSelected?.Invoke(picked);
+                }
+                
+                //바인드에선 기존 회전과 설치로직을 막음
+                return;
+            }
+            
             //회전
             if (_dragItem != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
@@ -173,7 +211,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 _lastAnchor = new Vector2Int(int.MinValue, int.MinValue); //유령 재배치 유도
             }
 
-            Vector2Int cell = grid.ScreenToCell(uiCamera, Input.mousePosition, out bool outOfBounds); //셀 좌표 추출
 
             if (_dragItem != null) //드래그 아이템이 있다면
             {

@@ -41,17 +41,14 @@ TagManager:
   - name: BackGround
     uniqueID: 396294213
     locked: 0
-  - name: Default
-    uniqueID: 0
-    locked: 0
   - name: Player
     uniqueID: 829679227
     locked: 0
   - name: Skills
     uniqueID: 3734322121
     locked: 0
-  - name: Inventory
-    uniqueID: 1054722689
+  - name: Default
+    uniqueID: 0
     locked: 0
   m_RenderingLayers:
   - Default

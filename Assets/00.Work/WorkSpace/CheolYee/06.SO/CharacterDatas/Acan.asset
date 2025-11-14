@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 94ca6713c4e54d709acfd369c0097340, type: 3}
-  m_Name: Elf
+  m_Name: Acan
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: "\uC5D8\uD504"
-  <CharacterId>k__BackingField: 0
-  <CharacterClass>k__BackingField: 3
-  <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 5c4290da5a7b3414aa65a80c48d14745, type: 3}
+  <CharacterName>k__BackingField: "\uC544\uCE78"
+  <CharacterId>k__BackingField: 1
+  <CharacterClass>k__BackingField: 2
+  <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 2e6081980e9fde34e897d2f099e8e744, type: 3}
   <MaxHp>k__BackingField: 100
   <DefaultDamage>k__BackingField: 20
   <DefaultCritChance>k__BackingField: 10
