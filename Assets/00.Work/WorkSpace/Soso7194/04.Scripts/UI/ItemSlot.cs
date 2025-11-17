@@ -1,4 +1,5 @@
 ﻿using System;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,26 +19,19 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         private int _coin = 10;
         private TextMeshProUGUI _buttonText;
         private bool _isSell = false;
-
-        private void OnEnable()
-        {
-            if (ShopManager.Instance != null)
-                ShopManager.Instance.OnItemChanged += OnChangeItem;
-        }
-
-        private void OnDisable()
-        {
-            if (ShopManager.Instance != null)
-                ShopManager.Instance.OnItemChanged -= OnChangeItem;
-        }
-
         
-        private void Start()
+        private void Awake()
         {
             _buttonText = itemButton.GetComponentInChildren<TextMeshProUGUI>();
-            _coin = Random.Range(1, 9) * 10;
+        }
+
+        public void Initialize(ItemDataSo itemData)
+        {
+            itemImage.sprite = itemData.icon;
+            itemName.text = itemData.itemName;
+            _coin = itemData.price;
+            
             _buttonText.text = _coin.ToString();
-            // SO 값 받아오기
         }
         
         public void OnClickButton()
@@ -55,14 +49,6 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             {
                 Debug.Log("이미 팔렸거나 돈이 없습니다!");
             }
-        }
-
-        private void OnChangeItem()
-        {
-            Debug.Log("아이템 교체");
-            _coin = Random.Range(1, 9) * 10;
-            _buttonText.text = _coin.ToString();
-            _isSell = false;
         }
     }
 }
