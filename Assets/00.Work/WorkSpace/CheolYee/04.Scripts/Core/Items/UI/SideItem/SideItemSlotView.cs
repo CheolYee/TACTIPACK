@@ -13,7 +13,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
         [SerializeField] private TextMeshProUGUI countText;
         [SerializeField] private GameObject highLight;
         
-        private SideInventoryManager _sideManager;           // 인스펙터 연결 권장
+        private SideInventoryManager _sideManager; //인스펙터 연결 권장
         private GridInventoryUIController _gridUI;  
         
         public ItemDataSo Data { get; private set; }
@@ -46,11 +46,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
         
         public void BeginDragFromSide(ItemDataSo so, SideInventoryManager sideManager, GridInventoryUIController gridUI)
         {
-            // 1개 보류 차감(실패/취소 시 환불 예정)
+            //1개 보류 차감(실패 시 환불 예정)
             int removed = sideManager.RemoveItem(so);
-            if (removed <= 0) return; // 재고 없음
+            if (removed <= 0) return; //아이템 없음
 
-            // 그리드 컨트롤러에 "사이드 출처"로 드래그 시작시키기
+            //그리드 컨트롤러에 드래그 시작시키기
             gridUI.StartDragFromSide(so, sideManager);
         }
 

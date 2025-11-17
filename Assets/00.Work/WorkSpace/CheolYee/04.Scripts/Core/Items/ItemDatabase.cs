@@ -1,17 +1,18 @@
 using System.Collections.Generic;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
 {
     public class ItemDatabase : MonoBehaviour
     {
-        public List<ItemDataSo> allItems; //에디터에서 채우기
+        public ItemDatabaseSo allItems; //에디터에서 채우기
         private Dictionary<string, ItemDataSo> _itemDict;
 
         private void Awake()
         {
             _itemDict = new Dictionary<string, ItemDataSo>();
-            foreach (ItemDataSo item in allItems)
+            foreach (ItemDataSo item in allItems.ItemDatabase)
             {
                 if (string.IsNullOrEmpty(item.itemId)) Debug.LogWarning($"아이템 데이터 SO {item.name}의 아이디가 없습니다.");
                 if (!_itemDict.TryAdd(item.itemId, item)) Debug.LogWarning($"똑같은 아이템이 있습니다. : {item.itemId}");
@@ -24,7 +25,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         public void Initialize()
         {
             _itemDict = new Dictionary<string, ItemDataSo>();
-            foreach (ItemDataSo item in allItems)
+            foreach (ItemDataSo item in allItems.ItemDatabase)
             {
                 _itemDict.TryAdd(item.itemId, item);
             }

@@ -11,7 +11,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
     {
         [Header("Attack")]
         [field: SerializeField] public AttackDataSo DefaultAttackData { get; private set; }
-        [field: SerializeField] public int Index { get; private set; }
+        [field: SerializeField] public int TargetIndex { get; private set; }
         [field: SerializeField] public float SkillDelay { get; private set; }
         
         [Header("Flow Policy")]

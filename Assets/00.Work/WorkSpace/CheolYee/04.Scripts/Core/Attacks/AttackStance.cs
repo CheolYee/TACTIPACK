@@ -22,7 +22,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
     {
         Single, //단일
         Area, //범위
-        Random //랜덤
+        Random, //랜덤
+        None
     }
 
     //스킬 실행에 필요한 것들

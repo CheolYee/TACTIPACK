@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16268d930b646beac04a1c1e803da91, type: 3}
+  m_Name: E_AttackState
+  m_EditorClassIdentifier: 
+  stateName: ATTACK
+  className: _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState.EnemyAttackState
+  stateIndex: 1
+  paramSo: {fileID: 11400000, guid: 2800a59ba42827c4096dc673db9606d3, type: 2}

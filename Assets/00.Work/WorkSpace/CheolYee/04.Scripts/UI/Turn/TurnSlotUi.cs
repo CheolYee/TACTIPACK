@@ -1,4 +1,7 @@
-﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
+﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -52,7 +55,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             _savedOverrideSorting = slotCanvas.overrideSorting;
             _savedSortingOrder = slotCanvas.sortingOrder;
 
-            // 부모 Canvas 기준으로 동작하게
+            //부모 Canvas 기준으로 동작하게
             slotCanvas.overrideSorting = _savedOverrideSorting;
             slotCanvas.sortingOrder = _savedSortingOrder;
         }
@@ -72,6 +75,34 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 icon.sprite = data.CharacterIcon;
             
             if (skillSlot != null) skillSlot.Initialize(player);
+        }
+
+        public void ExecuteBoundSkill()
+        {
+            if (BoundPlayer == null)
+            {
+                Debug.LogWarning($"TurnSlotUi({name}): BoundPlayer가 없습니다.");
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(BoundPlayer, null));
+                return;
+            }
+
+            if (skillSlot == null)
+            {
+                Debug.LogWarning($"TurnSlotUi({name}): SkillSlot이 없습니다.");
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(BoundPlayer, null));
+                return;
+            }
+
+            AttackItemSo skill = skillSlot.BoundSkill;
+            if (skill == null)
+            {
+                Debug.Log($"TurnSlotUi({name}): 바인딩된 스킬이 없어 공격을 실행하지 않습니다.");
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(BoundPlayer, null));
+                return;
+            }
+            
+            BoundPlayer.Attack(skill);
+            Debug.Log($"[TurnSlotUi] {BoundPlayer.CharacterData.name} 이(가) 스킬 {skill.name} 로 공격 실행");
         }
 
         public void OnBeginDrag(PointerEventData eventData)

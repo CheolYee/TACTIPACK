@@ -90,11 +90,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             {
                 case EffectSpawnAnchor.User:
                     SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
-                    SkillCameraManager.Instance.ZoomTo(6f);
+                    SkillCameraManager.Instance.ZoomTo(7f);
                     return ctx.User.transform.position;
                 case EffectSpawnAnchor.Target:
                     SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
-                    SkillCameraManager.Instance.ZoomTo(6f);
+                    SkillCameraManager.Instance.ZoomTo(7f);
                     return (ctx.Targets != null && ctx.Targets.Count > 0) 
                         ? ctx.Targets[0].transform.position 
                         : ctx.User.transform.position;

@@ -82,8 +82,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
 
         public void HandleBindButtonClicked()
         {
-            if (BoundSkill == null) OnRequestBind?.Invoke(this);
-            else RequestUseSkill();
+            OnRequestBind?.Invoke(this);
         }
     }
 }

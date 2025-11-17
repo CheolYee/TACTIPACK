@@ -27,18 +27,49 @@ namespace _00.Work.Resource.Scripts.Managers
         
         [Header("Follow Damping")]
         [SerializeField] private float followDamping = 0.15f;
+        
+        [Header("CamOffset")]
+        [SerializeField] private Vector2 followOffset;
 
         private Transform _initialFollow;
         private float _initialOrthoSize;
         private float _initialFov;
         
         private Coroutine _zoomRoutine;
+        private CinemachinePositionComposer _positionComposer;
 
         protected override void Awake()
         {
             Application.targetFrameRate = 60;
             base.Awake();
             CacheInitialState();
+            CacheComposer();
+            ApplyFollowOffset();
+        }
+        
+        private void OnValidate()
+        {
+            if (cam == null)
+                cam = GetComponent<CinemachineCamera>();
+
+            CacheComposer();
+            ApplyFollowOffset();
+        }
+
+        private void ApplyFollowOffset()
+        {
+            if (_positionComposer == null) return;
+
+            Vector3 offset = _positionComposer.TargetOffset;
+            offset.x = followOffset.x;
+            offset.y = followOffset.y;
+            _positionComposer.TargetOffset = offset;
+        }
+
+        private void CacheComposer()
+        {
+            if (cam == null) return;
+            _positionComposer = cam.GetComponent<CinemachinePositionComposer>();
         }
 
         private void CacheInitialState()

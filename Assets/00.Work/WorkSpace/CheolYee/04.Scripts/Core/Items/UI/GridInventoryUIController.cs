@@ -31,6 +31,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         [SerializeField] private SideInventoryManager sideManager;
         [SerializeField] private Image dragIconPrefab;
         
+        public event Action<ItemInstance> OnItemReturnedToSideInventory;
+        
         private Image _dragIcon;
         
         private GridItemGhostUI _ghost; //런타임 인스턴스
@@ -77,7 +79,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             _ghost.Hide(); //시작 시 다 숨김
             
             database.Initialize(); //내부 딕셔너리 구성
-            foreach (ItemDataSo so in database.allItems) //등록된 so 순회
+            foreach (ItemDataSo so in database.allItems.ItemDatabase) //등록된 so 순회
             {
                 _dataCache[so.itemId] = so; //빠른 조회를 위해 캐싱
             }
@@ -101,8 +103,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         [ContextMenu("Pick RandomItem")] //랜덤 아이템을 잡아와요
         public void PickRandomItem()
         {
-            if (database.allItems == null || database.allItems.Count == 0) return; //데이터 없으면 리턴
-            ItemDataSo so = database.allItems[Random.Range(0, database.allItems.Count)]; //랜덤 so 하나 고름
+            if (database.allItems == null || database.allItems.ItemDatabase.Count == 0) return; //데이터 없으면 리턴
+            ItemDataSo so = database.allItems.ItemDatabase[Random.Range(0, database.allItems.ItemDatabase.Count)]; //랜덤 so 하나 고름
             
             StartDrag(new ItemInstance(so.itemId), so, 0, DragOrigin.Grid, null);
         }
@@ -134,7 +136,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             }
         }
         
-        // 사이드 슬롯에서 시작하는 진입점 (신규)
+        //사이드 슬롯에서 시작하는 진입점
         public void StartDragFromSide(ItemDataSo so, SideInventoryManager sideInventoryManager)
         {
             // 새 인스턴스 생성(설치 성공 시 그리드가 소유)
@@ -230,6 +232,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                             if (sideManager != null && _dragData != null)
                             {
                                 sideManager.AddItem(_dragData);
+                                OnItemReturnedToSideInventory?.Invoke(_dragItem);
                             }
                             StopDrag();
                         }
@@ -257,6 +260,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                         if (sideManager != null && _dragData != null)
                         {
                             sideManager.AddItem(_dragData);
+                            OnItemReturnedToSideInventory?.Invoke(_dragItem);
                         }
                     }
                     StopDrag();

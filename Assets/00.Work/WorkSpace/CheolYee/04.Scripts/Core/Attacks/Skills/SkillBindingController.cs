@@ -41,6 +41,31 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             
             if (cancelBindingButton != null)
                 cancelBindingButton.onClick.AddListener(CancelBinding);
+
+            if (gridUi != null)
+                gridUi.OnItemReturnedToSideInventory += HandleItemReturnedToSideInventory;
+        }
+
+        private void HandleItemReturnedToSideInventory(ItemInstance item)
+        {
+            if (item == null || turnUiRoot == null) return;
+            
+            TurnSkillSlotUi[] slots = turnUiRoot.GetComponentsInChildren<TurnSkillSlotUi>(true);
+
+            foreach (TurnSkillSlotUi slot in slots)
+            {
+                if (slot.BoundItemInstance == item)
+                {
+                    //이 아이템을 바인딩하던 슬롯의 바인딩 해제
+                    slot.ClearBinding();
+
+                    //이 슬롯을 대상으로 바인딩 모드였으면 바인딩 모드도 정리
+                    if (_isBinding && _currentSkillSlot == slot)
+                    {
+                        CancelBinding();
+                    }
+                }
+            }
         }
 
         private void OnDestroy()
@@ -48,6 +73,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             //이벤트 해제
             if (cancelBindingButton != null)
                 cancelBindingButton.onClick.RemoveListener(CancelBinding);
+            
+            if (gridUi != null)
+                gridUi.OnItemReturnedToSideInventory -= HandleItemReturnedToSideInventory;
         }
 
         public void RegisterSkillSlot(TurnSkillSlotUi slot)
@@ -60,6 +88,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         private void BeginBindingFromSlot(TurnSkillSlotUi slot)
         {
             if (slot == null || slot.Owner == null) return;
+
+            if (_isBinding)
+            {
+                CancelBinding();
+            }
             
             _currentSkillSlot = slot;
             _currentPlayer = slot.Owner;
@@ -106,7 +139,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
 
             if (inst == null)
             {
-                ShowError("아이템이 없는 칸입니다.");
+                //빈칸 클릭 시 바인드 지우고 종료
+                if (_currentSkillSlot.BoundSkill != null)
+                    _currentSkillSlot.ClearBinding();
+                
+                CancelBinding();
                 return;
             }
 
@@ -136,6 +173,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             if (!IsClassCompatible(_currentPlayer, attackItem))
             {
                 ShowError("이 캐릭터는 이 스킬을 사용할 수 없습니다.");
+                return;
+            }
+            
+            if (IsAlreadyBoundToOtherSlot(inst, _currentSkillSlot))
+            {
+                ShowError("이미 다른 캐릭터의 슬롯에 바인딩된 아이템입니다.");
                 return;
             }
 
@@ -240,11 +283,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
                 errorCanvasGroup.alpha = 0;
                 errorCanvasGroup.gameObject.SetActive(false);
             }
-
-            if (errorText != null)
-            {
-                errorText.gameObject.SetActive(false);
-            }
         }
 
 
@@ -258,6 +296,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
                 cancelBindingButton.gameObject.SetActive(active);
             
             
+        }
+        
+        //다른곳에서 아이템 인스턴스를 바인딩하고 있는지 확인
+        private bool IsAlreadyBoundToOtherSlot(ItemInstance inst, TurnSkillSlotUi currentSlot)
+        {
+            if (turnUiRoot == null || inst == null) return false;
+
+            TurnSkillSlotUi[] slots = turnUiRoot.GetComponentsInChildren<TurnSkillSlotUi>(true);
+            foreach (var slot in slots)
+            {
+                //자기 자신은 제외
+                if (slot == null || slot == currentSlot) continue;
+        
+                if (slot.BoundItemInstance == inst)
+                    return true;
+            }
+
+            return false;
         }
     }
 }
