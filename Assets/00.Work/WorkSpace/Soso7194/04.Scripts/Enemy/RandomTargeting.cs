@@ -11,7 +11,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
     public class RandomTargeting : MonoBehaviour
     {
         
-        [Header("타겟 위치")]
+        [Header("Targeting")]
         [SerializeField] private List<GameObject> targets;
 
         private List<GameObject> _enemies;

@@ -8,6 +8,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
 {
     public class Enemy : MonoBehaviour, IEnemy
     {
+        [Header("HP Bar")]
         [SerializeField] private float hpBarLerpSpeed = 3f;
         public int CurrentHP { get; set; }
         public CharacterDataSO Data { get; set; }

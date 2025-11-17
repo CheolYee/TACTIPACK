@@ -10,13 +10,14 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
     {
         public List<GameObject> SpawnedEnemies { get; private set; } // 에너미 저장
 
+        [Header("Enemy Spawns")]
         [Range(1, 3)]
         [SerializeField] private int enemySpawns = 1;
         
-        [Header("적 SO")]
+        [Header("Enemy SO")]
         [SerializeField] private List<EnemySO> enemyData; // 에너미 SO
         
-        [Header("적 스폰 포인트")]
+        [Header("Enemies Spawn Pos")]
         [SerializeField] private List<Transform> enemiesSpawnPos; // 에너미 스폰포인트
         
         [Header("적 HP바")]

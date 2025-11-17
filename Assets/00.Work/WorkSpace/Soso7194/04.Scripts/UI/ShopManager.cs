@@ -9,14 +9,16 @@ using UnityEngine.UI;
 
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 {
-    public class ShopManager : MonoBehaviour
+    public class ShopManager : MonoSingleton<ShopManager>
     {
-        public static ShopManager Instance { get; private set; }
-        [SerializeField] private int coin;
-        
+        [Header("Shop UI")]
         [SerializeField] private Image shopManu;
-        [SerializeField] private int resetCount = 3;
         [SerializeField] private TextMeshProUGUI coinText;
+        [SerializeField] private TextMeshProUGUI resetText;
+        
+        [Header("Shop Setting")]
+        [SerializeField] private int coin;
+        [SerializeField] private int resetCount = 3;
         
         public Action OnItemChanged;
         
@@ -27,30 +29,23 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             get => coin;
             set => coin = Mathf.Clamp(value, 0, int.MaxValue);
         }
-        
-        private void Awake()
+
+        protected override void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-            
             _resetCount = resetCount;
             Coin = coin;
         }
         
         private void OnEnable()
         {
-            ItemSlot.OnCoinChanged += ChangeCoinText;
+            ItemSlot.OnUICoinChanged += ChangeCoinText;
             
             coinText.text = Coin.ToString();
         }
         
         private void OnDisable()
         {
-            ItemSlot.OnCoinChanged -= ChangeCoinText;
+            ItemSlot.OnUICoinChanged -= ChangeCoinText;
         }
 
         private void Update()

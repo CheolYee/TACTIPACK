@@ -9,13 +9,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.SO
     [CreateAssetMenu(fileName = "Enemy", menuName = "SO/Enemy", order = 0)]
     public class EnemySO : ScriptableObject
     {
-        [Header("기본 설정")]
+        [Header("Enemy Setting")]
         public string enemyName; // 이름
         public GameObject prefab; // 에너미 프리팹
         public int maxHP; // 체력
         public int attack; // 공격력
 
-        [Header("보스 설정")] 
+        [Header("Boss Setting")] 
         public bool isBoss;
         public int skillTurn;
         public int skillDamage;

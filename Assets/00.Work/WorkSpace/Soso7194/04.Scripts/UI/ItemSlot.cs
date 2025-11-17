@@ -8,11 +8,12 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 {
     public class ItemSlot : MonoBehaviour
     {
+        [Header("Item Slot")]
         [SerializeField] private Image itemImage;
         [SerializeField] private TextMeshProUGUI itemName;
         [SerializeField] private Button itemButton;
         
-        public static Action OnCoinChanged;
+        public static Action OnUICoinChanged;
         
         private int _coin = 10;
         private TextMeshProUGUI _buttonText;
@@ -48,7 +49,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
                 ShopManager.Instance.Coin -= _coin;
                 Debug.Log($"남은 골드 : {ShopManager.Instance.Coin}");
                 _isSell = true;
-                OnCoinChanged?.Invoke();
+                OnUICoinChanged?.Invoke();
             }
             else
             {
