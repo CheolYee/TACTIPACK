@@ -6,9 +6,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
 {
     public class AgentRenderer : MonoBehaviour, IAgentComponent, IAgentRenderer, IAnimationTrigger
     {
-        [SerializeField] private bool lookToTheLeft; //처음 시작 시 왼쪽을 보는가 아닌가
+        [field: SerializeField] public bool LookToTheLeft { get; set; } //처음 시작 시 왼쪽을 보는가 아닌가
         
         public event Action OnAnimationEnd; //애니메이션 종료 이벤트
+        public event Action OnAnimationFire; //타격 시점 이벤트
         public float FacingDirection { get; private set; } = 1f; //보는 방향 (기본 우측)
         public Sprite CurrentSprite => _spriteRenderer.sprite; //현재 스프라이트 가져오기 (잔상이나 다른 효과)
         
@@ -22,7 +23,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             _animator = GetComponent<Animator>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
             
-            if (lookToTheLeft) Flip();
+            if (LookToTheLeft) Flip();
         }
 
         //파라미터 오버로딩
@@ -38,6 +39,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             _agent.transform.rotation = Quaternion.Euler(0, yRotation, 0);
         }
         
+        private void AnimationFireTrigger()
+        {
+            OnAnimationFire?.Invoke();
+            //애니메이션이 시작했음을 알려주는 메서드
+        }
+
         private void AnimationEndTrigger() => OnAnimationEnd?.Invoke(); //애니메이션이 끝났음을 알려주는 메서드 (애니메이션 트리거에서 실행)
     }
 }

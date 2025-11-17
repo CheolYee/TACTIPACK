@@ -15,7 +15,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
     public class SideInventoryManager : MonoSingleton<SideInventoryManager>
     {
         [Header("SideItem Database")]
-        [SerializeField] private SideItemDatabaseSo itemDatabase; //모든 아이템을 담고 있는 아이템 데이터베이스
+        [SerializeField] private ItemDatabaseSo itemDatabase; //모든 아이템을 담고 있는 아이템 데이터베이스
 
         [Header("Rules")]
         [SerializeField] private int defaultMaxStackItem = 99; //한칸당 최대 중첩 개수
@@ -30,7 +30,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
         public bool IsAllowed(ItemDataSo item)
         {
             if (item == null || itemDatabase == null) return false; //아이템 이상하거나 베이스가 없으면 허락 안됨
-            return itemDatabase.SideItemDatabase.Contains(item); //아이템이 리스트에 들어있다면 true 아니면 false
+            return itemDatabase.ItemDatabase.Contains(item); //아이템이 리스트에 들어있다면 true 아니면 false
         }
 
         //현재 아이템의 개수를 반환하는 함수
@@ -93,7 +93,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
         [ContextMenu("랜덤 아이템 추가 디버그")]
         private void Debug_AddRandomItem()
         {
-            var list = itemDatabase.SideItemDatabase;
+            var list = itemDatabase.ItemDatabase;
             var pickItem = list[UnityEngine.Random.Range(0, list.Count)];
             int add = AddItem(pickItem);
         }

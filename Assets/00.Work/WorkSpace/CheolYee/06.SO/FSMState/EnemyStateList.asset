@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab8da9171dbd4de09fa2ca7a46f0796b, type: 3}
+  m_Name: EnemyStateList
+  m_EditorClassIdentifier: 
+  enumName: EnemyStates
+  states:
+  - {fileID: 11400000, guid: 19e0bb094839eab4da9ea36ba0f5e626, type: 2}
+  - {fileID: 11400000, guid: ccd50ef31c4e00c4c9ddd3b12bb2d351, type: 2}
+  - {fileID: 11400000, guid: b29d333983e359d4fa58dced7f0b2858, type: 2}

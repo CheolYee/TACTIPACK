@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
@@ -30,6 +31,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         [SerializeField] private SideInventoryManager sideManager;
         [SerializeField] private Image dragIconPrefab;
         
+        public event Action<ItemInstance> OnItemReturnedToSideInventory;
+        
         private Image _dragIcon;
         
         private GridItemGhostUI _ghost; //런타임 인스턴스
@@ -42,11 +45,33 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         private ItemDataSo _dragData; // 드래그하는 아이템의 SO
         private int _dragRotation; //드래그 중 회전(0/90/180/270)
         private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); //유령 위치 캐시
+        
+        //바인딩 모드
+        private bool _bindingMode;
+        private Action<ItemInstance> _onBindingItemSelected;
 
         // 데이터 캐시
         private readonly Dictionary<string, ItemDataSo> _dataCache = new();
         private readonly List<Vector2Int> _abs = new();
         private readonly List<int> _idxs = new();
+
+        #region BindingMode
+
+        //바인딩 시작
+        public void EnterBindingMode(Action<ItemInstance> onItemSelected)
+        {
+            _bindingMode = true;
+            _onBindingItemSelected = onItemSelected;
+        }
+
+        public void ExitBindingMode()
+        {
+            _bindingMode = false;
+            _onBindingItemSelected = null;
+        }
+
+
+        #endregion
 
         private void Start()
         {
@@ -54,7 +79,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             _ghost.Hide(); //시작 시 다 숨김
             
             database.Initialize(); //내부 딕셔너리 구성
-            foreach (ItemDataSo so in database.allItems) //등록된 so 순회
+            foreach (ItemDataSo so in database.allItems.ItemDatabase) //등록된 so 순회
             {
                 _dataCache[so.itemId] = so; //빠른 조회를 위해 캐싱
             }
@@ -78,8 +103,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         [ContextMenu("Pick RandomItem")] //랜덤 아이템을 잡아와요
         public void PickRandomItem()
         {
-            if (database.allItems == null || database.allItems.Count == 0) return; //데이터 없으면 리턴
-            ItemDataSo so = database.allItems[Random.Range(0, database.allItems.Count)]; //랜덤 so 하나 고름
+            if (database.allItems == null || database.allItems.ItemDatabase.Count == 0) return; //데이터 없으면 리턴
+            ItemDataSo so = database.allItems.ItemDatabase[Random.Range(0, database.allItems.ItemDatabase.Count)]; //랜덤 so 하나 고름
             
             StartDrag(new ItemInstance(so.itemId), so, 0, DragOrigin.Grid, null);
         }
@@ -111,7 +136,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             }
         }
         
-        // 사이드 슬롯에서 시작하는 진입점 (신규)
+        //사이드 슬롯에서 시작하는 진입점
         public void StartDragFromSide(ItemDataSo so, SideInventoryManager sideInventoryManager)
         {
             // 새 인스턴스 생성(설치 성공 시 그리드가 소유)
@@ -166,6 +191,21 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
 
         private void HandleInput()
         {
+            Vector2Int cell = grid.ScreenToCell(uiCamera, Input.mousePosition, out bool outOfBounds); //셀 좌표 추출
+
+            //바인딩 모드
+            if (_bindingMode)
+            {
+                if (!outOfBounds && Input.GetMouseButtonDown(0))
+                {
+                    ItemInstance picked = grid.GetItemAtCell(cell);
+                    _onBindingItemSelected?.Invoke(picked);
+                }
+                
+                //바인드에선 기존 회전과 설치로직을 막음
+                return;
+            }
+            
             //회전
             if (_dragItem != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
@@ -173,7 +213,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 _lastAnchor = new Vector2Int(int.MinValue, int.MinValue); //유령 재배치 유도
             }
 
-            Vector2Int cell = grid.ScreenToCell(uiCamera, Input.mousePosition, out bool outOfBounds); //셀 좌표 추출
 
             if (_dragItem != null) //드래그 아이템이 있다면
             {
@@ -193,6 +232,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                             if (sideManager != null && _dragData != null)
                             {
                                 sideManager.AddItem(_dragData);
+                                OnItemReturnedToSideInventory?.Invoke(_dragItem);
                             }
                             StopDrag();
                         }
@@ -220,6 +260,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                         if (sideManager != null && _dragData != null)
                         {
                             sideManager.AddItem(_dragData);
+                            OnItemReturnedToSideInventory?.Invoke(_dragItem);
                         }
                     }
                     StopDrag();

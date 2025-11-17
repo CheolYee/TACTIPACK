@@ -12,10 +12,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         public ItemClass itemClass; //어떤 클래스가 사용하는 아이템인가?
         public Sprite icon; //인벤토리 아이콘
         [TextArea] public string description; //아이템 설명
+        
+        [Header("Shop Settings")]
+        public int price; //아이템 가격
 
         [Header("Default Shape Settings")]
         public Vector2Int shape = new(1, 1); //기본 사각형 크기
-        public bool rotatable = true; //회전 가능한지 여부
 
         [Header("Free Shape Settings")]
         public Vector2Int[] shapeOffsets; //개별 셀 오프셋 목록 (pivot 기준)

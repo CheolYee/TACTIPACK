@@ -21,8 +21,6 @@ public class TurnManager : MonoBehaviour
     [Header("적 타겟팅 시스템")]
     [SerializeField] private RandomTargeting enemyTargeting;
 
-    public event Action OnPlayerTurnEnd;
-
     private bool _isPlayerTurn = true;
 
     private void Awake()

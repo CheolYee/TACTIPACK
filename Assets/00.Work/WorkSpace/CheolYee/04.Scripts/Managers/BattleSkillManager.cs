@@ -1,29 +1,50 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
 {
-    public class BattleSkillManager : MonoBehaviour
+    public class BattleSkillManager : MonoSingleton<BattleSkillManager>
     {
-        private readonly List<AgentHealth> _targets = new();
+        [SerializeField] private List<AgentHealth> playerTargets = new();
+        [SerializeField] private List<AgentHealth> enemyTargets = new();
 
-        //시전 시 모든 타겟을 지정할 메서드
-        public void SetTargets(IEnumerable<AgentHealth> targets)
+        //플레이어가 에너미를 타겟팅할 때 쓸 메서드
+        public void SetPlayerTargets(IEnumerable<AgentHealth> targets)
         {
-            _targets.Clear();
-            _targets.AddRange(targets.Where(t => t != null));
+            playerTargets.Clear();
+            playerTargets.AddRange(targets.Where(t => t != null));
         }
         
-        public List<AgentHealth> GetTargets() => _targets.Where(t => t != null).ToList();
+        //에너미가 플레이어를 타겟팅할 때 쓸 메서드
+        public void SetEnemyTargets(IEnumerable<AgentHealth> targets)
+        {
+            enemyTargets.Clear();
+            enemyTargets.AddRange(targets.Where(t => t != null));
+        }
+        
+        private List<AgentHealth> GetTargetsForUser(Agent user)
+        {
+            if (user is Enemy)
+                return GetPlayerTargets();
+
+            // 기본은 플레이어용으로 가정
+            return GetEnemyTargets();
+        }
+        
+        public List<AgentHealth> GetPlayerTargets() => playerTargets.Where(t => t != null).ToList();
+        public List<AgentHealth> GetEnemyTargets() => enemyTargets.Where(t => t != null).ToList();
 
         //스킬의 생성 위치를 설정합니다.
         public Vector3 ResolveCastPoint(Agent user, TargetingMode mode, int idx = 0)
         {
-            List<AgentHealth> list = GetTargets();
+            List<AgentHealth> list = GetTargetsForUser(user);
             if (list.Count == 0) return user.transform.position; //만약 타겟이 없으면 그냥 리턴
 
             switch (mode)
@@ -37,6 +58,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
                 case TargetingMode.Random: //랜덤
                     int randomIndex = Random.Range(0, list.Count);
                     return list[randomIndex].transform.position;
+                case TargetingMode.None:
+                    return user.transform.position;
                 default:
                     return user.transform.position;
             }
@@ -44,12 +67,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
 
         public SkillContent BuildContext(Agent user, AttackItemSo item, AttackStance? overrideStance = null)
         {
-            List<AgentHealth> targets = GetTargets();
+            List<AgentHealth> targets = GetTargetsForUser(user);
             return new SkillContent()
             {
                 User = user,
                 Targets = targets,
-                CastPoint = ResolveCastPoint(user, item.TargetingMode, item.Index),
+                CastPoint = ResolveCastPoint(user, item.TargetingMode, item.TargetIndex),
                 TargetingMode = item.TargetingMode,
                 Stance = overrideStance ?? AttackStance.Stationary,
                 ApproachOffset = item.ApproachOffset

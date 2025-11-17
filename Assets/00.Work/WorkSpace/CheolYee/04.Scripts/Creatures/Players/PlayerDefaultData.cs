@@ -11,7 +11,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         Healer = 3 //힐러
     }
     
-    [CreateAssetMenu(fileName = "PlayerDefaultData", menuName = "SO/Player/DefaultData", order = 0)]
+    [CreateAssetMenu(fileName = "PlayerDefaultData", menuName = "SO/Character/PlayerDefaultData", order = 0)]
     public class PlayerDefaultData : ScriptableObject
     {
         [Header("Info")]
@@ -19,9 +19,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         [field: SerializeField] public int CharacterId {get; private set;} //캐릭터의 아이디
         [field: SerializeField] public CharacterClass CharacterClass {get; private set;} //캐릭터의 직업 클래스
         
+        [Header("UI")]
+        [field: SerializeField] public Sprite CharacterIcon {get; private set;}
+        
         [Header("Settings")]
         [field: SerializeField] public float MaxHp {get; private set;} //HP
         [field: SerializeField] public float DefaultDamage {get; private set;} //기본 데미지
         [field: SerializeField] public float DefaultCritChance {get; private set;} //크리티컬 확률
     }
+    
+    
 }

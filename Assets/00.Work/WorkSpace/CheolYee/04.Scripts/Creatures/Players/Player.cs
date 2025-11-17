@@ -11,7 +11,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         //기본 캐릭터 데이터
         [field: SerializeField] public PlayerDefaultData CharacterData { get; private set; }
         [SerializeField] private StateListSo playerStateList;
-        [SerializeField] private AttackItemSo testItem;
         
         private AgentStateMachine _stateMachine;
         
@@ -37,13 +36,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
             ChangeState(PlayerStates.IDLE);
         }
 
+        private void Update()
+        {
+            _stateMachine.UpdateMachine();
+        }
+
         public void ChangeState(PlayerStates newState)
         {
             _stateMachine.ChangeState((int)newState);
         }
-
-        [ContextMenu("테스트 어택")] 
-        private void StartAttack() => Attack(testItem);
 
         public void Attack(AttackItemSo item)
         {
