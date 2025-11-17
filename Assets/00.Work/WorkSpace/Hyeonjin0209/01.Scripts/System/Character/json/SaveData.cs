@@ -7,3 +7,7 @@ public class SaveData
 {
     public List<CharacterType> party = new List<CharacterType>();
 }
+public class CharacterData
+{
+
+}
