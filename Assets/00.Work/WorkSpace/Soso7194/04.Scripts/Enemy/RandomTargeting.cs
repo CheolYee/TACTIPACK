@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _00.Work.WorkSpace.Soso7194._04.Scripts.Json;
 using DG.Tweening;
 using MEC;
 using UnityEngine;
@@ -10,18 +11,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
     public class RandomTargeting : MonoBehaviour
     {
         
-        [Header("타겟 위치")]
+        [Header("Targeting")]
         [SerializeField] private List<GameObject> targets;
 
         private List<GameObject> _enemies;
         private bool _stop;
 
         public event Action OnEnemyTurnEnd;
-
-        private void Awake()
-        {
-            GetComponent<EnemyManager>();
-        }
 
         public void SetEnemies(List<GameObject> spawnedEnemies)
         {
@@ -68,12 +64,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                 Vector3 startPos = enemy.transform.position;
 
                 int targetIndex;
-                while (true)
+                targetIndex = Random.Range(0, targetsCopy.Count);
+                /*while (true)
                 {
                     targetIndex = Random.Range(0, targetsCopy.Count);
                     if (targets[targetIndex].GetComponentInChildren<IPlayer>() != null)
                         break;
-                }
+                }*/
 
                 seq.Append(enemy.transform.DOMove(targets[targetIndex].transform.position + new Vector3(0.5f, 0, 0), 0.3f));
                 enemyScript.TakeDamage(5);
@@ -91,7 +88,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy
                     Debug.Log("적이 사망하여 돌아가지 않음");
                 }
             }
-
+            
             _stop = false;
             Debug.Log("=== 적 턴 종료 ===");
             OnEnemyTurnEnd?.Invoke();
