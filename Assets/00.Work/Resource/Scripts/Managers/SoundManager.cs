@@ -12,6 +12,15 @@ namespace _00.Work.Scripts.Managers
         public float bgmVolume;
         public float sfxVolume;
     }
+
+    [System.Serializable]
+    public class TestJsonSaveData
+    {
+        public float jeahoon;
+        public float dongwan;
+        public float hyounjin;
+    }
+    
     public class SoundManager : MonoSingleton<SoundManager>
     {
 
@@ -22,9 +31,9 @@ namespace _00.Work.Scripts.Managers
         public List<AudioClip> sfxClips;
         
 
-        private static string SoundSavePath => Application.persistentDataPath + "/soundData.json";
 
         private SoundSettings _settings = new SoundSettings();
+        private TestJsonSaveData _teamSetting = new TestJsonSaveData();
         
         public float GetBGMVolume() => _settings.bgmVolume;
         public float GetSfxVolume() => _settings.sfxVolume;
@@ -98,9 +107,10 @@ namespace _00.Work.Scripts.Managers
             SaveSettings();
         }
 
+        private static string SoundSavePath => Application.persistentDataPath + "/soundData.json";
         private void SaveSettings()
         {
-            var json = JsonUtility.ToJson(_settings);
+            string json = JsonUtility.ToJson(_settings);
             File.WriteAllText(SoundSavePath, json);
         }
 
@@ -108,11 +118,11 @@ namespace _00.Work.Scripts.Managers
         {
             if (File.Exists(SoundSavePath))
             {
-                Debug.Log(SoundSavePath);
                 var json = File.ReadAllText(SoundSavePath);
                 _settings = JsonUtility.FromJson<SoundSettings>(json);
             }
             else
+                Debug.Log(SoundSavePath);
             {
                 _settings = new SoundSettings
                 {
@@ -120,6 +130,8 @@ namespace _00.Work.Scripts.Managers
                     bgmVolume = 0.5f,
                     sfxVolume = 0.5f,
                 };
+                
+                SaveSettings();
             }     
         }
 
