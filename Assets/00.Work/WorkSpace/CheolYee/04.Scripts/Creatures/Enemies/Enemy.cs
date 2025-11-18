@@ -80,15 +80,20 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
 
         public void Attack(AttackItemSo item)
         {
+            ChangeState(EnemyStates.ATTACK);
+        }
+
+        private void SetRandomAttackSkill()
+        {
             int randomAttack = Random.Range(0, EnemyData.Attacks.Count);
             actionData.CurrentAttackItem = EnemyData.Attacks[randomAttack];
             currentSkill = EnemyData.Attacks[randomAttack];
-            
-            ChangeState(EnemyStates.ATTACK);
         }
-        
+
         public void StartTurn()
         {
+            SetRandomAttackSkill();
+            
             if (currentSkill == null)
             {
                 Debug.LogWarning($"{name} : defaultSkill 이 비어있어서 턴을 바로 종료합니다.");

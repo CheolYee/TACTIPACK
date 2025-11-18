@@ -230,8 +230,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             
             _occupiedMap[inst.instanceId] = absCells; //인스턴스가 설치되는 셀 목록 계산
             
-            inst.isInBackpack = true; //백팩에 있으니까 true변경
-            inst.backpackPosition = anchor; //기준 위치 기록
             inst.rotation = rotation; //회전 상태 기록
         }
 
@@ -249,8 +247,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                 }
                 _occupiedMap.Remove(inst.instanceId); //캐시에서 제거
             }
-            
-            inst.isInBackpack = false; //상태 갱신
         }
 
         public bool Move(ItemInstance inst, ItemDataSo data, Vector2Int anchor, int rotation)

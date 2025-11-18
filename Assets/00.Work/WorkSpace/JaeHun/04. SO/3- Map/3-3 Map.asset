@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: 3-3 Map
   m_EditorClassIdentifier: 
   mapName: RestRoom
+  mapType: 0
   nextMap:
   - {fileID: 11400000, guid: 654db25b94fc00b4eb0bad8d24677f8b, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: -31.55, y: 48.69}
+  - {fileID: 11400000, guid: 8be25f22bd077c141ae4c71fbce02025, type: 2}
+  isLock: 1
+  stageData: {fileID: 0}

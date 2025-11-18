@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: 3-9 Map
   m_EditorClassIdentifier: 
   mapName: BossRoom
+  mapType: 0
   nextMap: []
-  isLook: 1
-  cameraPosition: {x: 28.97, y: 48.41}
+  isLock: 0
+  stageData: {fileID: 0}

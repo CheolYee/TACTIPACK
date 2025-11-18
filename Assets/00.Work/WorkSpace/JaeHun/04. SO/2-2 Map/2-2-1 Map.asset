@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 2-2-1 Map
   m_EditorClassIdentifier: 
   mapName: EnemyMap
+  mapType: 0
   nextMap:
   - {fileID: 11400000, guid: d25e34d89e483f24496a5613b26f144b, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: 28.97, y: 48.41}
+  isLock: 0
+  stageData: {fileID: 0}

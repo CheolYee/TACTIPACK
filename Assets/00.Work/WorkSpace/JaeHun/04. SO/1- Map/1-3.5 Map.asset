@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: 1-3.5 Map
   m_EditorClassIdentifier: 
   mapName: ShopMap
+  mapType: 0
   nextMap:
-  - {fileID: 11400000, guid: 663894eba5f98a046abe74ff4fc36332, type: 2}
   - {fileID: 11400000, guid: 654db25b94fc00b4eb0bad8d24677f8b, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: 29.01, y: 68.7}
+  isLock: 1
+  stageData: {fileID: 0}

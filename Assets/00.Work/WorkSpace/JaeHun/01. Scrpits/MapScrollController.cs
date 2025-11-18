@@ -33,8 +33,6 @@ public class MapScrollController : MonoBehaviour
             pos.y += move;
             pos.y = Mathf.Clamp(pos.y, minY, maxY);
             mapContent.anchoredPosition = pos;
-
-            Debug.Log($"[SCROLL] move={move:F1}, posY={pos.y:F1} (min:{minY}, max:{maxY})");
         }
     }
 }
