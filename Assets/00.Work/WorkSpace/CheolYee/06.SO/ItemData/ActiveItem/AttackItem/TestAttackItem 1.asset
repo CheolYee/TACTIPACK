@@ -17,8 +17,9 @@ MonoBehaviour:
   itemClass: 0
   icon: {fileID: 7243337202485442896, guid: 98d773084ad7b614b9a09ae164029883, type: 3}
   description: "\uC804\uBC29\uC758 \uB2E8\uC77C \uC801\uC744 \uACF5\uACA9\uD569\uB2C8\uB2E4"
+  price: 0
+  isAllowedBinding: 1
   shape: {x: 0, y: 0}
-  rotatable: 0
   shapeOffsets:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
@@ -35,7 +36,7 @@ MonoBehaviour:
   cooldownTurns: 3
   skillPrefab: {fileID: 5558115182442371640, guid: c6763c7f04cf1344da27d24b104d4b49, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 895f58b9a9f8b4842b96e1337fe44c7c, type: 2}
-  <Index>k__BackingField: 0
+  <TargetIndex>k__BackingField: 0
   <SkillDelay>k__BackingField: 2
   <TargetingMode>k__BackingField: 0
   <DefaultStance>k__BackingField: 1

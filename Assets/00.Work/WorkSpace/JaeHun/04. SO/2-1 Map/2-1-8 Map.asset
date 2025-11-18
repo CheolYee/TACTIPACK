@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
+  m_Name: 2-1-8 Map
+  m_EditorClassIdentifier: 
+  mapName: RestRoom
+  nextMap:
+  - {fileID: 11400000, guid: 111c5ff4c583b734cbc70b0f496364c5, type: 2}
+  - {fileID: 11400000, guid: 9fb32a23bc425da4cbaf911d75202d09, type: 2}
+  isLook: 1
+  isRandom: 0
+  cameraPosition: {x: -31.55, y: 48.69}

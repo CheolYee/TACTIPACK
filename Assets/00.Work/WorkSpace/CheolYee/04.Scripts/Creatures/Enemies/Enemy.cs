@@ -4,6 +4,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
@@ -19,10 +20,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         [SerializeField] private StateListSo enemyStateList;
         
         [Header("Skill")]
-        [SerializeField] private AttackItemSo defaultSkill; //에너미가 사용할 고유 스킬 한종
-        
-        public AgentState CurrentState => _stateMachine.CurrentState;
-        public AttackItemSo CurrentSkill => defaultSkill;
+        [SerializeField] private AttackItemSo currentSkill; 
         
         private AgentStateMachine _stateMachine;
         
@@ -30,7 +28,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         {
             base.AfterInitializeComponent();
             _stateMachine = new AgentStateMachine(this, enemyStateList.states);
-            
+        }
+        
+        public void SetupEnemy(EnemyDefaultData data)
+        {
+            EnemyData = data;
             EnemyInit();
         }
 
@@ -38,7 +40,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         {
             Debug.Assert(EnemyData != null, $"캐릭터 데이터가 없습니다! {name}");
             
+            Renderer.InitRenderer(EnemyData.AnimatorController, EnemyData.CharacterOffset);
             Health.InitHealth(EnemyData.MaxHp);
+            Health.HealthBarInstance.SetName(EnemyData.EnemyName);
+            
+            BattleSkillManager.Instance.RegisterEnemy(Health);
         }
         
         private void Start()
@@ -55,25 +61,42 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         {
             _stateMachine.ChangeState((int)newState);
         }
+        
+        protected override void HandleAgentDeath()
+        {
+            if (IsDead) return;
+            IsDead = true;
+            
+            onAgentDeath?.Invoke();
+
+            if (BattleSkillManager.Instance != null)
+            {
+                BattleSkillManager.Instance.Unregister(Health);
+            }
+            
+            ChangeState(EnemyStates.DEATH);
+        }
+
 
         public void Attack(AttackItemSo item)
         {
-            ActionData.CurrentAttackItem = item;
+            int randomAttack = Random.Range(0, EnemyData.Attacks.Count);
+            actionData.CurrentAttackItem = EnemyData.Attacks[randomAttack];
+            currentSkill = EnemyData.Attacks[randomAttack];
             
             ChangeState(EnemyStates.ATTACK);
         }
         
         public void StartTurn()
         {
-            if (defaultSkill == null)
+            if (currentSkill == null)
             {
                 Debug.LogWarning($"{name} : defaultSkill 이 비어있어서 턴을 바로 종료합니다.");
-                // 아무것도 안 하고 턴만 넘기고 싶다면 SkillFinishedEvent를 바로 쏴도 됨
                 Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(this, null));
                 return;
             }
 
-            Attack(defaultSkill);
+            Attack(currentSkill);
         }
     }
 }

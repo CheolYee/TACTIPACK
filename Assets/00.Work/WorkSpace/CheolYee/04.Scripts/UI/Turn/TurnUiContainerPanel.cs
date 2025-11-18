@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.Managers;
+using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
@@ -14,7 +15,7 @@ using UnityEngine.UI;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
 {
-    public class TurnUiContainerPanel : MonoBehaviour
+    public class TurnUiContainerPanel : MonoSingleton<TurnUiContainerPanel>
     {
         [Header("References")] 
         [SerializeField] private SkillBindingController skillBindingController;
@@ -22,12 +23,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private TurnSlotUi slotPrefab; //실제 드래그되는 슬롯
         [SerializeField] private Canvas canvas;
         [SerializeField] private VerticalLayoutGroup layoutGroup;
-        
-        [Header("Limit")]
-        [SerializeField] private int maxPlayers = 3;
-        
-        [Header("Enemies")]
-        [SerializeField] private List<Enemy> enemies = new();
         
         public VerticalLayoutGroup LayoutGroup => layoutGroup;
         public RectTransform Content => content;
@@ -48,22 +43,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             Bus<SkillFinishedEvent>.OnEvent -= OnSkillFinished;
         }
 
-        private void Awake()
-        {
-            Build();
-        }
-
         private void Build()
         {
             if (slotPrefab == null || content == null) return;
 
-            List<Player> players = PartyManager.Instance.Players;
+            List<Player> players = BattleSkillManager.Instance.GetPlayers();
             if (players == null || players.Count == 0) return;
             
-            int count = Math.Min(maxPlayers, players.Count);
 
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < players.Count; i++)
             {
                 Player p = players[i];
                 TurnSlotUi slot = Instantiate(slotPrefab, content);
@@ -79,6 +67,55 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 }
                 
                 _slots.Add(slot);
+            }
+        }
+        
+        //슬롯 재빌드
+        public void RebuildFromBattleManager()
+        {
+            Build();
+        }
+        
+        //슬롯 추가
+        public void AddPlayerSlot(Player player)
+        {
+            if (player == null) return;
+            if (slotPrefab == null || content == null) return;
+
+            //이미 슬롯이 있으면 중복으로 추가하지 않음
+            if (_slots.Exists(s => s.BoundPlayer == player))
+                return;
+
+            TurnSlotUi slot = Instantiate(slotPrefab, content);
+            slot.name = $"[Turn UI Slot] : {player.CharacterData.name}";
+                
+            slot.Initialize(this, canvas);
+            slot.BindPlayer(player);
+                
+            var skillSlot = slot.GetSkillSlot();
+            if (skillSlot != null)
+            {
+                skillBindingController.RegisterSkillSlot(skillSlot);
+            }
+                
+            _slots.Add(slot);
+        }
+        
+        //플레이어 슬롯 지우기
+        public void RemovePlayerSlot(Player player)
+        {
+            if (player == null) return;
+
+            TurnSlotUi slot = _slots.Find(s => s != null && s.BoundPlayer == player);
+            if (slot == null) return;
+
+            _slots.Remove(slot);
+            Destroy(slot.gameObject);
+
+            // 형제 인덱스 정리(선택 사항)
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                _slots[i].transform.SetSiblingIndex(i);
             }
         }
 
@@ -138,11 +175,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         {
             Debug.Log("===== [TurnUiContainerPanel] 턴 실행 시작 =====");
 
-            // 1) 플레이어 턴
+            //플레이어 턴
             yield return RunPlayerTurnSequence();
 
-            // 2) 에너미 턴
+            //에너미 턴
             yield return RunEnemyTurnSequence();
+            
+            HudManager.Instance.ShowAll();
 
             Debug.Log("===== [TurnUiContainerPanel] 라운드 종료 =====");
         }
@@ -165,6 +204,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 Player player = slot.BoundPlayer;
                 if (player == null) continue; //플레이어가 없어도 넘기기
+
+                if (player.IsDead || player.Health == null || player.Health.CurrentHealth <= 0f)
+                {
+                    Debug.LogWarning("사망 상태의 플레이어는 턴을 스킵힙니다.");
+                    continue;
+                }
+                
                 
                 Debug.Log($"[TurnUiContainerPanel] 턴 {i + 1} : {player.name} 스킬 실행");
                 
@@ -179,10 +225,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 yield return new WaitUntil(() => !_waitingForSkill);
             }
             
+            yield return new WaitForSeconds(0.5f);
+            SkillCameraManager.Instance.Reset();
+            yield return new WaitForSeconds(0.5f);
             _waitingAgent = null;
         }
         private IEnumerator RunEnemyTurnSequence()
         {
+            List<AgentHealth> enemies = BattleSkillManager.Instance.GetEnemyTargets();
             Debug.Log("[TurnUiContainerPanel] 에너미 턴에 진입했씁니다.");
             if (enemies == null || enemies.Count == 0)
             {
@@ -190,17 +240,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 yield break;
             }
 
-            // 에너미들이 공격할 대상(플레이어들)을 한 번 세팅해둔다.
-            /*var playerHealths = PartyManager.Instance.Players
-                .Where(p => p != null && p.Health != null) // Health 프로퍼티 있다고 가정
-                .Select(p => p.Health)
-                .ToList();
-
-            BattleSkillManager.Instance.SetEnemyTargets(playerHealths);*/
-
             for (int i = 0; i < enemies.Count; i++)
             {
-                Enemy enemy = enemies[i];
+                Enemy enemy = enemies[i].Owner as Enemy;
                 if (enemy == null || enemy.Health == null)
                     continue;
 
@@ -218,6 +260,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 yield return new WaitUntil(() => !_waitingForSkill);
             }
 
+            yield return new WaitForSeconds(0.5f);
+            SkillCameraManager.Instance.Reset();
+            yield return new WaitForSeconds(0.5f);
             _waitingAgent = null;
             Debug.Log("[TurnUiContainerPanel] 에너미 턴 실행 끝");
         }

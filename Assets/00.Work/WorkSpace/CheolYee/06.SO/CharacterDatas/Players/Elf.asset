@@ -15,6 +15,8 @@ MonoBehaviour:
   <CharacterName>k__BackingField: "\uC5D8\uD504"
   <CharacterId>k__BackingField: 0
   <CharacterClass>k__BackingField: 3
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 2fd0a2b84f4df6743ab5b47d6d73be48, type: 2}
+  <CharacterOffset>k__BackingField: {x: 0, y: -0.1}
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 5c4290da5a7b3414aa65a80c48d14745, type: 3}
   <MaxHp>k__BackingField: 100
   <DefaultDamage>k__BackingField: 20
