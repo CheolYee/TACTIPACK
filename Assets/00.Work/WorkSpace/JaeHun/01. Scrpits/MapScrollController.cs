@@ -20,7 +20,7 @@ public class MapScrollController : MonoBehaviour
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
         if (Mathf.Abs(scrollInput) > 0.001f)
-            move += scrollInput * scrollSpeed;
+            move -= scrollInput * scrollSpeed;
 
         if (Input.GetKey(KeyCode.UpArrow))
             move -= keyScrollSpeed * Time.deltaTime;   // ↑ → 위쪽 보기

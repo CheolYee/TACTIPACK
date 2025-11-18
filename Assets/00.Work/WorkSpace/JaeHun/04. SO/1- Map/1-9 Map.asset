@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
+  m_Name: 1-9 Map
+  m_EditorClassIdentifier: 
+  mapName: BossRoom
+  nextMap:
+  - {fileID: 11400000, guid: a414e1c4a911e79488ab41c01e386383, type: 2}
+  - {fileID: 11400000, guid: f6404cf3997a03a48a9afc8b793c0429, type: 2}
+  - {fileID: 11400000, guid: ec24df8ff43274e46a45726c156eb46d, type: 2}
+  - {fileID: 11400000, guid: 3f2955797e23b9048ae11fdd4f365238, type: 2}
+  - {fileID: 11400000, guid: de888debd75e712419bc1d3c076da50f, type: 2}
+  isLook: 1
+  isRandom: 0
+  cameraPosition: {x: 28.97, y: 48.41}
