@@ -34,8 +34,6 @@ AnimationClip:
       value: {fileID: 7009914241796286228, guid: f4bb5ef58018124498625267abbb6aec, type: 3}
     - time: 0.75
       value: {fileID: 608017849539727553, guid: f4bb5ef58018124498625267abbb6aec, type: 3}
-    - time: 0.875
-      value: {fileID: 0}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -65,13 +63,12 @@ AnimationClip:
     - {fileID: -206606391882205479, guid: f4bb5ef58018124498625267abbb6aec, type: 3}
     - {fileID: 7009914241796286228, guid: f4bb5ef58018124498625267abbb6aec, type: 3}
     - {fileID: 608017849539727553, guid: f4bb5ef58018124498625267abbb6aec, type: 3}
-    - {fileID: 0}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1
+    m_StopTime: 0.875
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -90,4 +87,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.875
+    functionName: AnimationEndTrigger
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

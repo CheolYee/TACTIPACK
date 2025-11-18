@@ -2,6 +2,8 @@
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
@@ -20,7 +22,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         {
             base.AfterInitializeComponent();
             _stateMachine = new AgentStateMachine(this, playerStateList.states);
-            
+        }
+        public void SetupCharacter(PlayerDefaultData data)
+        {
+            CharacterData = data;
             CharacterInit();
         }
 
@@ -28,7 +33,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         {
             Debug.Assert(CharacterData != null, $"캐릭터 데이터가 없습니다! {name}");
             
+            Renderer.InitRenderer(CharacterData.AnimatorController, CharacterData.CharacterOffset);
             Health.InitHealth(CharacterData.MaxHp);
+            Health.HealthBarInstance.SetName(CharacterData.CharacterName);
+            
+            
+            BattleSkillManager.Instance.RegisterPlayer(Health);
         }
 
         private void Start()
@@ -46,11 +56,33 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
             _stateMachine.ChangeState((int)newState);
         }
 
+        protected override void HandleAgentDeath()
+        {
+            if (IsDead) return;
+            IsDead = true;
+            
+            onAgentDeath?.Invoke();
+
+            if (BattleSkillManager.Instance != null)
+            {
+                BattleSkillManager.Instance.Unregister(Health);
+            }
+            
+            if (TurnUiContainerPanel.Instance != null)
+            {
+                TurnUiContainerPanel.Instance.RemovePlayerSlot(this);
+            }
+
+            
+            ChangeState(PlayerStates.DEATH);
+        }
+
         public void Attack(AttackItemSo item)
         {
-            ActionData.CurrentAttackItem = item;
+            actionData.CurrentAttackItem = item;
             
             ChangeState(PlayerStates.ATTACK);
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Resource.Scripts.Utils;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
@@ -68,9 +69,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
         private IEnumerator StateFlow()
         {
             //기본 데이터 가져오기
-            AttackItemSo item = Agent.ActionData.CurrentAttackItem;
+            AttackItemSo item = Agent.actionData.CurrentAttackItem;
             SkillContent ctx = _skillManager.BuildContext(Agent, item, item.DefaultStance);
 
+            if (ctx.Targets.Count <= 0)
+            {
+                //타겟이 없으면 그냥 돌아와잇
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(Agent, item));
+                Player.ChangeState(PlayerStates.IDLE);
+                yield break;
+            }
+            
             //리플렉션 빌드
             StanceInvoker.BuildMap(this);
 
@@ -94,7 +103,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             //실제 공격 실행기로 실행
             yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx.Stance));
             if (_isExiting) yield break;
-
+            
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
             //만약 캐릭터가 움직이는 상태였다면
             if (ctx.Stance == AttackStance.StepForward || ctx.Stance == AttackStance.DashToTarget)
@@ -106,13 +115,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 if (_isExiting) yield break;
             }
 
+            HudManager.Instance.ShowAll();
             yield return new WaitForSeconds(0.5f);
-            
-            SkillCameraManager.Instance.Reset();
             
             //턴메니저에 보낼 스킬 종료 이벤트
             Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(Agent, item));
             //공격이 모두 끝날 시 IDle로 전환
+            
             Player.ChangeState(PlayerStates.IDLE);
         }
 
@@ -137,8 +146,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             // 트윈 정리
             _moveTween?.Kill();
             _moveTween = null;
-            
-            SkillCameraManager.Instance.Reset();
 
             base.Exit();
         }
@@ -156,8 +163,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
         [StanceHandler(AttackStance.Stationary)]
         private Tween HandleStationary(SkillContent ctx)
         {
+            HudManager.Instance.ShowOnly(ctx.User.Health.HealthBarInstance);
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
-            SkillCameraManager.Instance.ZoomTo(6f, 0.3f);
+            SkillCameraManager.Instance.ZoomTo(7f, 0.3f);
             return null;
         }
         
@@ -175,13 +183,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             var dir  = (ctx.CastPoint - from).normalized;
             var step = from + dir * ctx.ApproachOffset;
 
-            
             //필요시 약간의 준비 지연을 트윈으로 처리
             var seq = DOTween.Sequence();
             seq.AppendInterval(0.5f);
             seq.Append(Agent.transform.DOMove(step, 0.5f).SetEase(Ease.OutSine));
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
-            SkillCameraManager.Instance.ZoomTo(6f, 0.3f);
+            SkillCameraManager.Instance.ZoomTo(7f, 0.3f);
             return seq;
         }
 
@@ -189,7 +196,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
         private Tween HandleDashToTarget(SkillContent ctx)
         {
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
-            SkillCameraManager.Instance.ZoomTo(6f, 1f);
+            SkillCameraManager.Instance.ZoomTo(7f, 1f);
             
             return Agent.transform.DOMove(ctx.CastPoint, 0.25f).SetEase(Ease.OutSine);
         }

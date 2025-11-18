@@ -25,6 +25,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             
             if (LookToTheLeft) Flip();
         }
+        public void InitRenderer(RuntimeAnimatorController characterDataAnimatorController, Vector2 characterOffset)
+        {
+            _animator.runtimeAnimatorController = characterDataAnimatorController;
+            transform.position = (Vector2)_agent.transform.position + characterOffset;
+        }
 
         //파라미터 오버로딩
         public void SetParam(AnimParamSo param, bool value) => _animator.SetBool(param.HashValue, value);
@@ -36,7 +41,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         {
             FacingDirection *= -1;
             float yRotation = FacingDirection > 0 ? 0 : 180;
-            _agent.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+            transform.rotation = Quaternion.Euler(0, yRotation, 0);
         }
         
         private void AnimationFireTrigger()
@@ -46,5 +51,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         }
 
         private void AnimationEndTrigger() => OnAnimationEnd?.Invoke(); //애니메이션이 끝났음을 알려주는 메서드 (애니메이션 트리거에서 실행)
+
     }
 }

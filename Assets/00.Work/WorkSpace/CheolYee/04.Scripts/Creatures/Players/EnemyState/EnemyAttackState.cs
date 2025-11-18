@@ -68,9 +68,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
         private IEnumerator StateFlow()
         {
             //기본 데이터 가져오기
-            AttackItemSo item = Agent.ActionData.CurrentAttackItem;
+            AttackItemSo item = Agent.actionData.CurrentAttackItem;
             SkillContent ctx = _skillManager.BuildContext(Agent, item, item.DefaultStance);
 
+            if (ctx.Targets.Count <= 0)
+            {
+                //타겟이 없으면 그냥 돌아와잇
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(Agent, item));
+                Enemy.ChangeState(EnemyStates.IDLE);
+                yield break;
+            }
+            
             //리플렉션 빌드
             StanceInvoker.BuildMap(this);
 
@@ -108,8 +116,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
 
             yield return new WaitForSeconds(0.5f);
             
-            SkillCameraManager.Instance.Reset();
-            
             //턴메니저에 보낼 스킬 종료 이벤트
             Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(Agent, item));
             //공격이 모두 끝날 시 IDle로 전환
@@ -137,8 +143,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
             // 트윈 정리
             _moveTween?.Kill();
             _moveTween = null;
-            
-            SkillCameraManager.Instance.Reset();
 
             base.Exit();
         }
@@ -157,7 +161,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
         private Tween HandleStationary(SkillContent ctx)
         {
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
-            SkillCameraManager.Instance.ZoomTo(6f, 0.3f);
+            SkillCameraManager.Instance.ZoomTo(7f, 0.3f);
             return null;
         }
         
@@ -180,7 +184,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
             seq.AppendInterval(0.5f);
             seq.Append(Agent.transform.DOMove(step, 0.5f).SetEase(Ease.OutSine));
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
-            SkillCameraManager.Instance.ZoomTo(6f, 0.3f);
+            SkillCameraManager.Instance.ZoomTo(7f, 0.3f);
             return seq;
         }
 
@@ -188,7 +192,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
         private Tween HandleDashToTarget(SkillContent ctx)
         {
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
-            SkillCameraManager.Instance.ZoomTo(6f, 1f);
+            SkillCameraManager.Instance.ZoomTo(7f, 1f);
 
             Vector3 dest = ctx.CastPoint;
             float dirX = Mathf.Sign(dest.x - Agent.transform.position.x);

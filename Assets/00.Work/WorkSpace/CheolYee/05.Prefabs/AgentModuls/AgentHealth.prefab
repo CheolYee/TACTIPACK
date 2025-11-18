@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MaxHealth>k__BackingField: 0
+  healthBarPrefab: {fileID: 6389003336588100694, guid: 4720712f158b7204eb278cfad885df86, type: 3}
 --- !u!1 &8077041232455616899
 GameObject:
   m_ObjectHideFlags: 0

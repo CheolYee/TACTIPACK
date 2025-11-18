@@ -18,6 +18,8 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: d3252aab4feec0745892c0f472b5d52c, type: 3}
   description: "\uC790\uC2E0\uC5D0\uAC8C 1\uD68C\uC6A9 \uBC29\uC5B4\uB9C9\uC744 \uB9CC\uB4E4\uC5B4
     1\uD134\uAC04 \uBAB8\uC744 \uBCF4\uD638\uD569\uB2C8\uB2E4."
+  price: 0
+  isAllowedBinding: 1
   shape: {x: 2, y: 2}
   shapeOffsets: []
   pivot: {x: 0, y: 0}

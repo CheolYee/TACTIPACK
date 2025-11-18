@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using _00.Work.Resource.Scripts.Utils;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
@@ -15,6 +14,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         
         [Header("Shop Settings")]
         public int price; //아이템 가격
+
+        [Header("BindingSetting")]
+        public bool isAllowedBinding;
 
         [Header("Default Shape Settings")]
         public Vector2Int shape = new(1, 1); //기본 사각형 크기
@@ -76,15 +78,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         
         [Tooltip("스킬 프리팹 (프로젝타일, 이펙트 등)")]
         public GameObject skillPrefab;
-    }
+    }   
 
     [CreateAssetMenu(fileName = "newPassiveItem", menuName = "SO/Item/PassiveItem", order = 1)]
     public abstract class PassiveItemDataSo : ItemDataSo
     {
         [Header("Passive Item Settings")]
-        [Tooltip("스탯 보정 (예: 체력 +10, 공격력 +2)")]
-        public int bonusHealth;
-        public int bonusAttack;
+        [Tooltip("스탯 보정 (%)")]
+        public int cooldownTurns;
+        public int healthMulti;
+        public int attackMulti;
+        public float critMulti;
     }
 
     public enum ItemClass
