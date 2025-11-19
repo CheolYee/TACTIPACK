@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/00.Work/WorkSpace/Soso7194/00. Scenes/SDW.Title.unity
+    guid: 745ec55c4278bbc41b769e2badf0e26c
   - enabled: 1
     path: Assets/00.Work/WorkSpace/Hyeonjin0209/00. Scenes/HJ.Main.unity
     guid: e7ce3c78fb889d8458fbc5c191814d74
