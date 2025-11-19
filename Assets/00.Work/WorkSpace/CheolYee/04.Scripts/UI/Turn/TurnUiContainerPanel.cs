@@ -265,6 +265,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             yield return new WaitForSeconds(0.5f);
             _waitingAgent = null;
             Debug.Log("[TurnUiContainerPanel] 에너미 턴 실행 끝");
+            
+            Bus<BattleRoundAdvancedEvent>.Raise(new BattleRoundAdvancedEvent());
         }
 
         //스킬 종료 이벤트 버스가 오면 여기서 받기

@@ -9,6 +9,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using DG.Tweening;
@@ -103,6 +104,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             //실제 공격 실행기로 실행
             yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx.Stance));
             if (_isExiting) yield break;
+            
+            var inst = Agent.actionData.CurrentItemInst;
+            if (inst != null && item != null && item.cooldownTurns > 0)
+            {
+                inst.StartCooldown(item.cooldownTurns);
+                ItemCooldownManager.Instance.Register(inst);
+            }
             
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
             //만약 캐릭터가 움직이는 상태였다면

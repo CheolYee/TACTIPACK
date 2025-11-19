@@ -2,6 +2,7 @@
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
@@ -78,7 +79,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         }
 
 
-        public void Attack(AttackItemSo item)
+        public void Attack(AttackItemSo ite, ItemInstance inst = null)
         {
             ChangeState(EnemyStates.ATTACK);
         }

@@ -204,6 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 68620924}
   - component: {fileID: 68620925}
+  - component: {fileID: 68620926}
   m_Layer: 5
   m_Name: Error Text Panel
   m_TagString: Untagged
@@ -243,6 +244,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &68620926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68620923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7867e63679614d99aa3b63d13a255128, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  messageText: {fileID: 1078325881}
+  canvasGroup: {fileID: 68620925}
+  fadeDuration: 0.2
+  displayDuration: 1
 --- !u!1 &155625030
 GameObject:
   m_ObjectHideFlags: 0
@@ -1872,8 +1889,8 @@ MonoBehaviour:
   gridRect: {fileID: 944274962}
   cellSizePx: 64
   cellPaddingPx: {x: 0, y: 0}
-  pivotAsCell: {x: 0, y: 0}
-  debugScreenToCell: 0
+  cooldownTextPrefab: {fileID: 3984317000056143505, guid: 960fe4674cbb2fa4eabaf2fa6c5b9e7e, type: 3}
+  cooldownMargin: {x: 0, y: 0}
 --- !u!222 &944274967
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2209,6 +2226,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 968150523}
   m_CullTransparentMesh: 1
+--- !u!1 &1067094843
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1067094845}
+  - component: {fileID: 1067094844}
+  m_Layer: 0
+  m_Name: ItemCooldownManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1067094844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067094843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52c633c44174e04a87bb38dba70387f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1067094845
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067094843}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1078325879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2268,8 +2329,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 305c3c0da48b5df478db98c6eb22232e, type: 2}
-  m_sharedMaterial: {fileID: -4769224023185734576, guid: 305c3c0da48b5df478db98c6eb22232e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 313e77a672558bf42ae7daa94d9ec125, type: 2}
+  m_sharedMaterial: {fileID: -7929094039686868698, guid: 313e77a672558bf42ae7daa94d9ec125, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2293,8 +2354,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 70
+  m_fontSizeBase: 70
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5430,10 +5491,6 @@ MonoBehaviour:
   itemDatabase: {fileID: 944274963}
   bindingOverlay: {fileID: 1490504359}
   cancelBindingButton: {fileID: 1614322049}
-  errorCanvasGroup: {fileID: 68620925}
-  errorText: {fileID: 1078325881}
-  errorFadeDuration: 0.2
-  errorDisplayDuration: 1
   turnUiRoot: {fileID: 1887716613}
   bindingHighlightOrder: 1200
 --- !u!1 &2089925525
@@ -5906,5 +5963,6 @@ SceneRoots:
   - {fileID: 1830927055}
   - {fileID: 1224587800}
   - {fileID: 1945023158}
+  - {fileID: 1067094845}
   - {fileID: 658149379}
   - {fileID: 928502460}

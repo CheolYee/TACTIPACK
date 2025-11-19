@@ -1,10 +1,9 @@
-﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
+﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
-using DG.Tweening;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +16,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         [SerializeField] private ItemDatabase itemDatabase; //아이템 DB
         [SerializeField] private GameObject bindingOverlay; //검은 배경
         [SerializeField] private Button cancelBindingButton; //바인드 해제버튼
-        [SerializeField] private CanvasGroup errorCanvasGroup; //에러 표시용
-        
-        [Header("Error Visual")]
-        [SerializeField] private TextMeshProUGUI errorText;
-        [SerializeField] private float errorFadeDuration = 0.2f;
-        [SerializeField] private float errorDisplayDuration = 1f;
         
         [Header("Turn UI Roots")]
         [SerializeField] private RectTransform turnUiRoot;
@@ -42,19 +35,28 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             if (cancelBindingButton != null)
                 cancelBindingButton.onClick.AddListener(CancelBinding);
 
-            if (gridUi != null)
-                gridUi.OnItemReturnedToSideInventory += HandleItemReturnedToSideInventory;
+            Bus<OnItemReturnedToSideInventory>.OnEvent += HandleItemReturnedToSideInventory;
+            Bus<ItemCooldownStartedEvent>.OnEvent += OnItemCooldownStarted;
+        }
+        private void OnDestroy()
+        {
+            //이벤트 해제
+            if (cancelBindingButton != null)
+                cancelBindingButton.onClick.RemoveListener(CancelBinding);
+            
+            Bus<OnItemReturnedToSideInventory>.OnEvent -= HandleItemReturnedToSideInventory;
+            Bus<ItemCooldownStartedEvent>.OnEvent -= OnItemCooldownStarted;
         }
 
-        private void HandleItemReturnedToSideInventory(ItemInstance item)
+        private void HandleItemReturnedToSideInventory(OnItemReturnedToSideInventory itemData)
         {
-            if (item == null || turnUiRoot == null) return;
+            if (itemData.Inst == null || turnUiRoot == null) return;
             
             TurnSkillSlotUi[] slots = turnUiRoot.GetComponentsInChildren<TurnSkillSlotUi>(true);
 
             foreach (TurnSkillSlotUi slot in slots)
             {
-                if (slot.BoundItemInstance == item)
+                if (slot.BoundItemInstance == itemData.Inst)
                 {
                     //이 아이템을 바인딩하던 슬롯의 바인딩 해제
                     slot.ClearBinding();
@@ -68,21 +70,34 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             }
         }
 
-        private void OnDestroy()
-        {
-            //이벤트 해제
-            if (cancelBindingButton != null)
-                cancelBindingButton.onClick.RemoveListener(CancelBinding);
-            
-            if (gridUi != null)
-                gridUi.OnItemReturnedToSideInventory -= HandleItemReturnedToSideInventory;
-        }
 
         public void RegisterSkillSlot(TurnSkillSlotUi slot)
         {
             if (slot == null) return;
             slot.OnRequestBind += BeginBindingFromSlot;
         }
+        private void OnItemCooldownStarted(ItemCooldownStartedEvent evt)
+        {
+            if (turnUiRoot == null || evt.Instance == null)
+                return;
+
+            // 쿨타임이 0이거나 음수면 그냥 무시
+            if (evt.CooldownTurns <= 0)
+                return;
+
+            // 모든 턴 스킬 슬롯을 돌면서, 이 인스턴스를 바인딩하고 있는 슬롯을 찾는다.
+            var slots = turnUiRoot.GetComponentsInChildren<TurnSkillSlotUi>(true);
+            foreach (var slot in slots)
+            {
+                if (slot == null) continue;
+
+                if (slot.BoundItemInstance == evt.Instance)
+                {
+                    slot.ClearBinding();
+                }
+            }
+        }
+        
 
         //슬롯에서 바인딩 버튼이 눌렸을 때 호출
         private void BeginBindingFromSlot(TurnSkillSlotUi slot)
@@ -114,7 +129,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
                 gridUi.EnterBindingMode(OnGridItemSelectedForBinding);
             }
             
-            HideErrorImmediate();
         }
 
         private void SetTurnSlotRayCast(bool enable)
@@ -183,7 +197,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             }
 
             //쿨타임 검사
-            if (IsOnCooldown(_currentPlayer, attackItem))
+            if (IsOnCooldown(inst))
             {
                 ShowError("이 스킬은 현재 쿨타임입니다.");
                 return;
@@ -195,7 +209,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             //바인딩 완료 후 모드 종료
             CancelBinding();
         }
-
+        
+        private void ShowError(string message)
+        {
+            // 공용 인벤 메세지 이벤트로 던진다
+            Bus<MessageEvent>.Raise(new MessageEvent(message));
+        }
         
         //선택한 아이템과 플레이어의 직업이 맞거나 공용인지 확인
         private bool IsClassCompatible(Player player, ItemDataSo item)
@@ -213,41 +232,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         }
         
         //아이템이 쿨타임인가
-        private bool IsOnCooldown(Player owner, AttackItemSo skill)
+        private bool IsOnCooldown(ItemInstance inst)
         {
-            //쿨타임 아직없음
-            return false;
-        }
-
-        private void ShowError(string message)
-        {
-            if (errorText == null)
-            {
-                Debug.LogError(message);
-                return;
-            }
-            
-            errorText.text = message;
-
-            if (errorCanvasGroup != null)
-            {
-                errorCanvasGroup.gameObject.SetActive(true);
-                errorCanvasGroup.DOKill();
-                errorCanvasGroup.alpha = 0;
-                
-                Sequence sequence = DOTween.Sequence();
-                sequence.Append(errorCanvasGroup.DOFade(1f, errorFadeDuration));
-                sequence.AppendInterval(errorDisplayDuration);
-                sequence.Append(errorCanvasGroup.DOFade(0f, errorFadeDuration));
-                sequence.OnComplete(() =>
-                {
-                    errorCanvasGroup.gameObject.SetActive(false);
-                });
-            }
-            else
-            {
-                errorText.gameObject.SetActive(true);
-            }
+            if (inst == null) return false;
+            return inst.IsOnCooldown;
         }
 
         //바인딩을 해제한다
@@ -270,21 +258,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             if (gridUi != null) gridUi.ExitBindingMode();
             
             SetOverlayActive(false);
-            HideErrorImmediate(); //즉시 에러메시지들 숨기기
         }
-
-        
-        //즉시 에러메시지들을 숨기기
-        private void HideErrorImmediate()
-        {
-            if (errorCanvasGroup != null)
-            {
-                errorCanvasGroup.DOKill();
-                errorCanvasGroup.alpha = 0;
-                errorCanvasGroup.gameObject.SetActive(false);
-            }
-        }
-
 
         //눈에 보이는 비주얼 껐다켰다
         private void SetOverlayActive(bool active)
@@ -294,8 +268,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             
             if (cancelBindingButton != null)
                 cancelBindingButton.gameObject.SetActive(active);
-            
-            
         }
         
         //다른곳에서 아이템 인스턴스를 바인딩하고 있는지 확인

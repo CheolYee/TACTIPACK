@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using _00.Work.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem.SIdeInventoryItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
 {
@@ -31,8 +31,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         [SerializeField] private SideInventoryManager sideManager;
         [SerializeField] private Image dragIconPrefab;
         
-        public event Action<ItemInstance> OnItemReturnedToSideInventory;
-        
         private Image _dragIcon;
         
         private GridItemGhostUI _ghost; //런타임 인스턴스
@@ -44,7 +42,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         private ItemInstance _dragItem; // 드래그 중인 아이템 인스턴스
         private ItemDataSo _dragData; // 드래그하는 아이템의 SO
         private int _dragRotation; //드래그 중 회전(0/90/180/270)
-        private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); //유령 위치 캐시
+        private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); // 유령용
+        private Vector2Int _originCell = new(int.MinValue, int.MinValue); // 처음 집었던 셀
+        
         
         //바인딩 모드
         private bool _bindingMode;
@@ -100,20 +100,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             }
         }
 
-        [ContextMenu("Pick RandomItem")] //랜덤 아이템을 잡아와요
-        public void PickRandomItem()
-        {
-            if (database.allItems == null || database.allItems.ItemDatabase.Count == 0) return; //데이터 없으면 리턴
-            ItemDataSo so = database.allItems.ItemDatabase[Random.Range(0, database.allItems.ItemDatabase.Count)]; //랜덤 so 하나 고름
-            
-            StartDrag(new ItemInstance(so.itemId), so, 0, DragOrigin.Grid, null);
-        }
-
-        public void PickItem(ItemDataSo so)
-        {
-            StartDrag(new ItemInstance(so.itemId), so, 0, DragOrigin.Grid, null);
-        }
-
         private void StartDrag(ItemInstance itemInstance, ItemDataSo data, int rotation
             , DragOrigin dragOrigin, SideInventoryManager sideManagerOrNull)
         {
@@ -129,6 +115,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             
             if (hover != null) hover.Hide(); //드래그 중일 때는 호버 없애기
 
+            if (_dragOrigin == DragOrigin.Grid && _dragItem != null && grid != null)
+            {
+                grid.SetCooldownVisualVisible(_dragItem, false);
+            }
+            
             if (_dragIcon != null)
             {
                 _dragIcon.sprite = _dragData != null ? _dragData.icon : null;
@@ -141,11 +132,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         {
             // 새 인스턴스 생성(설치 성공 시 그리드가 소유)
             var inst = new ItemInstance(so.itemId);
+            _originCell =  new Vector2Int(int.MinValue, int.MinValue);
             StartDrag(inst, so, 0, DragOrigin.Side, sideInventoryManager);
-
-            //사이드에서 꺼낼 때, 시작하자마자 사이드에서 1개 차감은
-            //SideItemSlotView.BeginDragFromSide에서 이미 수행했음.
-            //여기서는 "환불 대기"만 켜둔다.
             _pendingRefund = true;
         }
 
@@ -211,6 +199,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             {
                 _dragRotation = (_dragRotation + 90) % 360; //90도 회전
                 _lastAnchor = new Vector2Int(int.MinValue, int.MinValue); //유령 재배치 유도
+                
+                //쿨타임도 돌게
+                if (_dragOrigin == DragOrigin.Grid && grid != null)
+                {
+                    grid.RotateCooldownVisual(_dragItem, 90f);
+                }
             }
 
 
@@ -231,16 +225,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                         {
                             if (sideManager != null && _dragData != null)
                             {
+                                grid.Remove(_dragItem);
+                                
+                                Bus<OnItemReturnedToSideInventory>.Raise(new OnItemReturnedToSideInventory(_dragItem));
                                 sideManager.AddItem(_dragData);
-                                OnItemReturnedToSideInventory?.Invoke(_dragItem);
                             }
                             StopDrag();
                         }
-                    }
-
-                    if (Input.GetMouseButtonUp(1))
-                    {
-                        StopDrag();
                     }
                     return;
                 }
@@ -251,19 +242,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 if (Input.GetMouseButtonUp(0))
                 {
                     TryPlace(cell, true); //셀 안이라면 설치 시도
-                }
-            
-                if (Input.GetMouseButtonUp(1))
-                {
-                    if (_dragOrigin == DragOrigin.Grid)
-                    {
-                        if (sideManager != null && _dragData != null)
-                        {
-                            sideManager.AddItem(_dragData);
-                            OnItemReturnedToSideInventory?.Invoke(_dragItem);
-                        }
-                    }
-                    StopDrag();
                 }
                 return; //드래그 처리 끝
             }
@@ -280,10 +258,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                     if (placedLayer != null) placedLayer.HideItem(picked);
 
                     //그리드에서 떼기
-                    grid.Remove(picked);
+                    grid.DetachForDrag(picked);
 
                     //슬롯 배경 색 갱신(있다면)
                     if (gridSlots != null) gridSlots.RefreshColors();
+
+                    //처음 잡았던 셀 기억하기
+                    _originCell = cell;
 
                     //드래그 시작(기존 회전 유지)
                     StartDrag(picked, so, picked.rotation, DragOrigin.Grid, null);

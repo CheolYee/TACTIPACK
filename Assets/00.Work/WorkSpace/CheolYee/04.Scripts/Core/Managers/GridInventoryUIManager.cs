@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.Utils;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
+using TMPro;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
@@ -14,15 +17,19 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         public RectTransform gridRect; //백팩 그리드가 표시될 위치
         public float cellSizePx = 64f; //셀 한 칸 크기
         public Vector2 cellPaddingPx = Vector2.zero; //셀 한칸 간격
-        public Vector2Int pivotAsCell; //피벗을 셀 좌표 기준으로 볼 때의 기준(기본 0, 0)
-        public bool debugScreenToCell; //디버그 토글
         
+        [Header("CoolDown Visual")]
+        [SerializeField] private RectTransform cooldownTextPrefab;
+        [SerializeField] private Vector2 cooldownMargin = new(-20, 20);
         
         //각 셀이 어떤 아이템 인스턴스에 의해 사용되었는지 저장(없으면 null이 담김)
         private ItemInstance[,] _cells; //그리드형 인벤토리를 위한 아이템 인스턴스 참조를 위해 2차원 배열 생성
 
         //각 배치된 아이템의 인스턴스 아이디를 사용되어지고 있는 셀 목록(절대 좌표)를 캐싱
         private readonly Dictionary<string, List<Vector2Int>> _occupiedMap = new();
+        
+        //인스턴스별 쿨타임 텍스트
+        private readonly Dictionary<ItemInstance, RectTransform> _cooldownVisuals = new();
         
         //재사용을 위한 임시 버퍼
         private readonly List<Vector2Int> _tmpRotated = new();
@@ -34,12 +41,131 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             if (width < 1) width = 1;
             if (height < 1) height = 1;
             EnsureGrid();
+            
+            Bus<ItemCooldownChangedEvent>.OnEvent += OnItemCooldownChanged;
         }
+        private void OnDestroy()
+        {
+            Bus<ItemCooldownChangedEvent>.OnEvent -= OnItemCooldownChanged;
+            
+            foreach (var kvp in _cooldownVisuals)
+            {
+                if (kvp.Value != null)
+                    Destroy(kvp.Value.gameObject);
+            }
+            _cooldownVisuals.Clear();
+        }
+
 
         private void Start()
         {
             EnsureGrid();
         }
+
+        #region CoolTimes
+        
+        public void RotateCooldownVisual(ItemInstance inst, float deltaAngle)
+        {
+            if (inst == null) return;
+            if (!_cooldownVisuals.TryGetValue(inst, out var visual) || visual == null) return;
+
+            // 부모 이미지 회전 (Z축)
+            Vector3 parentEuler = visual.localEulerAngles;
+            parentEuler.z += deltaAngle;
+            visual.localEulerAngles = parentEuler;
+
+            // 자식 텍스트는 반대로 돌려서 항상 정방향 유지
+            var tmp = visual.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null)
+            {
+                var textRect = tmp.rectTransform;
+                Vector3 childEuler = textRect.localEulerAngles;
+                childEuler.z -= deltaAngle;
+                textRect.localEulerAngles = childEuler;
+            }
+        }
+
+        public void SetCooldownVisualVisible(ItemInstance inst, bool visible)
+        {
+            if (inst == null) return;
+            if (!_cooldownVisuals.TryGetValue(inst, out var visual) || visual == null) return;
+
+            visual.gameObject.SetActive(visible);
+        }
+
+        private Vector2 GetCooldownVisualPosition(Vector2Int cell, int rotation)
+        {
+            // 현재 CellToAnchoredPos는 '셀 중심' 기준 좌표를 반환하고 있음
+            Vector2 center = CellToAnchoredPos(cell);
+            Vector2 baseOffset = new Vector2(-cellSizePx * 0.5f, -cellSizePx * 0.5f) + cooldownMargin;
+            
+            Vector2 rotatedOffset = Util.RotateOffset(baseOffset, rotation);
+
+            //좌측 하단 오프샛 맞추기
+            return center + rotatedOffset;
+        }
+        private void OnItemCooldownChanged(ItemCooldownChangedEvent evt)
+        {
+            ItemInstance inst = evt.Instance;
+            if (inst == null) return;
+
+            //그리드에 이 인스턴스가 깔려 있는지 확인
+            if (!_occupiedMap.TryGetValue(inst.instanceId, out var cells) || cells == null || cells.Count == 0)
+            {
+                //그리드에 없는데 텍스트가 있다면 제거
+                if (_cooldownVisuals.TryGetValue(inst, out var visual) && visual != null)
+                {
+                    Destroy(visual.gameObject);
+                }
+                _cooldownVisuals.Remove(inst);
+                return;
+            }
+
+            //남은 쿨타임이 0 이하라면 텍스트 제거
+            if (evt.RemainingTurns <= 0)
+            {
+                if (_cooldownVisuals.TryGetValue(inst, out var visual) && visual != null)
+                {
+                    Destroy(visual.gameObject);
+                }
+                _cooldownVisuals.Remove(inst);
+                return;
+            }
+
+            if (cooldownTextPrefab == null) return;
+
+            // 아이템이 차지하는 셀들 중 첫 번째 셀 기준으로 텍스트 위치를 잡자
+            Vector2Int anchorCell = cells[0];
+            Vector2 anchoredPos = GetCooldownVisualPosition(anchorCell, inst.rotation);
+
+            if (_cooldownVisuals.TryGetValue(inst, out var existing) && existing != null)
+            {
+                // 위치 갱신
+                existing.anchoredPosition = anchoredPos;
+
+                // 자식 TMP 찾아서 텍스트만 업데이트
+                var tmp = existing.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (tmp != null)
+                {
+                    tmp.text = evt.RemainingTurns.ToString();
+                }
+            }
+            else
+            {
+                // 새 프리팹 생성 (이미지+텍스트)
+                RectTransform newVisual = Instantiate(cooldownTextPrefab, gridRect);
+                newVisual.anchoredPosition = anchoredPos;
+
+                var tmp = newVisual.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (tmp != null)
+                {
+                    tmp.text = evt.RemainingTurns.ToString();
+                }
+
+                _cooldownVisuals[inst] = newVisual;
+            }
+        }
+        #endregion
         
 #if UNITY_EDITOR
         private void OnValidate()
@@ -219,7 +345,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         //실제 설치 (검사 통과되었다고 가정)
         public void Place(ItemInstance inst, ItemDataSo data, Vector2Int anchor, int rotation)
         {
-            Remove(inst); //기존 설치칸 모두 제거
+            ClearInstanceCells(inst, true); //기존 설치칸 모두 제거
             
             List<Vector2Int> absCells = GetAbsoluteCells(inst, data, anchor, rotation); //설치 셀 목록
 
@@ -231,30 +357,52 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             _occupiedMap[inst.instanceId] = absCells; //인스턴스가 설치되는 셀 목록 계산
             
             inst.rotation = rotation; //회전 상태 기록
+            
+            if (_cooldownVisuals.TryGetValue(inst, out var label) && label != null)
+            {
+                Vector2Int anchorCell = absCells[0];
+                Vector2 anchoredPos = GetCooldownVisualPosition(anchorCell, inst.rotation);
+                label.anchoredPosition = anchoredPos;
+                label.gameObject.SetActive(true);
+            }
         }
 
         public void Remove(ItemInstance inst)
         {
-            if (inst == null) return; //예외처리
-            if (_occupiedMap.TryGetValue(inst.instanceId, out List<Vector2Int> cells)) //캐시에 셀 목록이 있다면
+            ClearInstanceCells(inst, false);
+        }
+        
+        public void DetachForDrag(ItemInstance inst)
+        {
+            ClearInstanceCells(inst, keepCooldownVisual: true);
+        }
+        
+        private void ClearInstanceCells(ItemInstance inst, bool keepCooldownVisual)
+        {
+            if (inst == null) return;
+    
+            // 셀 비우기 + _occupiedMap 정리
+            if (_occupiedMap.TryGetValue(inst.instanceId, out List<Vector2Int> cells))
             {
-                foreach (Vector2Int cell in cells) //각 셀을 검사
+                foreach (Vector2Int cell in cells)
                 {
-                    if (InBounds(cell) && _cells[cell.x, cell.y] == inst) //여전히 같은 인스턴스면
+                    if (InBounds(cell) && _cells[cell.x, cell.y] == inst)
                     {
-                        _cells[cell.x, cell.y] = null; //설치 해제
+                        _cells[cell.x, cell.y] = null;
                     }
                 }
-                _occupiedMap.Remove(inst.instanceId); //캐시에서 제거
+                _occupiedMap.Remove(inst.instanceId);
             }
-        }
 
-        public bool Move(ItemInstance inst, ItemDataSo data, Vector2Int anchor, int rotation)
-        {
-            if (!CanPlace(inst, data, anchor, rotation)) //설치가 불가능하면
-                return false; //실패
-            Place(inst, data, anchor, rotation); //가능했다면 설치
-            return true; //성공
+            // 쿨타임 비주얼까지 지울지 여부
+            if (!keepCooldownVisual)
+            {
+                if (_cooldownVisuals.TryGetValue(inst, out var label) && label != null)
+                {
+                    Destroy(label.gameObject);
+                }
+                _cooldownVisuals.Remove(inst);
+            }
         }
 
         //특정 셀이 차지되고있는가

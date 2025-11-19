@@ -101,7 +101,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 return;
             }
             
-            BoundPlayer.Attack(skill);
+            BoundPlayer.Attack(skill, skillSlot.BoundItemInstance);
             Debug.Log($"[TurnSlotUi] {BoundPlayer.CharacterData.name} 이(가) 스킬 {skill.name} 로 공격 실행");
         }
 
