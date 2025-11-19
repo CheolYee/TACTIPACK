@@ -1,5 +1,6 @@
 using System;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar;
 using UnityEngine;
 
@@ -46,11 +47,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         }
 
         //데미지를 주기 위한 메서드 (데미지만 줌)
-        public void ApplyDamage(AttackDataSo attackData)
+        public void ApplyDamage(DamageContainer attackData)
         {
             float prevHealth = _currentHealth; //이전체력을 맞기 전의 현재체력으로 설정
             //0보다 작지 않도록, 최대체력보다 크지 않도록 조정
             _currentHealth = Mathf.Clamp(_currentHealth - attackData.Damage, 0, MaxHealth);
+
+            if (_owner != null)
+            {
+                StatusEffectController statusController = _owner.GetCompo<StatusEffectController>();
+                statusController?.OnDamaged(attackData);
+            }
 
             //맞았으니 이벤트 실행 (이전 체력, 현재 체력, 최대 체력)
             OnHealthChange?.Invoke(prevHealth, _currentHealth, MaxHealth);

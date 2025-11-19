@@ -1,7 +1,9 @@
-﻿namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
+﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
+
+namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
 {
     public interface IDamageable
     {
-        void ApplyDamage(AttackDataSo attackData);
+        void ApplyDamage(DamageContainer attackData);
     }
 }

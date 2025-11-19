@@ -35,6 +35,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
         
         public override void Enter()
         {
+            if (Enemy.StatusEffectController.IsStunned)
+            {
+                Debug.Log($"{Enemy.EnemyData.EnemyName} 는 기절 상태라 AttackState 진입을 즉시 종료합니다.");
+
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(Agent, Agent.actionData.CurrentAttackItem));
+                Enemy.ChangeState(EnemyStates.IDLE);
+                return;
+            }
+            
             //내부 트리거 콜 초기화
             IsTriggerCall = false;
             _isExiting = false;
@@ -162,12 +171,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
         {
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
             SkillCameraManager.Instance.ZoomTo(7f, 0.3f);
-            return null;
-        }
-        
-        [StanceHandler(AttackStance.CustomPoint)]
-        private Tween HandleCustomPoint(SkillContent ctx)
-        {
             return null;
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using _00.Work.Resource.Scripts.Utils;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI;
 using TMPro;
 using UnityEngine;
 
@@ -22,6 +23,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         [SerializeField] private RectTransform cooldownTextPrefab;
         [SerializeField] private Vector2 cooldownMargin = new(-20, 20);
         
+        [Header("Render Layers")]
+        [SerializeField] private PlaceItemLayerUI placeLayer;
+        
         //각 셀이 어떤 아이템 인스턴스에 의해 사용되었는지 저장(없으면 null이 담김)
         private ItemInstance[,] _cells; //그리드형 인벤토리를 위한 아이템 인스턴스 참조를 위해 2차원 배열 생성
 
@@ -30,6 +34,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         
         //인스턴스별 쿨타임 텍스트
         private readonly Dictionary<ItemInstance, RectTransform> _cooldownVisuals = new();
+        
+        //쿨타임 턴 수 제작
+        private readonly Dictionary<ItemInstance, int> _cooldownMaxTurns = new();
+        
         
         //재사용을 위한 임시 버퍼
         private readonly List<Vector2Int> _tmpRotated = new();
@@ -43,10 +51,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             EnsureGrid();
             
             Bus<ItemCooldownChangedEvent>.OnEvent += OnItemCooldownChanged;
+            Bus<ItemCooldownStartedEvent>.OnEvent += OnItemCooldownStarted;
         }
+
+
         private void OnDestroy()
         {
             Bus<ItemCooldownChangedEvent>.OnEvent -= OnItemCooldownChanged;
+            Bus<ItemCooldownStartedEvent>.OnEvent -= OnItemCooldownStarted;
             
             foreach (var kvp in _cooldownVisuals)
             {
@@ -64,24 +76,19 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
 
         #region CoolTimes
         
-        public void RotateCooldownVisual(ItemInstance inst, float deltaAngle)
+        private void OnItemCooldownStarted(ItemCooldownStartedEvent evt)
         {
+            ItemInstance inst = evt.Instance;
             if (inst == null) return;
-            if (!_cooldownVisuals.TryGetValue(inst, out var visual) || visual == null) return;
+            if (evt.CooldownTurns <= 0) return;
 
-            // 부모 이미지 회전 (Z축)
-            Vector3 parentEuler = visual.localEulerAngles;
-            parentEuler.z += deltaAngle;
-            visual.localEulerAngles = parentEuler;
+            _cooldownMaxTurns[inst] = evt.CooldownTurns;
+            placeLayer?.SetItemCooldownTint(inst, 1f);
 
-            // 자식 텍스트는 반대로 돌려서 항상 정방향 유지
-            var tmp = visual.GetComponentInChildren<TextMeshProUGUI>(true);
-            if (tmp != null)
+            // 시작할 때는 ratio = 1 (가장 어두운 상태)
+            if (placeLayer != null)
             {
-                var textRect = tmp.rectTransform;
-                Vector3 childEuler = textRect.localEulerAngles;
-                childEuler.z -= deltaAngle;
-                textRect.localEulerAngles = childEuler;
+                placeLayer.SetItemCooldownTint(inst, 1f);
             }
         }
 
@@ -118,6 +125,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                     Destroy(visual.gameObject);
                 }
                 _cooldownVisuals.Remove(inst);
+                
+                _cooldownMaxTurns.Remove(inst);
+                if (placeLayer != null)
+                {
+                    // 혹시 남아있을 렌더에 정상 색상으로 리셋
+                    placeLayer.SetItemCooldownTint(inst, 0f);
+                }
                 return;
             }
 
@@ -129,21 +143,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                     Destroy(visual.gameObject);
                 }
                 _cooldownVisuals.Remove(inst);
+                
+                _cooldownMaxTurns.Remove(inst);
+                placeLayer?.SetItemCooldownTint(inst, 0f);
                 return;
             }
 
             if (cooldownTextPrefab == null) return;
 
-            // 아이템이 차지하는 셀들 중 첫 번째 셀 기준으로 텍스트 위치를 잡자
+            //첫 번째 셀 기준
             Vector2Int anchorCell = cells[0];
             Vector2 anchoredPos = GetCooldownVisualPosition(anchorCell, inst.rotation);
 
             if (_cooldownVisuals.TryGetValue(inst, out var existing) && existing != null)
             {
-                // 위치 갱신
+                //위치 갱신
                 existing.anchoredPosition = anchoredPos;
 
-                // 자식 TMP 찾아서 텍스트만 업데이트
+                //자식 TMP 찾아서 텍스트만 업데이트
                 var tmp = existing.GetComponentInChildren<TextMeshProUGUI>(true);
                 if (tmp != null)
                 {
@@ -152,7 +169,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             }
             else
             {
-                // 새 프리팹 생성 (이미지+텍스트)
+                //새 프리팹 생성
                 RectTransform newVisual = Instantiate(cooldownTextPrefab, gridRect);
                 newVisual.anchoredPosition = anchoredPos;
 
@@ -163,6 +180,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                 }
 
                 _cooldownVisuals[inst] = newVisual;
+            }
+            
+            if (placeLayer != null && _cooldownMaxTurns.TryGetValue(inst, out int maxTurns) && maxTurns > 0)
+            {
+                float ratio = (float)evt.RemainingTurns / maxTurns;   // 1 → 시작, 0 → 끝
+                placeLayer.SetItemCooldownTint(inst, ratio);
             }
         }
         #endregion
@@ -315,7 +338,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         }
 
         //현재 그리드를 벗어나지 않았는가?
-        public bool InBounds(Vector2Int cell)
+        private bool InBounds(Vector2Int cell)
         {
             EnsureGrid();
             int w = _cells.GetLength(0);
@@ -370,6 +393,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         public void Remove(ItemInstance inst)
         {
             ClearInstanceCells(inst, false);
+            placeLayer?.ClearItemTint(inst);
+            _cooldownMaxTurns.Remove(inst);
         }
         
         public void DetachForDrag(ItemInstance inst)

@@ -204,6 +204,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 Player player = slot.BoundPlayer;
                 if (player == null) continue; //플레이어가 없어도 넘기기
+                
+                //스턴 상태 파악
+                if (player.StatusEffectController && player.StatusEffectController.OnTurnStart())
+                {
+                    Debug.LogWarning($"{player.CharacterData.CharacterName}는 기절 상태로 턴을 스킵합니다.");
+                    player.StatusEffectController.OnTurnEnd();
+                    continue;
+                }
 
                 if (player.IsDead || player.Health == null || player.Health.CurrentHealth <= 0f)
                 {
@@ -223,6 +231,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 //이벤트가 와서 스킬이 모두 끝날 때 까지 대기
                 yield return new WaitUntil(() => !_waitingForSkill);
+                
+                //행동 후 턴 종료
+                player.StatusEffectController.OnTurnEnd();
             }
             
             yield return new WaitForSeconds(0.5f);
@@ -249,6 +260,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 // 죽은 적은 스킵
                 if (enemy.IsDead)
                     continue;
+                
+                //스턴 확인
+                bool sturned = enemy.StatusEffectController && enemy.StatusEffectController.OnTurnStart();
+                if (sturned)
+                {
+                    Debug.Log($"[TurnUiContainerPanel] 에너미 {enemy.name} 는 기절 상태로 턴 스킵합니다.");
+                    enemy.StatusEffectController.OnTurnEnd();
+                    continue;
+                }
 
                 Debug.Log($"[TurnUiContainerPanel] 에너미 턴 {i + 1} : {enemy.name} 스킬 실행");
 
@@ -258,6 +278,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 enemy.StartTurn();
 
                 yield return new WaitUntil(() => !_waitingForSkill);
+                
+                enemy.StatusEffectController.OnTurnEnd();
             }
 
             yield return new WaitForSeconds(0.5f);

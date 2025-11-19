@@ -39,11 +39,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         private bool _pendingRefund; //설치 실패/취소 시 환불할지
 
         // 드래그 상태
-        private ItemInstance _dragItem; // 드래그 중인 아이템 인스턴스
-        private ItemDataSo _dragData; // 드래그하는 아이템의 SO
+        private ItemInstance _dragItem; //드래그 중인 아이템 인스턴스
+        private ItemDataSo _dragData; //드래그하는 아이템의 SO
         private int _dragRotation; //드래그 중 회전(0/90/180/270)
-        private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); // 유령용
-        private Vector2Int _originCell = new(int.MinValue, int.MinValue); // 처음 집었던 셀
+        private int _originRotation; //회전값 저장
+        private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); //유령용
+        private Vector2Int _originCell = new(int.MinValue, int.MinValue); //처음 집었던 셀
         
         
         //바인딩 모드
@@ -199,16 +200,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             {
                 _dragRotation = (_dragRotation + 90) % 360; //90도 회전
                 _lastAnchor = new Vector2Int(int.MinValue, int.MinValue); //유령 재배치 유도
-                
-                //쿨타임도 돌게
-                if (_dragOrigin == DragOrigin.Grid && grid != null)
-                {
-                    grid.RotateCooldownVisual(_dragItem, 90f);
-                }
             }
 
 
-            if (_dragItem != null) //드래그 아이템이 있다면
+            if (_dragItem != null) // 드래그 중
             {
                 if (outOfBounds)
                 {
@@ -219,31 +214,48 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                     {
                         if (_dragOrigin == DragOrigin.Side)
                         {
+                            //사이드에서 끌고 나온 아이템은 그냥 드래그 취소
                             StopDrag();
                         }
                         else if (_dragOrigin == DragOrigin.Grid)
                         {
-                            if (sideManager != null && _dragData != null)
+                            Debug.LogWarning($"[드래그 아이템 디버그로그] {_dragItem.IsOnCooldown}");
+                            
+                            if (_dragItem.IsOnCooldown)
                             {
-                                grid.Remove(_dragItem);
-                                
-                                Bus<OnItemReturnedToSideInventory>.Raise(new OnItemReturnedToSideInventory(_dragItem));
-                                sideManager.AddItem(_dragData);
+                                Bus<MessageEvent>.Raise(new MessageEvent("쿨타임중인 아이템은 돌아갈 수 없습니다."));
                             }
-                            StopDrag();
+                            else
+                            {
+                                //쿨타임이 아닌 아이템은 기존처럼 사이드 인벤토리로 돌아감
+                                if (sideManager != null && _dragData != null)
+                                {
+                                    if (grid != null)
+                                        grid.Remove(_dragItem);
+
+                                    Bus<OnItemReturnedToSideInventory>.Raise(
+                                        new OnItemReturnedToSideInventory(_dragItem));
+
+                                    sideManager.AddItem(_dragData);
+                                }
+
+                                StopDrag();
+                            }
                         }
                     }
+
                     return;
                 }
-                
+
+                // 안쪽은 기존 그대로 (UpdateGhost / TryPlace)
                 UpdateDragIconFollow(false);
-                UpdateGhost(cell, true); //유령 위치 & 색 갱신
+                UpdateGhost(cell, true);
 
                 if (Input.GetMouseButtonUp(0))
                 {
-                    TryPlace(cell, true); //셀 안이라면 설치 시도
+                    TryPlace(cell, true);
                 }
-                return; //드래그 처리 끝
+                return;
             }
             
             //드래그 중이 아닐 때
@@ -298,12 +310,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 return;
             }
             
-            //앵커가 바뀌지 않았다면 스킵
-            if (anchorCell == _lastAnchor) return; //동일 위치면 패스
-            _lastAnchor = anchorCell; //캐시 갱신
-            
             bool ok = grid.CanPlace(_dragItem, _dragData, anchorCell, _dragRotation); //가능 여부 검사
             _ghost.SetOk(ok);
+            
+            if (ok && anchorCell != _lastAnchor)
+            {
+                _lastAnchor = anchorCell;
+            }
             
             //유령 타일들의 고정 위치 목록 만들기
             List<Vector2Int> absCells = grid.GetAbsoluteCells(_dragItem, _dragData, anchorCell, _dragRotation);

@@ -37,6 +37,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
 
         public override void Enter()
         {
+            if (Player.StatusEffectController.IsStunned)
+            {
+                Debug.Log($"{Player.name} 는 기절 상태라 AttackState 진입을 즉시 종료합니다.");
+
+                Bus<SkillFinishedEvent>.Raise(new SkillFinishedEvent(Agent, Agent.actionData.CurrentAttackItem));
+                Player.ChangeState(PlayerStates.IDLE);
+                return;
+            }
+            
             //내부 트리거 콜 초기화
             IsTriggerCall = false;
             _isExiting = false;
@@ -177,12 +186,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             return null;
         }
         
-        [StanceHandler(AttackStance.CustomPoint)]
-        private Tween HandleCustomPoint(SkillContent ctx)
-        {
-            return null;
-        }
-
         [StanceHandler(AttackStance.StepForward)]
         private Tween HandleStepForward(SkillContent ctx)
         {

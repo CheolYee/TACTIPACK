@@ -42,3 +42,8 @@ MonoBehaviour:
   <DefaultStance>k__BackingField: 2
   <ApproachOffset>k__BackingField: 2
   damageOnImpactEvent: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 3
+    durationTurns: 2
+    power: 0
+    stackable: 0

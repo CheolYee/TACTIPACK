@@ -15,7 +15,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
         Stationary, //가만히 있기
         StepForward, //앞으로 가기 (특정 지점 위치 한개)
         DashToTarget, //타겟 앞으로 가기
-        CustomPoint //특정 지정 위치 설정해주기
     }
 
     public enum TargetingMode
