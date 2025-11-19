@@ -65,7 +65,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         {
             Debug.Log("New Game");
             // 대충 저장되어 있는 JSON 지우고 생성
-            FadeManager.Instance.FadeToScene(1);
+            FadeManager.Instance.FadeToSceneAsync(1);
         }
 
         public void LoadGame()
