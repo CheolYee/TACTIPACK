@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Resource.Scripts.Utils;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
@@ -8,10 +7,12 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.AnimatorSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using DG.Tweening;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -30,6 +31,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
         
         private bool _fired; //애니메이션 Fire 이벤트 수신 플래그
         private bool _isExiting; //Exit 진행 중(취소 플래그)
+        
+        private ItemDatabase _itemDatabase;
         
         public PlayerAttackState(Agent agent, AnimParamSo stateParam) : base(agent, stateParam)
         {
@@ -57,6 +60,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 _agentRenderer = Player.GetCompo<AgentRenderer>();
                 _attackExecutor = Player.GetCompo<AttackExecutor>();
                 _skillManager = Object.FindFirstObjectByType<BattleSkillManager>();
+                _itemDatabase   = Object.FindFirstObjectByType<ItemDatabase>();
             }
             catch (NullReferenceException e)
             {
@@ -111,14 +115,48 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             yield return new WaitUntil(() => _fired || _isExiting);
 
             //실제 공격 실행기로 실행
-            yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx.Stance));
+            yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx));
             if (_isExiting) yield break;
             
             var inst = Agent.actionData.CurrentItemInst;
-            if (inst != null && item != null && item.cooldownTurns > 0)
+            if (inst != null && item != null)
             {
-                inst.StartCooldown(item.cooldownTurns);
-                ItemCooldownManager.Instance.Register(inst);
+                // 쿨타임 처리
+                if (item.cooldownTurns > 0)
+                {
+                    inst.StartCooldown(item.cooldownTurns);
+                    ItemCooldownManager.Instance.Register(inst);
+                }
+
+                //소모성 처리
+                if (_itemDatabase != null)
+                {
+                    var data = _itemDatabase.GetItemById(inst.dataId);
+                    if (data != null && data.isConsumable)
+                    {
+                        //혹시 InitUses를 못 받은 경우를 대비한 안전장치
+                        if (!inst.HasLimitedUses)
+                        {
+                            inst.InitUses(data.maxUses);
+                        }
+
+                        inst.ConsumeUse();
+                        
+                        //숫자갱신
+                        var grid = Object.FindFirstObjectByType<GridInventoryUIManager>();
+                        grid?.UpdateConsumableUsesVisual(inst);
+
+                        if (inst.IsDepleted)
+                        {
+                            //그리드에서 제거
+                            grid?.Remove(inst);
+
+                            //턴 UI 바인딩 해제
+                            var panel = TurnUiContainerPanel.Instance;
+                            panel?.ClearBindingForItem(inst);
+                        }
+                    }
+                }
             }
             
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
@@ -180,7 +218,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
         [StanceHandler(AttackStance.Stationary)]
         private Tween HandleStationary(SkillContent ctx)
         {
-            HudManager.Instance.ShowOnly(ctx.User.Health.HealthBarInstance);
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
             SkillCameraManager.Instance.ZoomTo(7f, 0.3f);
             return null;

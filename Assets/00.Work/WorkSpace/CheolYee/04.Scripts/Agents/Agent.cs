@@ -98,7 +98,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         public void ApplyDamage(DamageContainer attackData)
         {
             actionData.LastAttackData = attackData;
+            
+            if (StatusEffectController != null &&
+                StatusEffectController.TryBlockDamage(ref attackData))
+            {
+                // 막힌 경우: HP 변화 없음, 화상 추가 피해도 발생 안 함
+                return;
+            }
+            
             Health.ApplyDamage(attackData);
         }
+        
+        //크확 계산기
+        public virtual float GetBaseCritChance()
+        {
+            // 기본은 0 (필요한 쪽에서 override)
+            return 0f;
+        }
+        
+        
     }
 }

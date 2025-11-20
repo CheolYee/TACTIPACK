@@ -109,7 +109,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
             yield return new WaitUntil(() => _fired || _isExiting);
 
             //실제 공격 실행기로 실행
-            yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx.Stance));
+            yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx));
             if (_isExiting) yield break;
 
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);

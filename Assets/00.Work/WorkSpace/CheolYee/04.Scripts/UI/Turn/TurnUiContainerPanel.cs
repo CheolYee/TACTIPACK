@@ -6,6 +6,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using UnityEngine;
@@ -25,7 +26,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private VerticalLayoutGroup layoutGroup;
         
         public VerticalLayoutGroup LayoutGroup => layoutGroup;
-        public RectTransform Content => content;
         
         private readonly List<TurnSlotUi> _slots = new();
 
@@ -76,31 +76,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             Build();
         }
         
-        //슬롯 추가
-        public void AddPlayerSlot(Player player)
-        {
-            if (player == null) return;
-            if (slotPrefab == null || content == null) return;
-
-            //이미 슬롯이 있으면 중복으로 추가하지 않음
-            if (_slots.Exists(s => s.BoundPlayer == player))
-                return;
-
-            TurnSlotUi slot = Instantiate(slotPrefab, content);
-            slot.name = $"[Turn UI Slot] : {player.CharacterData.name}";
-                
-            slot.Initialize(this, canvas);
-            slot.BindPlayer(player);
-                
-            var skillSlot = slot.GetSkillSlot();
-            if (skillSlot != null)
-            {
-                skillBindingController.RegisterSkillSlot(skillSlot);
-            }
-                
-            _slots.Add(slot);
-        }
-        
         //플레이어 슬롯 지우기
         public void RemovePlayerSlot(Player player)
         {
@@ -117,24 +92,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             {
                 _slots[i].transform.SetSiblingIndex(i);
             }
-        }
-
-        private void Clear()
-        { 
-            foreach (var s in _slots)
-            {
-                if (s != null) Destroy(s.gameObject);
-            }
-            _slots.Clear();
-        }
-        public List<Player> GetCurrentOrder()
-        {
-            List<Player> order = new List<Player>(_slots.Count);
-            foreach (var s in _slots)
-            {
-                order.Add(s.BoundPlayer);
-            }
-            return order;
         }
         
         public void SwapSlots(TurnSlotUi a, TurnSlotUi b)
@@ -319,6 +276,20 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
 
             seq.Append(a.DOScale(originalScaleA, duration));
             seq.Join(b.DOScale(originalScaleB, duration));
+        }
+        public void ClearBindingForItem(ItemInstance inst)
+        {
+            if (inst == null) return;
+
+            foreach (var slot in _slots)
+            {
+                if (slot == null) continue;
+                var skillSlot = slot.GetSkillSlot();
+                if (skillSlot != null && skillSlot.BoundItemInstance == inst)
+                {
+                    skillSlot.ClearBinding();
+                }
+            }
         }
     }
 }

@@ -98,10 +98,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
             int add = AddItem(pickItem);
         }
         
+        [ContextMenu("특정 아이템추가 디버그")]
+        private void Debug_AddItem()
+        {
+            AddItem(debugItem);
+        }
+        
         [ContextMenu("특정 타겟 아이템 제거 디버그")]
         private void Debug_RemoveItemOne()
         {
-            int remove = RemoveItem(debugItem);
+            RemoveItem(debugItem);
         }
         
         

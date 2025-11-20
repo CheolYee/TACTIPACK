@@ -45,6 +45,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         {
             ChangeState(PlayerStates.IDLE);
         }
+        
+        public override float GetBaseCritChance() //크리티컬 오버라이딩
+        {
+            return CharacterData != null ? CharacterData.DefaultCritChance : 0f;
+        }
 
         private void Update()
         {

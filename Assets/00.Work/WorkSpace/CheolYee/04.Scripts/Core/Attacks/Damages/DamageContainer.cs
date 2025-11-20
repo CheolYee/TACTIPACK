@@ -6,7 +6,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
     public struct DamageContainer
     {
         public float Damage;
-     
-        public DamageContainer(float damage) { Damage = damage; }
+        public bool IsCritical;
+
+        public DamageContainer(float damage, bool isCritical = false)
+        {
+            Damage = damage;
+            IsCritical = isCritical;
+        }
     }
 }

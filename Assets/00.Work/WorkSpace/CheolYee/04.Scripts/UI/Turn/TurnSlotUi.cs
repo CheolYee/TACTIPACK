@@ -1,7 +1,9 @@
-﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
+﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,7 +19,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         
         [Header("Sorting")]
         [SerializeField] private Canvas slotCanvas;
-        [SerializeField] private int dragSortingOrder = 1000; // 드래그 중일 때 순서
+        [SerializeField] private int dragSortingOrder = 1000; //드래그 중일 때 순서
+        
+        [Header("Visual")]
+        [SerializeField] private Image background;
+        [SerializeField] private float stunFadeDuration = 0.15f;
+        [SerializeField] private float stunnedDarkFactor = 0.6f;
         public Player BoundPlayer {get; private set;}
         public bool DraggedEnough => _draggedEnough;
         
@@ -33,9 +40,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         
         private bool _savedOverrideSorting;
         private int _savedSortingOrder;
-        
         public static TurnSlotUi CurrentlyDragging {get; private set;}
         
+        private StatusEffectController _statusController;
+        private bool _isStunned;
+        private Color _defaultBgColor;
+        private Tween _stunTween;
         public TurnSkillSlotUi GetSkillSlot() => skillSlot;
 
         private void Awake()
@@ -58,6 +68,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             //부모 Canvas 기준으로 동작하게
             slotCanvas.overrideSorting = _savedOverrideSorting;
             slotCanvas.sortingOrder = _savedSortingOrder;
+            
+            if (background != null)
+                _defaultBgColor = background.color;
         }
 
         public void Initialize(TurnUiContainerPanel owner, Canvas canvas)
@@ -75,8 +88,79 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 icon.sprite = data.CharacterIcon;
             
             if (skillSlot != null) skillSlot.Initialize(player);
+            
+            _statusController = player.StatusEffectController;
+            if (_statusController != null)
+            {
+                _statusController.OnStatusChanged += HandleStatusChanged;
+                HandleStatusChanged(_statusController); // 초기 상태 반영
+            }
         }
 
+
+        private void OnDestroy()
+        {
+            if (_statusController != null)
+            {
+                _statusController.OnStatusChanged -= HandleStatusChanged;
+                _statusController = null;
+            }
+        }
+        private void HandleStatusChanged(StatusEffectController controller)
+        {
+            if (controller == null) return;
+
+            bool stunnedNow = controller.IsStunned; // 또는 controller.HasStatus(StatusEffectType.Stun);
+            if (stunnedNow == _isStunned)
+                return;
+
+            _isStunned = stunnedNow;
+
+            if (_isStunned)
+                ApplyStunState();
+            else
+                ClearStunState();
+        }
+
+
+        private void ApplyStunState()
+        {
+            if (skillSlot != null)
+            {
+                skillSlot.ClearBinding();
+                skillSlot.SetLocked(true);
+            }
+
+            //슬롯 어둡게 트윈
+            if (background != null)
+            {
+                _stunTween?.Kill();
+                Color target = _defaultBgColor * stunnedDarkFactor;
+                target.a = _defaultBgColor.a;
+                background.color = _defaultBgColor * stunnedDarkFactor;
+                _stunTween = background
+                    .DOColor(target, stunFadeDuration)
+                    .SetEase(Ease.OutQuad);
+            }
+        }
+
+        private void ClearStunState()
+        {
+            if (skillSlot != null)
+            {
+                skillSlot.SetLocked(false);
+                // 스턴이 풀렸다고 해서 자동으로 스킬을 다시 채우지는 않음 (플레이어가 다시 바인드)
+            }
+
+            // 2) 색상 복원
+            if (background != null)
+            {
+                _stunTween?.Kill();
+                _stunTween = background
+                    .DOColor(_defaultBgColor, stunFadeDuration)
+                    .SetEase(Ease.OutQuad);
+            }
+        }
         public void ExecuteBoundSkill()
         {
             if (BoundPlayer == null)

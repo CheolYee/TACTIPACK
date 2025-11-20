@@ -183,7 +183,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
                 return;
             }
 
-            //래스 매칭 검사
+            //클래스 매칭 검사
             if (!IsClassCompatible(_currentPlayer, attackItem))
             {
                 ShowError("이 캐릭터는 이 스킬을 사용할 수 없습니다.");

@@ -27,6 +27,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
 
         [Header("Image By Cell")]
         public List<Sprite> cellSprites;
+        
+        [Header("Consumable Settings")]
+        [Tooltip("소모성 아이템 여부")]
+        public bool isConsumable = false;
+
+        [Tooltip("소모성일 때 한 인스턴스가 사용할 수 있는 최대 횟수")]
+        public int maxUses = 1;
 
 
         //shapeOffsets가 비어 있으면 사각형 셀로 변환하여 반환

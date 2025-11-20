@@ -36,14 +36,20 @@ MonoBehaviour:
   cooldownTurns: 3
   skillPrefab: {fileID: 5558115182442371640, guid: c6763c7f04cf1344da27d24b104d4b49, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 895f58b9a9f8b4842b96e1337fe44c7c, type: 2}
-  <TargetIndex>k__BackingField: 0
+  <TargetIndex>k__BackingField: 2
   <SkillDelay>k__BackingField: 2
-  <TargetingMode>k__BackingField: 0
+  <TargetingMode>k__BackingField: 2
   <DefaultStance>k__BackingField: 2
   <ApproachOffset>k__BackingField: 2
+  isHealSkill: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0.3
   damageOnImpactEvent: 1
+  canCritical: 0
   <DefaultStatusEffect>k__BackingField:
-  - type: 3
+  - type: 5
+    targetGroup: 0
     durationTurns: 2
-    power: 0
+    power: 0.01
+    percentage: 100
     stackable: 0

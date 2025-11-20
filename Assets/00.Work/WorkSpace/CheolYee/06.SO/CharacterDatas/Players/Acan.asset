@@ -20,4 +20,4 @@ MonoBehaviour:
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 2e6081980e9fde34e897d2f099e8e744, type: 3}
   <MaxHp>k__BackingField: 100
   <DefaultDamage>k__BackingField: 20
-  <DefaultCritChance>k__BackingField: 10
+  <DefaultCritChance>k__BackingField: 0

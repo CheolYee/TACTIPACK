@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
-  m_Name: HolyShild
+  m_Name: ID 21. HolyShild
   m_EditorClassIdentifier: 
   itemId: 21
   itemName: "\uD06C\uB85C\uC2A4 \uAC00\uB4DC"
@@ -30,10 +30,18 @@ MonoBehaviour:
   - {fileID: -40799054, guid: 7b11d1223b9f65442a19d86c775a210c, type: 3}
   cooldownTurns: 2
   skillPrefab: {fileID: 5558115182442371640, guid: f60a1e41e922aec46a6579af431755ed, type: 3}
-  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 895f58b9a9f8b4842b96e1337fe44c7c, type: 2}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: a62c9f0c02256c24abbb25cb9f993226, type: 2}
   <TargetIndex>k__BackingField: 0
   <SkillDelay>k__BackingField: 2
   <TargetingMode>k__BackingField: 3
   <DefaultStance>k__BackingField: 0
   <ApproachOffset>k__BackingField: 0
-  damageOnImpactEvent: 1
+  damageOnImpactEvent: 0
+  canCritical: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 8
+    targetGroup: 1
+    durationTurns: 2
+    power: 0
+    percentage: 100
+    stackable: 0

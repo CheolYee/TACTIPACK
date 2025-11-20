@@ -1,4 +1,9 @@
-﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using DG.Tweening;
 using TMPro;
@@ -7,12 +12,20 @@ using UnityEngine.UI;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
 {
+    [Serializable]
+    public struct StatusIconEntry
+    {
+        public StatusEffectType type;
+        public Sprite icon;
+    }
+    
     public class HealthBarUi : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private Image hpFillImage;
         [SerializeField] private Image damageFillImage;
         [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] private TextMeshProUGUI hpText;
         [SerializeField] private Canvas healthBarCanvas;
         
         [Header("Fade")]
@@ -22,17 +35,28 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
         [Header("HP Tween")]
         [SerializeField] private float hpTweenDuration = 0.2f;      // 앞바 속도
         [SerializeField] private float damageTweenDuration = 0.5f;   // 뒷바 속도
-        [SerializeField] private float damageDelay = 0.1f;    
+        [SerializeField] private float damageDelay = 0.1f;
+        
+        [Header("Status Effects")]
+        [SerializeField] private RectTransform statusEffectRoot;          // 가로 자동정렬 오브젝트
+        [SerializeField] private StatusEffectIconUi statusIconPrefab;
+        [SerializeField] private StatusIconEntry[] statusIconEntries;
+        
+        private Dictionary<StatusEffectType, Sprite> _statusIconMap;
+        private readonly Dictionary<StatusEffectType, StatusEffectIconUi> _statusIcons = new();
         
         private AgentHealth _health;
         private Agent _owner;
+        private StatusEffectController _statusController;
+        
         private Tween _fadeTween;
         private Tween _hpTween;
+        private Tween _hpTextTween;
         private Tween _damageTween;
 
         private void Awake()
         {
-            if (!healthBarCanvas)
+            if (healthBarCanvas != null)
                 healthBarCanvas.worldCamera = Camera.main;
             
             if (hpFillImage != null)
@@ -47,6 +71,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
                 canvasGroup.interactable = false;
                 canvasGroup.blocksRaycasts = false;
             }
+            
+            //스프라이트 매핑
+            _statusIconMap = new Dictionary<StatusEffectType, Sprite>();
+            if (statusIconEntries != null)
+            {
+                foreach (var entry in statusIconEntries)
+                {
+                    if (!_statusIconMap.ContainsKey(entry.type) && entry.icon != null)
+                        _statusIconMap.Add(entry.type, entry.icon);
+                }
+            }
         }
 
         private void Start()
@@ -59,16 +94,73 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
             _owner = owner;
             _health = health;
 
-            if (hpFillImage != null && _health != null)
-            {
-                float max = _health.MaxHealth;
-                float current = _health.CurrentHealth;
-                hpFillImage.fillAmount = max > 0 ? current / max : 0f;
-            }
-
             _health.OnInitHealth += HandleHealthChange;
             _health.OnHealthChange += HandleHealthChange;
             _health.OnDeath += HandleDeath;
+            
+            HandleHealthChange(_health.CurrentHealth, _health.CurrentHealth, _health.MaxHealth);
+            
+            _statusController = _owner.GetCompo<StatusEffectController>();
+            if (_statusController != null)
+            {
+                _statusController.OnStatusChanged += HandleStatusChanged;
+                HandleStatusChanged(_statusController); // 초기 아이콘 세팅
+            }
+        }
+
+        private void HandleStatusChanged(StatusEffectController controller)
+        {
+            if (statusEffectRoot == null || statusIconPrefab == null)
+                return;
+
+            IReadOnlyList<StatusEffectInstance> effects = controller.ActiveEffects;
+
+            //더 이상 존재하지 않는 효과의 아이콘 제거
+            var keysToRemove = new List<StatusEffectType>();
+            foreach (var kv in _statusIcons)
+            {
+                bool stillExists = effects.Any(e => e.Type == kv.Key && e.RemainingTurns > 0);
+                if (!stillExists)
+                {
+                    if (kv.Value != null)
+                        Destroy(kv.Value.gameObject);
+
+                    keysToRemove.Add(kv.Key);
+                }
+            }
+
+            foreach (var key in keysToRemove)
+            {
+                _statusIcons.Remove(key);
+            }
+
+            //현재 효과 리스트 기준으로 아이콘 업뎃
+            foreach (var effect in effects)
+            {
+                if (effect.RemainingTurns <= 0)
+                    continue;
+
+                if (!_statusIcons.TryGetValue(effect.Type, out var iconUi) || iconUi == null)
+                {
+                    iconUi = Instantiate(statusIconPrefab, statusEffectRoot);
+                    _statusIcons[effect.Type] = iconUi;
+
+                    Sprite sprite = GetIconSprite(effect.Type);
+                    iconUi.SetIcon(sprite, effect.RemainingTurns);
+                }
+                else
+                {
+                    iconUi.UpdateTurn(effect.RemainingTurns);
+                }
+            }
+        }
+        
+        private Sprite GetIconSprite(StatusEffectType type)
+        {
+            if (_statusIconMap != null && _statusIconMap.TryGetValue(type, out var sprite))
+                return sprite;
+
+            return null;
         }
 
         public void SetName(string charName)
@@ -87,6 +179,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
 
             float prevRatio = Mathf.Clamp01(prevHealth / maxHealth);
             float currentRatio = Mathf.Clamp01(currentHealth / maxHealth);
+            
+            if (hpText != null)
+            {
+                hpText.text = currentHealth.ToString(CultureInfo.InvariantCulture);
+            }
 
             //트윈 정리
             if (_hpTween != null && _hpTween.IsActive())
@@ -146,6 +243,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
             _health.OnHealthChange -= HandleHealthChange;
             _health.OnDeath -= HandleDeath;
             _health = null;
+            
+            if (_statusIconMap == null) return;
+            _statusController.OnStatusChanged -= HandleStatusChanged;
+            _statusController = null;
         }
 
         public void SetVisibleImmediate(bool visible)

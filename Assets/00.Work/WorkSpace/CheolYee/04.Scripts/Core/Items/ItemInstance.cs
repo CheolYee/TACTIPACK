@@ -15,6 +15,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         [SerializeField] private int remainingCooldownTurns; // 남은 쿨타임
         public int RemainingCooldownTurns => remainingCooldownTurns;
         public bool IsOnCooldown => remainingCooldownTurns > 0;
+        
+        [SerializeField] private int remainingUses = -1; // -1 : 사용 제한 없음(비소모성)
+        public int RemainingUses => remainingUses;
+        public bool IsDepleted => remainingUses == 0;
+        public bool HasLimitedUses => remainingUses >= 0;
 
         //생성자 (기본)
         public ItemInstance(string data)
@@ -23,6 +28,19 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
             dataId = data;
             rotation = 0;
             remainingCooldownTurns = 0;
+            remainingUses = -1; //제한 없음
+        }
+        
+        public void InitUses(int maxUses)
+        {
+            remainingUses = Mathf.Max(1, maxUses);
+        }
+
+        public void ConsumeUse()
+        {
+            if (remainingUses < 0) return; // 비소모성
+            remainingUses--;
+            if (remainingUses < 0) remainingUses = 0;
         }
 
         public void StartCooldown(int cooldownTurns)

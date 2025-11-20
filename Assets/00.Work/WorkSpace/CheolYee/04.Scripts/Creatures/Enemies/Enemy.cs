@@ -77,7 +77,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
             
             ChangeState(EnemyStates.DEATH);
         }
-
+        //크리티컬 확률 계산기
+        public override float GetBaseCritChance()
+        {
+            return EnemyData != null ? EnemyData.DefaultCritChance : 0f;
+        }
 
         public void Attack(AttackItemSo ite, ItemInstance inst = null)
         {

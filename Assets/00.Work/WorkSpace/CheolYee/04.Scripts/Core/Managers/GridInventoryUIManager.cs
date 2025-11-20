@@ -26,6 +26,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         [Header("Render Layers")]
         [SerializeField] private PlaceItemLayerUI placeLayer;
         
+        [Header("Consumable Visual")]
+        [SerializeField] private RectTransform consumableTextPrefab;   //소모성 전용 프리팹
+        [SerializeField] private Vector2 consumableMargin = new(20, 20); //위치 보정
+        
         //각 셀이 어떤 아이템 인스턴스에 의해 사용되었는지 저장(없으면 null이 담김)
         private ItemInstance[,] _cells; //그리드형 인벤토리를 위한 아이템 인스턴스 참조를 위해 2차원 배열 생성
 
@@ -37,6 +41,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         
         //쿨타임 턴 수 제작
         private readonly Dictionary<ItemInstance, int> _cooldownMaxTurns = new();
+        
+        //소모성
+        private readonly Dictionary<ItemInstance, RectTransform> _consumableVisuals = new();
+        private readonly Dictionary<ItemInstance, int> _consumableMaxUses = new();
         
         
         //재사용을 위한 임시 버퍼
@@ -60,12 +68,21 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             Bus<ItemCooldownChangedEvent>.OnEvent -= OnItemCooldownChanged;
             Bus<ItemCooldownStartedEvent>.OnEvent -= OnItemCooldownStarted;
             
+            //쿨타임과 소모성 다지우기
             foreach (var kvp in _cooldownVisuals)
             {
                 if (kvp.Value != null)
                     Destroy(kvp.Value.gameObject);
             }
             _cooldownVisuals.Clear();
+            
+            foreach (var kvp in _consumableVisuals)
+            {
+                if (kvp.Value != null)
+                    Destroy(kvp.Value.gameObject);
+            }
+            _consumableVisuals.Clear();
+            _consumableMaxUses.Clear();
         }
 
 
@@ -73,6 +90,101 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         {
             EnsureGrid();
         }
+
+        #region Consumable
+        
+        private Vector2 GetConsumableVisualPosition(Vector2Int cell, int rotation)
+        {
+            // 셀 중심
+            Vector2 center = CellToAnchoredPos(cell);
+
+            // 좌측 하단 기준 오프셋
+            Vector2 baseOffset = new Vector2(-cellSizePx * 0.5f, -cellSizePx * 0.5f) + consumableMargin;
+    
+            // 회전 보정 (쿨타임이랑 동일 로직)
+            Vector2 rotatedOffset = Util.RotateOffset(baseOffset, rotation);
+    
+            return center + rotatedOffset;
+        }
+        
+        
+        //그리드에 배치될 떄 UI 생성과 갱신
+        private void RefreshConsumableVisual(
+            ItemInstance inst,
+            ItemDataSo data,
+            List<Vector2Int> absCells)
+        {
+            if (consumableTextPrefab == null) return;
+
+            // 소모성이 아니거나, 사용 제한이 없거나, 이미 소진되면 UI 제거
+            if (inst == null || data == null || !data.isConsumable || !inst.HasLimitedUses || inst.IsDepleted)
+            {
+                if (inst != null && _consumableVisuals.TryGetValue(inst, out var old) && old != null)
+                {
+                    Destroy(old.gameObject);
+                }
+                _consumableVisuals.Remove(inst);
+                _consumableMaxUses.Remove(inst);
+                return;
+            }
+
+            if (absCells == null || absCells.Count == 0)
+                return;
+
+            // 첫 번째 셀을 기준으로 앵커 위치 계산
+            Vector2Int anchorCell = absCells[0];
+            Vector2 anchoredPos = GetConsumableVisualPosition(anchorCell, inst.rotation);
+
+            RectTransform visual;
+            if (_consumableVisuals.TryGetValue(inst, out var existing) && existing != null)
+            {
+                visual = existing;
+                visual.anchoredPosition = anchoredPos;
+            }
+            else
+            {
+                visual = Instantiate(consumableTextPrefab, gridRect);
+                visual.anchoredPosition = anchoredPos;
+                _consumableVisuals[inst] = visual;
+            }
+
+            int maxUses = Mathf.Max(1, data.maxUses);
+            _consumableMaxUses[inst] = maxUses;
+
+            var tmp = visual.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null)
+            {
+                tmp.text = inst.RemainingUses.ToString();
+            }
+
+            visual.gameObject.SetActive(true);
+        }
+        
+        
+        //사용한 텍스트 소진처리
+        public void UpdateConsumableUsesVisual(ItemInstance inst)
+        {
+            if (inst == null) return;
+
+            if (!_consumableVisuals.TryGetValue(inst, out var visual) || visual == null)
+                return;
+
+            var tmp = visual.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null)
+            {
+                tmp.text = inst.RemainingUses.ToString();
+            }
+
+            // 전부 소진되면 UI 제거
+            if (inst.IsDepleted)
+            {
+                Destroy(visual.gameObject);
+                _consumableVisuals.Remove(inst);
+                _consumableMaxUses.Remove(inst);
+            }
+        }
+
+        #endregion
 
         #region CoolTimes
         
@@ -388,11 +500,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                 label.anchoredPosition = anchoredPos;
                 label.gameObject.SetActive(true);
             }
+            
+            RefreshConsumableVisual(inst, data, absCells);
         }
 
         public void Remove(ItemInstance inst)
         {
             ClearInstanceCells(inst, false);
+            placeLayer?.HideItem(inst);
             placeLayer?.ClearItemTint(inst);
             _cooldownMaxTurns.Remove(inst);
         }
@@ -427,6 +542,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                     Destroy(label.gameObject);
                 }
                 _cooldownVisuals.Remove(inst);
+                
+                if (_consumableVisuals.TryGetValue(inst, out var cLabel) && cLabel != null)
+                    Destroy(cLabel.gameObject);
+                _consumableVisuals.Remove(inst);
+                _consumableMaxUses.Remove(inst);
             }
         }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
 {
-    public class SideItemSlotView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class SideItemSlotView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("References")] 
         [SerializeField] private Image icon;
@@ -66,6 +66,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
 
         public void OnEndDrag(PointerEventData eventData)
         {
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            SetHighlight(true);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            SetHighlight(false);
         }
     }
 }

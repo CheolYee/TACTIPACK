@@ -133,6 +133,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         {
             // 새 인스턴스 생성(설치 성공 시 그리드가 소유)
             var inst = new ItemInstance(so.itemId);
+            
+            if (so != null && so.isConsumable)
+            {
+                inst.InitUses(so.maxUses);
+            }
+            
             _originCell =  new Vector2Int(int.MinValue, int.MinValue);
             StartDrag(inst, so, 0, DragOrigin.Side, sideInventoryManager);
             _pendingRefund = true;
@@ -219,28 +225,35 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                         }
                         else if (_dragOrigin == DragOrigin.Grid)
                         {
-                            Debug.LogWarning($"[드래그 아이템 디버그로그] {_dragItem.IsOnCooldown}");
-                            
                             if (_dragItem.IsOnCooldown)
                             {
                                 Bus<MessageEvent>.Raise(new MessageEvent("쿨타임중인 아이템은 돌아갈 수 없습니다."));
+                                return;
                             }
-                            else
+
+                            if (_dragData != null && _dragData.isConsumable)
                             {
-                                //쿨타임이 아닌 아이템은 기존처럼 사이드 인벤토리로 돌아감
-                                if (sideManager != null && _dragData != null)
+                                int maxUses = Mathf.Max(1, _dragData.maxUses);
+                                if (_dragItem.HasLimitedUses && _dragItem.RemainingUses < maxUses)
                                 {
-                                    if (grid != null)
-                                        grid.Remove(_dragItem);
-
-                                    Bus<OnItemReturnedToSideInventory>.Raise(
-                                        new OnItemReturnedToSideInventory(_dragItem));
-
-                                    sideManager.AddItem(_dragData);
+                                    Bus<MessageEvent>.Raise(new MessageEvent("사용한 소모성 아이템은 되돌릴 수 없습니다."));
+                                    return;
                                 }
-
-                                StopDrag();
                             }
+                            
+                            //쿨타임이 아닌 아이템은 기존처럼 사이드 인벤토리로 돌아감
+                            if (sideManager != null && _dragData != null)
+                            {
+                                if (grid != null)
+                                    grid.Remove(_dragItem);
+
+                                Bus<OnItemReturnedToSideInventory>.Raise(
+                                    new OnItemReturnedToSideInventory(_dragItem));
+
+                                sideManager.AddItem(_dragData);
+                            }
+
+                            StopDrag();
                         }
                     }
 

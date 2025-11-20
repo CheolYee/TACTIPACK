@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageName: 
   enemies:
-  - spawnIndex: 0
-    enemyData: {fileID: 11400000, guid: 81714c62f5f284442919f6967b285720, type: 2}
   - spawnIndex: 1
     enemyData: {fileID: 11400000, guid: 81714c62f5f284442919f6967b285720, type: 2}
   - spawnIndex: 2
