@@ -11,6 +11,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts
         [SerializeField] private CanvasGroup chest;
         [SerializeField] private CanvasGroup rest;
         [SerializeField] private CanvasGroup shop;
+        [SerializeField] private CanvasGroup roulette;
 
         private void Update()
         {
@@ -28,6 +29,11 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts
             {
                 EnableShop();
             }
+
+            if (Keyboard.current.fKey.wasPressedThisFrame)
+            {
+                EnableRoulette();
+            }
         }
 
         public void EnableChest()
@@ -42,11 +48,18 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts
             rest.gameObject.SetActive(true);
             rest.alpha = 0f;
             rest.DOFade(1f, 0.5f);
-        }
+        } 
         
         public void EnableShop()
         {
             shop.gameObject.SetActive(true);
+        }
+        
+        public void EnableRoulette()
+        {
+            roulette.gameObject.SetActive(true);
+            roulette.alpha = 0f;
+            roulette.DOFade(1f, 0.5f);
         }
     }
 }
