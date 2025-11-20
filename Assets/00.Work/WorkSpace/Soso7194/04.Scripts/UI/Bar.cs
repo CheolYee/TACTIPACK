@@ -16,13 +16,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         private void OnEnable()
         {
-            Rest.OnStartFill += StartFill;
+            RestUI.OnStartFill += StartFill;
             slider.value = 0f;
         }
 
         private void OnDisable()
         {
-            Rest.OnStartFill -= StartFill;
+            RestUI.OnStartFill -= StartFill;
             slider.value = 0f;
         }
 
