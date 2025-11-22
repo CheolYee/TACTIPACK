@@ -132,7 +132,6 @@ GameObject:
   - component: {fileID: 33594505}
   - component: {fileID: 33594504}
   - component: {fileID: 33594508}
-  - component: {fileID: 33594509}
   m_Layer: 5
   m_Name: TitleUI
   m_TagString: Untagged
@@ -237,6 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ae4ae2622488d642a01773eeeb60f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fadeManager: {fileID: 178967990}
   mainButtons:
   - {fileID: 865785003}
   - {fileID: 1319809514}
@@ -248,18 +248,6 @@ MonoBehaviour:
   sfxBar: {fileID: 360057750}
   bgmBar: {fileID: 1265610421}
   titleText: {fileID: 424384596}
---- !u!114 &33594509
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 33594503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ea8659f88704474a2de75939291c539, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &41245719
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,6 +540,11 @@ RectTransform:
   m_AnchoredPosition: {x: 1451, y: 0}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &178967990 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7439505161954002351, guid: 99d237aa8781e49439d573ddb21e35e1, type: 3}
+  m_PrefabInstance: {fileID: 1475444960}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &341061064
 GameObject:
   m_ObjectHideFlags: 0

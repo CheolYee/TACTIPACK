@@ -9,6 +9,9 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 {
     public class TitleUI : MonoBehaviour
     {
+        [Header("Manager")]
+        [SerializeField] private GameObject fadeManager;
+        
         [Header("Buttons")]
         [SerializeField] private GameObject[] mainButtons;
         [SerializeField] private GameObject[] gameButtons;
@@ -33,10 +36,10 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             
             Sequence seq = DOTween.Sequence();
 
-            seq.Append(titleText.transform.DOMove(titleText.transform.position + new Vector3(0,-175,0), 0.3f));
+            seq.Append(titleText.transform.DOMove(titleText.transform.position + new Vector3(0,-400,0), 0.3f));
             foreach (var button in mainButtons)
             {
-                seq.Append(button.transform.DOMove(button.transform.position + new Vector3(250,0,0), 0.3f));
+                seq.Append(button.transform.DOMove(button.transform.position + new Vector3(650,0,0), 0.3f));
             }
         }
 
@@ -49,20 +52,21 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             {
                 foreach (var button in gameButtons)
                 {
-                    seq.Append(button.transform.DOMove(button.transform.position + new Vector3(400,0,0), 0.3f));
+                    seq.Append(button.transform.DOMove(button.transform.position + new Vector3(1000,0,0), 0.3f));
                 }
             }
             else
             {
                 foreach (var button in gameButtons)
                 {
-                    seq.Append(button.transform.DOMove(button.transform.position + new Vector3(-400,0,0), 0.3f));
+                    seq.Append(button.transform.DOMove(button.transform.position + new Vector3(-1000,0,0), 0.3f));
                 }
             }
         }
 
         public void NewGame()
         {
+            fadeManager.SetActive(true);
             Debug.Log("New Game");
             // 대충 저장되어 있는 JSON 지우고 생성
             FadeManager.Instance.FadeToSceneAsync(1);
@@ -70,6 +74,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         public void LoadGame()
         {
+            fadeManager.SetActive(true);
             Debug.Log("Load Game");
             // 대충 저장되어 있는 JSON 불러오기
             /* if (// JSON 파일이 있으면)
@@ -89,11 +94,11 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
             if (_isSetting == true)
             {
-                seq.Append(settingPanel.transform.DOMove(settingPanel.transform.position + new Vector3(-300,0,0), 0.3f));
+                seq.Append(settingPanel.transform.DOMove(settingPanel.transform.position + new Vector3(-1000,0,0), 0.3f));
             }
             else
             {
-                seq.Append(settingPanel.transform.DOMove(settingPanel.transform.position + new Vector3(300,0,0), 0.3f));
+                seq.Append(settingPanel.transform.DOMove(settingPanel.transform.position + new Vector3(1000,0,0), 0.3f));
             }
         }
 

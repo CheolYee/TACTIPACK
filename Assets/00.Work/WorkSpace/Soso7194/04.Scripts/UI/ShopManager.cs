@@ -19,6 +19,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         [SerializeField] private Image shopManu;
         [SerializeField] private TextMeshProUGUI coinText;
         [SerializeField] private TextMeshProUGUI resetText;
+        [SerializeField] private CanvasGroup canvasGroup;
         
         [Header("Shop Setting")]
         [SerializeField] private int coin;
@@ -27,8 +28,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         [SerializeField] private AllItemDatabase item;
         
         [SerializeField] private List<ItemSlot> itemSlots;
-        
-        private bool _isUp = false;
+
         private int _resetCount;
         public int Coin
         {
@@ -53,34 +53,14 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             ItemSlot.OnUICoinChanged += ChangeCoinText;
             
             coinText.text = Coin.ToString();
+            
+            Sequence seq = DOTween.Sequence();
+            seq.Append(shopManu.rectTransform.DOMoveY(550, 0.5f));
         }
         
         private void OnDisable()
         {
             ItemSlot.OnUICoinChanged -= ChangeCoinText;
-        }
-
-        private void Update()
-        {
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
-            {
-                _isUp = !_isUp;
-                Shop();
-            }
-        }
-
-        private void Shop()
-        {
-            if (_isUp)
-            {
-                Sequence seq = DOTween.Sequence();
-                seq.Append(shopManu.rectTransform.DOMoveY(550, 0.5f));
-            }
-            else
-            {
-                Sequence seq = DOTween.Sequence();
-                seq.Append(shopManu.rectTransform.DOMoveY(-550, 0.5f));
-            }
         }
 
         private void ChangeCoinText()
@@ -126,14 +106,16 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
                 ItemSlot itemSlot = itemSlots[i];
                 
                 itemSlot.Initialize(currentItem);
-                
             }
         }
 
         public void Exit()
         {
-            _isUp = !_isUp;
-            Shop();
+            Sequence seq = DOTween.Sequence();
+            seq.Append(shopManu.rectTransform.DOMoveY(-550, 0.5f)).onComplete += () =>
+            {
+                canvasGroup.gameObject.SetActive(false);
+            };
         }
     }
 }
