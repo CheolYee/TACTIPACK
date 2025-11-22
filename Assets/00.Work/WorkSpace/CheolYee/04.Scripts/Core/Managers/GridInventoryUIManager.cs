@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using _00.Work.Resource.Scripts.Utils;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.PassiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI;
 using TMPro;
 using UnityEngine;
@@ -29,6 +30,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         [Header("Consumable Visual")]
         [SerializeField] private RectTransform consumableTextPrefab;   //소모성 전용 프리팹
         [SerializeField] private Vector2 consumableMargin = new(20, 20); //위치 보정
+        
+        [Header("Data")]
+        [SerializeField] private ItemDatabase itemDatabase;
         
         //각 셀이 어떤 아이템 인스턴스에 의해 사용되었는지 저장(없으면 null이 담김)
         private ItemInstance[,] _cells; //그리드형 인벤토리를 위한 아이템 인스턴스 참조를 위해 2차원 배열 생성
@@ -99,9 +103,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             Vector2 center = CellToAnchoredPos(cell);
 
             // 좌측 하단 기준 오프셋
-            Vector2 baseOffset = new Vector2(-cellSizePx * 0.5f, -cellSizePx * 0.5f) + consumableMargin;
+            Vector2 baseOffset = new Vector2(cellSizePx * 0.5f, -cellSizePx * 0.5f) + consumableMargin;
     
-            // 회전 보정 (쿨타임이랑 동일 로직)
+            // 회전 보정
             Vector2 rotatedOffset = Util.RotateOffset(baseOffset, rotation);
     
             return center + rotatedOffset;
@@ -123,8 +127,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                 {
                     Destroy(old.gameObject);
                 }
-                _consumableVisuals.Remove(inst);
-                _consumableMaxUses.Remove(inst);
+
+                if (inst != null)
+                {
+                    _consumableVisuals.Remove(inst);
+                    _consumableMaxUses.Remove(inst);
+                }
+
                 return;
             }
 
@@ -206,10 +215,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
 
         public void SetCooldownVisualVisible(ItemInstance inst, bool visible)
         {
+            //쿨타임과 소모성 Ui 둘다 끄고키기
             if (inst == null) return;
-            if (!_cooldownVisuals.TryGetValue(inst, out var visual) || visual == null) return;
+            if (_cooldownVisuals.TryGetValue(inst, out var cdVisual) && cdVisual != null)
+            {
+                cdVisual.gameObject.SetActive(visible);
+            }
 
-            visual.gameObject.SetActive(visible);
+            if (_consumableVisuals.TryGetValue(inst, out var consVisual) && consVisual != null)
+            {
+                consVisual.gameObject.SetActive(visible);
+            }
         }
 
         private Vector2 GetCooldownVisualPosition(Vector2Int cell, int rotation)
@@ -502,14 +518,42 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             }
             
             RefreshConsumableVisual(inst, data, absCells);
+            
+            //So가 패시브라면
+            if (data is PassiveItemSo passive)
+            {
+                Bus<PassiveItemEquippedEvent>.Raise(new PassiveItemEquippedEvent(passive, inst));
+            }
         }
 
         public void Remove(ItemInstance inst)
         {
+            ItemDataSo data = null;
+            if (inst != null)
+            {
+                if (itemDatabase == null)
+                {
+                    itemDatabase = FindFirstObjectByType<ItemDatabase>();
+                }
+
+                if (itemDatabase != null)
+                {
+                    data = itemDatabase.GetItemById(inst.dataId);
+                }
+            }
+            
             ClearInstanceCells(inst, false);
             placeLayer?.HideItem(inst);
             placeLayer?.ClearItemTint(inst);
-            _cooldownMaxTurns.Remove(inst);
+            if (inst != null)
+            {
+                _cooldownMaxTurns.Remove(inst);
+
+                if (data is PassiveItemSo passive)
+                {
+                    Bus<PassiveItemUnequippedEvent>.Raise(new PassiveItemUnequippedEvent(passive, inst));
+                }
+            }
         }
         
         public void DetachForDrag(ItemInstance inst)

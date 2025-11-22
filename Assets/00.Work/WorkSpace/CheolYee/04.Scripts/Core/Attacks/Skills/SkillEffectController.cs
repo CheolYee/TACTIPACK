@@ -84,6 +84,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         }
 
         //스폰 위치에 따라 고정 위치를 찾고, 카메라를 설정함
+        
         private Vector3 GetAnchorPosition(SkillContent ctx, EffectSpawnAnchor spawnAnchor)
         {
             switch (spawnAnchor)
@@ -92,16 +93,26 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
                     SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
                     SkillCameraManager.Instance.ZoomTo(8f);
                     return ctx.User.transform.position;
+                    
                 case EffectSpawnAnchor.Target:
                     SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
                     SkillCameraManager.Instance.ZoomTo(8f);
-                    
-                    if (ctx.TargetingMode == TargetingMode.Area)
+
+                    //타겟이 여러 명이면 CastPoint(중심 기준),
+                    //한 명이면 그 타겟 위치,
+                    //하나도 없으면 시전자 위치
+                    if (ctx.Targets != null && ctx.Targets.Count > 1)
+                    {
                         return ctx.CastPoint;
-                    
-                    return (ctx.Targets != null && ctx.Targets.Count > 0) 
-                        ? ctx.Targets[0].transform.position 
-                        : ctx.User.transform.position;
+                    }
+
+                    if (ctx.Targets != null && ctx.Targets.Count == 1 && ctx.Targets[0] != null)
+                    {
+                        return ctx.Targets[0].transform.position;
+                    }
+
+                    return ctx.User.transform.position;
+
                 case EffectSpawnAnchor.CastPoint:
                 default:
                     return ctx.CastPoint;

@@ -20,6 +20,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         public int RemainingUses => remainingUses;
         public bool IsDepleted => remainingUses == 0;
         public bool HasLimitedUses => remainingUses >= 0;
+        
 
         //생성자 (기본)
         public ItemInstance(string data)

@@ -1,4 +1,9 @@
-﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages.Maps;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages.Maps;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,6 +15,8 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
     {
         [SerializeField] private Button mapButton;
         [SerializeField] private MapSo mapData;
+        
+        private TooltipTarget _tooltipTarget;
 
         private Tween _pulseTween; // DOTween 트윈 저장
         private Vector3 _originalScale; // 원래 크기 저장
@@ -18,6 +25,11 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         private const float PulseDuration = 0.6f;
 
         public MapSo MapData => mapData;
+
+        private void Awake()
+        {
+            _tooltipTarget = GetComponent<TooltipTarget>();
+        }
 
         private void Start()
         {
@@ -52,6 +64,77 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
                     StopPulse();
                     break;
             }
+            
+            UpdateTooltip();
+        }
+
+        private void UpdateTooltip()
+        {
+            if (_tooltipTarget == null || mapData == null)
+                return;
+
+            string title = string.IsNullOrEmpty(mapData.mapName)
+                ? "알 수 없는 맵"
+                : mapData.mapName;
+
+            string body = BuildTooltipBody(mapData);
+
+            // TooltipTarget 안의 SetText 사용
+            _tooltipTarget.SetText(title, body);
+        }
+
+        private string BuildTooltipBody(MapSo map)
+        {
+            var sb = new StringBuilder();
+
+            // 전투 방인지 판별 (일반 + 랜덤)
+            bool isCombatMap = map.mapType == MapType.Enemy ||
+                               map.mapType == MapType.Random;
+            
+            if (!isCombatMap)
+                return sb.ToString();
+
+            var stage = map.stageData;
+            if (stage == null || stage.enemies == null || stage.enemies.Count == 0)
+                return sb.ToString();
+
+            // 빈 줄 하나
+            sb.AppendLine();
+
+            // EnemyId 기준으로 묶기
+            var groups = new Dictionary<int, (EnemyDefaultData data, int count)>();
+
+            foreach (var entry in stage.enemies)
+            {
+                if (entry == null || entry.enemyData == null)
+                    continue;
+
+                var data = entry.enemyData;
+                int id = data.EnemyId;
+
+                if (!groups.TryGetValue(id, out var current))
+                {
+                    groups[id] = (data, 1);
+                }
+                else
+                {
+                    groups[id] = (current.data, current.count + 1);
+                }
+            }
+            
+            foreach (var kv in groups.Values)
+            {
+                var data = kv.data;
+                int count = kv.count;
+
+                string enemyName = string.IsNullOrEmpty(data.EnemyName)
+                    ? $"Enemy {data.EnemyId}"
+                    : data.EnemyName;
+
+                sb.AppendLine($"{enemyName} x {count}");
+            }
+
+            return sb.ToString();
         }
 
         private void StartPulse()

@@ -17,20 +17,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks
         DashToTarget, //타겟 앞으로 가기
     }
 
-    public enum TargetingMode
-    {
-        Single, //단일
-        Area, //범위
-        Random, //랜덤
-        Self
-    }
-
     //스킬 실행에 필요한 것들
     public sealed class SkillContent
     {
         public Agent User; //시전자
         public List<AgentHealth> Targets = new List<AgentHealth>(); //적이나 플레이어 리스트
-        public TargetingMode TargetingMode;
         public Vector3 CastPoint; //캐스트 위치
         public AttackStance Stance; //이동 이넘
         public float ApproachOffset; //대쉬 거리 오프셋 등

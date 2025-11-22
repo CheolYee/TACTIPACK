@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 3
+  m_EditorClassIdentifier: 
+  itemId: 3
+  itemName: "\uC0DD\uBA85\uC758 \uAF43\uC78E"
+  itemClass: 3
+  icon: {fileID: 21300000, guid: 7ca60d9d030f93440a31112c60c439df, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uD790\uB7EC\n\n\uAF43\uC78E\uC774 \uC9C0\uC815\uB41C
+    \uD30C\uD2F0\uC6D0\uC744 \uC9C0\uCF1C\uC90D\uB2C8\uB2E4.\n\uC790\uC2E0\uC758
+    \uB2E4\uC74C \uD134\uC758 \uC544\uAD70\uC774 \uC120\uD0DD\uB418\uBA70,\n\uC5C6\uB2E4\uBA74
+    \uC790\uC2E0\uC774 \uC120\uD0DD\uB429\uB2C8\uB2E4.\n\uC120\uD0DD\uB41C \uB300\uC0C1\uC740
+    3\uD134\uB3D9\uC548 \uCD5C\uD6C4\uC758 \uC800\uD56D\uC744 \uC5BB\uC2B5\uB2C8\uB2E4.\n\n\uC18C\uBAA8
+    \uAC00\uB2A5 \uD69F\uC218: 1\uD68C"
+  price: 150
+  isAllowedBinding: 1
+  shape: {x: 3, y: 3}
+  shapeOffsets: []
+  pivot: {x: 1, y: 1}
+  cellSprites:
+  - {fileID: 616425321, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 1204949921, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 347185059, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 1715849391, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 613844348, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 1480160419, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 2547846182754773752, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 1968417403, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  - {fileID: 1070482116, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
+  isConsumable: 1
+  maxUses: 1
+  cooldownTurns: 4
+  skillPrefab: {fileID: 5558115182442371640, guid: 5f4118ee52f8a0249ac6782a99affa7a, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: a0caf5fa7da276244bdf4b1ab6808f88, type: 2}
+  <SkillDelay>k__BackingField: 2
+  mainTargetGroup: 8
+  mainTargetIndex: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 0
+  isHealSkill: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 0
+  canCritical: 0
+  <DefaultStatusEffect>k__BackingField:
+  - type: 9
+    targetGroup: 8
+    durationTurns: 3
+    power: 0
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

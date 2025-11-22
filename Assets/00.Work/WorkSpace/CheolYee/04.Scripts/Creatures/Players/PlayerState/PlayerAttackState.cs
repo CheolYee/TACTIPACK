@@ -9,6 +9,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
@@ -150,6 +151,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                         {
                             //그리드에서 제거
                             grid?.Remove(inst);
+                            
+                            //뒷배경 다시 복구
+                            GridInventoryUIController.Instance?.gridSlots?.RefreshColors();
 
                             //턴 UI 바인딩 해제
                             var panel = TurnUiContainerPanel.Instance;
@@ -159,7 +163,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 }
             }
             
-            SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
+            SkillCameraManager.Instance?.SetAnchor(CamAnchor.Target, ctx.User.transform);
             //만약 캐릭터가 움직이는 상태였다면
             if (ctx.Stance == AttackStance.StepForward || ctx.Stance == AttackStance.DashToTarget)
             {
@@ -170,7 +174,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 if (_isExiting) yield break;
             }
 
-            HudManager.Instance.ShowAll();
+            HudManager.Instance?.ShowAll();
             yield return new WaitForSeconds(0.5f);
             
             //턴메니저에 보낼 스킬 종료 이벤트

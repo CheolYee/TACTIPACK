@@ -147,20 +147,45 @@ MonoBehaviour:
   statusIconEntries:
   - type: 1
     icon: {fileID: 21300000, guid: f5b5cad18cc1a02479f8bc52dea51729, type: 3}
+    title: "\uCD9C\uD608"
+    description: "\uC77C\uC815 \uD134\uAC04 \uD134\uC774 \uC885\uB8CC\uB420 \uB54C
+      \uC911\uCCA9\uB418\uB294 \uC9C0\uC18D \uD53C\uD574\uB97C \uBC1B\uC2B5\uB2C8\uB2E4."
   - type: 2
     icon: {fileID: 21300000, guid: b0895005de94fca439d918280b0bcee8, type: 3}
+    title: "\uD654\uC0C1"
+    description: "\uC77C\uC815 \uD134\uAC04 \uACF5\uACA9\uC744 \uBC1B\uC744 \uB54C
+      \uCD94\uAC00 \uD53C\uD574\uB97C \uC785\uC2B5\uB2C8\uB2E4."
   - type: 3
     icon: {fileID: 21300000, guid: 0e698422b4d4f294b81949b9f785dccf, type: 3}
+    title: "\uAE30\uC808"
+    description: "\uC77C\uC815 \uD134\uAC04 \uC544\uBB34 \uD589\uB3D9\uC744 \uD560
+      \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
   - type: 4
     icon: {fileID: 21300000, guid: e7038728f60734a42ba8e925dd695c8c, type: 3}
+    title: "\uB370\uBBF8\uC9C0 \uC99D\uAC00"
+    description: "\uC785\uD788\uB294 \uD53C\uD574\uAC00 \uC77C\uC815 % \uC99D\uAC00\uD569\uB2C8\uB2E4."
   - type: 5
     icon: {fileID: 21300000, guid: 101f0ada7a88c2a40946b80b655443a6, type: 3}
+    title: "\uB370\uBBF8\uC9C0 \uAC10\uC18C"
+    description: "\uC785\uD788\uB294 \uD53C\uD574\uAC00 \uC77C\uC815 % \uAC10\uC18C\uD569\uB2C8\uB2E4."
   - type: 6
     icon: {fileID: 21300000, guid: d82853d9dd68fd44291514b8fa1358da, type: 3}
+    title: "\uCE58\uBA85\uD0C0 \uD655\uB960 \uC99D\uAC00"
+    description: "\uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC77C\uC815\uB7C9 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   - type: 7
     icon: {fileID: 21300000, guid: 6ace284510dc51a4e854f775a34dd6f1, type: 3}
+    title: "\uCE58\uBA85\uD0C0 \uD655\uB960 \uAC10\uC18C"
+    description: "\uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC77C\uC815\uB7C9 \uAC10\uC18C\uD569\uB2C8\uB2E4."
   - type: 8
     icon: {fileID: 21300000, guid: e71ce84c67cf7614f9db9ca359452650, type: 3}
+    title: "\uBCA0\uB9AC\uC5B4"
+    description: "\uC77C\uC815 \uD134\uAC04 \uBAA8\uB4E0 \uACF5\uACA9\uC758 \uB370\uBBF8\uC9C0\uB97C\n1\uD68C
+      \uBC29\uC5B4\uD558\uB294 \uBCF4\uD638\uB9C9\uC744 \uC0DD\uC131\uD569\uB2C8\uB2E4."
+  - type: 9
+    icon: {fileID: 21300000, guid: 4ae5d482e265d824eaafefb2148851ee, type: 3}
+    title: "\uCD5C\uD6C4\uC758 \uC800\uD56D"
+    description: "\uC8FD\uC74C\uC5D0 \uC774\uB974\uB294 \uD53C\uD574\uB97C \uBC1B\uC744
+      \uC2DC\n1\uD68C \uBC29\uC5B4\uD558\uBA70, \uCCB4\uB825\uC774 1\uC774 \uB429\uB2C8\uB2E4."
 --- !u!223 &8677213625788769304
 Canvas:
   m_ObjectHideFlags: 0

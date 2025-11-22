@@ -12,6 +12,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
         AttackDown, //공격력 감소
         CritUp, //치명타 확률 증가
         CritDown, //치명타 확률 감소
-        Barrier
+        Barrier, //베리어
+        LastStand //무적
     }
 }

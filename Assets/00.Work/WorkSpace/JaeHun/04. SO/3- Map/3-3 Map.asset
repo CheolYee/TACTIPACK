@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 3-3 Map
   m_EditorClassIdentifier: 
-  mapName: RestRoom
-  mapType: 0
+  mapName: "\uD734\uC2DD \uBC29"
+  mapType: 3
   nextMap:
   - {fileID: 11400000, guid: 654db25b94fc00b4eb0bad8d24677f8b, type: 2}
   - {fileID: 11400000, guid: 8be25f22bd077c141ae4c71fbce02025, type: 2}

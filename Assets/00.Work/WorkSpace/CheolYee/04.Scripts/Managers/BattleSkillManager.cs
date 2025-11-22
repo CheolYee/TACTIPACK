@@ -8,6 +8,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
@@ -15,7 +16,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
     public class BattleSkillManager : MonoSingleton<BattleSkillManager>
     {
         [SerializeField] private List<AgentHealth> players = new();
-        [SerializeField] private List<AgentHealth> enemies = new();
+        [SerializeField] private List<AgentHealth> enemy = new();
 
         private bool _battleEnded;
         
@@ -29,15 +30,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
         public void RegisterEnemy(AgentHealth health)
         {
             if (health == null) return;
-            if (!enemies.Contains(health))
-                enemies.Add(health);
+            if (!enemy.Contains(health))
+                enemy.Add(health);
         }
         
         public void Unregister(AgentHealth health)
         {
             if (health == null) return;
             players.Remove(health);
-            enemies.Remove(health);
+            enemy.Remove(health);
 
             CheckBattleEnd();
         }
@@ -47,7 +48,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             if (_battleEnded) return;
 
             bool anyPlayerAlive = players.Any(h => h != null);
-            bool anyEnemyAlive = enemies.Any(h => h != null);
+            bool anyEnemyAlive = enemy.Any(h => h != null);
 
             if (!anyEnemyAlive && anyPlayerAlive)
             {
@@ -90,7 +91,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
         {
             List<Enemy> enemyCompos = new();
 
-            foreach (var e in this.enemies)
+            foreach (var e in this.enemy)
             {
                 enemyCompos.Add(e.Owner as Enemy);
             }
@@ -99,7 +100,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
         }
         
         public List<AgentHealth> GetPlayerTargets() => players.Where(t => t != null).ToList();
-        public List<AgentHealth> GetEnemyTargets() => enemies.Where(t => t != null).ToList();
+        public List<AgentHealth> GetEnemyTargets() => enemy.Where(t => t != null).ToList();
         
         public List<AgentHealth> GetAlliesOf(Agent user)
         {
@@ -127,97 +128,45 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
 
         public SkillContent BuildContext(Agent user, AttackItemSo item, AttackStance? overrideStance = null)
         {
-            List<AgentHealth> allTargets;
-            
-            if (item != null && item.IsHealSkill)
-                allTargets = GetAlliesOf(user); //힐 스킬 
-            else
-                allTargets = GetOpponentsOf(user); //공격/디버프
-            
-            var ctx = new SkillContent()
+            var ctx = new SkillContent
             {
                 User = user,
-                TargetingMode = item.TargetingMode,
-                Stance = overrideStance ?? AttackStance.Stationary,
-                ApproachOffset = item.ApproachOffset,
+                Stance = overrideStance ?? (item != null ? item.DefaultStance : AttackStance.Stationary),
+                ApproachOffset = item != null ? item.ApproachOffset : 0f,
                 Targets = new List<AgentHealth>()
             };
-            
-            if (allTargets.Count == 0)
+
+            if (user == null || item == null)
             {
-                ctx.CastPoint = user.transform.position;
+                ctx.CastPoint = user != null ? user.transform.position : Vector3.zero;
                 return ctx;
             }
-            
-            //여기서 타겟팅 모드에 따라서 타겟 설정도 같이함
-            switch (item.TargetingMode)
+
+            //메인 타겟 계산
+            var mainTargets = ResolveTargets(item.MainTargetGroup, user, ctx, item.MainTargetIndex);
+            ctx.Targets.AddRange(mainTargets);
+
+            if (ctx.Targets.Count > 0)
             {
-                //단일 타겟 (원하는 인덱스)
-                case TargetingMode.Single:
+                ctx.CastPoint = GetCenterPoint(ctx.Targets);
+
+                //HP바 표시도 동일 타겟 기준으로
+                var bars = new List<HealthBarUi>();
+                foreach (var h in ctx.Targets)
                 {
-                    //최소 0 최대는 모든 타겟 -1(인덱스 변환)을 넘지 않도록 해준다. (실수방지)
-                    int idx = Mathf.Clamp(item.TargetIndex, 0, allTargets.Count - 1);
-                    //타겟 설정한다
-                    AgentHealth target = allTargets[idx];
-
-                    //원하는 한 타겟만 컨테이너에 담는다
-                    ctx.Targets.Add(target);
-                    //그 놈 위치도 담는다
-                    ctx.CastPoint = target.transform.position;
-
-                    //타겟 된 놈만 체력바 보여준다
-                    HudManager.Instance.ShowOnly(target.HealthBarInstance);
-                    break;
+                    if (h != null && h.HealthBarInstance != null)
+                        bars.Add(h.HealthBarInstance);
                 }
 
-                //범위 공격 (전체임)
-                case TargetingMode.Area:
-                {
-                    //모든 타겟을 추가한다
-                    ctx.Targets.AddRange(allTargets);
-                    ctx.CastPoint = GetCenterPoint(allTargets);
-
-                    //모든 타겟의 전체 체력을 다 가져오기
-                    List<HealthBarUi> bars = allTargets.Select(h => h.HealthBarInstance).ToList();
-                    //모든 타겟을 때려박아 HP 보여주기
+                if (bars.Count > 0)
                     HudManager.Instance.ShowOnly(bars);
-                    break;
-                }
-
-                //랜덤 한놈 선택
-                case TargetingMode.Random:
-                {
-                    //모든 타겟의 개수만큼 인덱스를 랜덤으로 빼온다
-                    int idx = Random.Range(0, allTargets.Count);
-                    //타겟을 설정한다
-                    AgentHealth target = allTargets[idx];
-                    
-                    //설정한 타겟을 컨테이너에 담는다.
-                    ctx.Targets.Add(target);
-                    //타겟 위치도 담는다.
-                    ctx.CastPoint = target.transform.position;
-
-                    //타겟된 놈만 보여준다
-                    HudManager.Instance.ShowOnly(target.HealthBarInstance);
-                    break;
-                }
-
-                //자기 자신 타겟
-                case TargetingMode.Self:
-                default:
-                {
-                    //자기 위치를 스킬 캐스팅 위치로 한다
-                    ctx.CastPoint = user.transform.position;
-
-                    if (user.Health != null)
-                    {
-                        //타겟 컨테이너에 자신을 추가한다 (혹시 모를 자가치유 스킬 위해)
-                        ctx.Targets.Add(user.Health);
-                        //자기 자신을 보여준다.
-                        HudManager.Instance.ShowOnly(user.Health.HealthBarInstance);
-                    }
-                    break;
-                }
+            }
+            else
+            {
+                //타겟이 없으면 자기 자신 기준
+                ctx.CastPoint = user.transform.position;
+                if (user.Health != null)
+                    HudManager.Instance.ShowOnly(user.Health.HealthBarInstance);
             }
 
             return ctx;
@@ -230,6 +179,99 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
                 sum += h.transform.position;
 
             return sum / list.Count;
+        }
+        
+        public List<AgentHealth> ResolveTargets(
+            SkillTargetGroup group,
+            Agent user,
+            SkillContent ctx,
+            int index = 0)
+        {
+            var allies   = GetAlliesOf(user);
+            var enemies  = GetOpponentsOf(user);
+
+            switch (group)
+            {
+                case SkillTargetGroup.Targets:
+                    return ctx.Targets;
+
+                case SkillTargetGroup.Self:
+                    return (user.Health != null) 
+                        ? new List<AgentHealth> { user.Health }
+                        : new List<AgentHealth>();
+
+                case SkillTargetGroup.AlliesAll:
+                    return allies;
+
+                case SkillTargetGroup.EnemiesAll:
+                    return enemies;
+
+                case SkillTargetGroup.AlliesRandomOne:
+                {
+                    var picked = PickRandomOne(allies);
+                    return picked != null ? new List<AgentHealth> { picked } : new List<AgentHealth>();
+                }
+
+                case SkillTargetGroup.EnemiesRandomOne:
+                {
+                    var picked = PickRandomOne(enemies);
+                    return picked != null ? new List<AgentHealth> { picked } : new List<AgentHealth>();
+                }
+
+                case SkillTargetGroup.AlliesByIndex:
+                    return (index >= 0 && index < allies.Count)
+                        ? new List<AgentHealth> { allies[index] }
+                        : new List<AgentHealth>();
+
+                case SkillTargetGroup.EnemiesByIndex:
+                    return (index >= 0 && index < enemies.Count)
+                        ? new List<AgentHealth> { enemies[index] }
+                        : new List<AgentHealth>();
+                
+                case SkillTargetGroup.NextAllyInOrder:
+                {
+                    var next = GetNextAllyInOrder(user, allies);
+                    return (next != null) 
+                        ? new List<AgentHealth> { next } 
+                        : new List<AgentHealth>();
+                }
+
+                default:
+                    return new List<AgentHealth>();
+            }
+        }
+
+        private AgentHealth GetNextAllyInOrder(Agent user, List<AgentHealth> allies)
+        {
+            if (user == null) return null;
+
+            // 1) 플레이어라면 Turn UI 순서 먼저 시도
+            if (user is Player player)
+            {
+                var panel = TurnUiContainerPanel.Instance;
+                if (panel != null)
+                {
+                    var nextFromPanel = panel.GetNextPlayerHealthAfter(player);
+                    if (nextFromPanel != null)
+                        return nextFromPanel;
+                }
+            }
+
+            // 2) fallback: allies 리스트에서 자기 Health 기준으로 다음 인덱스
+            if (allies == null || allies.Count == 0 || user.Health == null)
+                return null;
+
+            // null 정리
+            allies = allies.Where(h => h != null).ToList();
+            if (allies.Count == 0)
+                return null;
+
+            int myIndex = allies.IndexOf(user.Health);
+            if (myIndex < 0)
+                return allies[0]; // 목록 안에 없으면 그냥 첫 아군 반환
+
+            int nextIndex = (myIndex + 1) % allies.Count;
+            return allies[nextIndex];
         }
     }
 }

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 1-4 Map
   m_EditorClassIdentifier: 
-  mapName: RestMap
+  mapName: "\uD734\uC2DD \uBC29"
+  mapType: 3
   nextMap:
   - {fileID: 11400000, guid: cc3a1c4b00d02e942bbb86ad6ded8264, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: -31.55, y: 48.69}
+  isLock: 1
+  stageData: {fileID: 0}

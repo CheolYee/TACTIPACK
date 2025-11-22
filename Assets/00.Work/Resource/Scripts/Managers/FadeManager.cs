@@ -46,7 +46,7 @@ namespace _00.Work.Resource.Scripts.Managers
             });
         }
 
-        private void FadeIn(Action onFadeComplete = null)
+        public void FadeIn(Action onFadeComplete = null)
         {
             if (fadeCanvasGroup == null)
                 return;

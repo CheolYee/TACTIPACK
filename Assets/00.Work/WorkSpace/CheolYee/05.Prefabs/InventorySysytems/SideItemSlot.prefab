@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 4553475237170889901}
   - component: {fileID: 9111132884663277514}
   - component: {fileID: 5023578221703253873}
+  - component: {fileID: 3150856488133232466}
   - component: {fileID: 4142405879354722961}
   m_Layer: 5
   m_Name: SideItemSlot
@@ -180,6 +181,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &3150856488133232466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866072850908043126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4168e9e68864aa29d153b982511b2a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: 
+  body: 
+  showDelay: 1
 --- !u!114 &4142405879354722961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +211,7 @@ MonoBehaviour:
   icon: {fileID: 5741711283908126382}
   countText: {fileID: 8426723155137216040}
   highLight: {fileID: 5308657158918963172}
+  _tooltip: {fileID: 3150856488133232466}
 --- !u!1 &5057002787407471631
 GameObject:
   m_ObjectHideFlags: 0

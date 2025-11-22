@@ -15,7 +15,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         
         [Header("Settings")]
         [field: SerializeField] public float MaxHp {get; private set;} //HP
-        [field: SerializeField] public float DefaultDamage {get; private set;} //기본 데미지
         [field: SerializeField] public float DefaultCritChance {get; private set;} //크리티컬 확률
         [field: SerializeField] public List<AttackItemSo> Attacks {get; private set;}
     }

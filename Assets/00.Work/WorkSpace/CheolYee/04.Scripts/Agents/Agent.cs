@@ -90,11 +90,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             if(findComponent is T findCompo)
                 return findCompo;
             
-            //그럼에도 찾지 못했다면 기본 타입을 반환합니다. (실패)
+            //그럼에도 찾지 못했다면 기본 타입을 반환
             return default(T);
         }
 
-        //Agent에 데미지를 주기 위함입니다. AgentHealth와 연결됩니다
+        //Agent에 데미지를 주기 위함
         public void ApplyDamage(DamageContainer attackData)
         {
             actionData.LastAttackData = attackData;
@@ -112,7 +112,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         //크확 계산기
         public virtual float GetBaseCritChance()
         {
-            // 기본은 0 (필요한 쪽에서 override)
+            // 기본은 0 (필요한 쪽에서 오버라이드)
             return 0f;
         }
         

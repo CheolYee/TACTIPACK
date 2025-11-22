@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
@@ -54,8 +55,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                         break;
                 }
             }
+            
+            float passiveUp = 0f;
+            var psm = PassiveStatManager.Instance;
+            if (psm != null && _owner != null)
+                passiveUp = psm.GetAttackUpFor(_owner);
 
-            float result = 1f + up - down;
+            float result = 1f + up - down + passiveUp;
             //공격력 0 밑으로는 내려가면 안돼요!!!!!!!!!!!!!!!!!!!!!!!
             return Mathf.Max(0f, result);
         }
@@ -83,8 +89,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                         break;
                 }
             }
+            
+            float passiveCrit = 0f;
+            var psm = PassiveStatManager.Instance;
+            if (psm != null && _owner != null)
+                passiveCrit = psm.GetCritAddFor(_owner);
 
-            return up - down;
+            return up - down + passiveCrit;
         }
         
         
@@ -170,7 +181,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                             //파워와 스택 쌓인 개수만큼 최대체력 비례 데미지
                             float ratio = effect.Power; 
                             float damage = _health.MaxHealth * ratio * effect.StackCount;
-                            _health.ApplyDirectDamage(damage);
+                            _health.ApplyDirectDamage(damage, DamageTextKind.Bleed);
                         }
                         break;
                 }
@@ -181,7 +192,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                     effect.Type == StatusEffectType.AttackUp  ||
                     effect.Type == StatusEffectType.AttackDown||
                     effect.Type == StatusEffectType.CritUp    ||
-                    effect.Type == StatusEffectType.CritDown)
+                    effect.Type == StatusEffectType.CritDown ||
+                    effect.Type == StatusEffectType.LastStand)
                 {
                     effect.RemainingTurns--;
                 }
@@ -205,7 +217,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
             {
                 // 예시: 공격 데미지의 (Power%) * 스택 만큼 추가 피해
                 float extra = attackData.Damage * burn.Power * burn.StackCount;
-                _health.ApplyDirectDamage(extra);
+                _health.ApplyDirectDamage(extra, DamageTextKind.Burn);
             }
         }
 
@@ -240,6 +252,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                 Cleanup();
             }
             RaiseStatusChanged(); //UI 아이콘 갱신
+            
+            
 
             //실제 데미지는 0으로
             attackData.Damage = 0f;
@@ -264,6 +278,65 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                 default:
                     return false;
             }
+        }
+        
+        /// <summary>
+        /// 디버프 턴을 감소시킨다.
+        /// targetType == StatusEffectType.None 이면 모든 디버프 대상
+        /// </summary>
+        public bool ReduceDebuffs(StatusEffectType targetType, int reduceTurns)
+        {
+            if (reduceTurns <= 0) return false;
+
+            bool changed = false;
+
+            foreach (var effect in _effects)
+            {
+                if (effect.RemainingTurns <= 0) continue;
+                if (!IsDebuff(effect.Type)) continue;
+
+                // 특정 타입만 지우고 싶으면 type 매칭
+                if (targetType != StatusEffectType.None && effect.Type != targetType)
+                    continue;
+
+                effect.RemainingTurns -= reduceTurns;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                Cleanup();
+                RaiseStatusChanged();
+            }
+
+            return changed;
+        }
+        
+        //무적버프 처리기계
+        public bool TryApplyLastStand(float prevHealth, ref float newHealth)
+        {
+            //이미 죽어있거나(이상 상황 방지), 이번 공격이 치명타가 아니면 무시
+            if (prevHealth <= 0f) return false;
+            if (newHealth > 0f) return false;
+
+            //살아 있는 라스트 스탠드 버프 찾기
+            var lastStand = _effects.FirstOrDefault(e =>
+                e.Type == StatusEffectType.LastStand && e.RemainingTurns > 0);
+
+            if (lastStand == null)
+                return false;
+
+            //여기서 버프 발동: 체력을 1로 고정
+            newHealth = 1f;
+
+            //버프 턴 1 감소 (원하면 여기서 바로 0으로 만들어도 됨)
+            lastStand.RemainingTurns--;
+
+            //리스트/아이콘 정리
+            Cleanup();
+            RaiseStatusChanged();
+
+            return true;
         }
     }
 }

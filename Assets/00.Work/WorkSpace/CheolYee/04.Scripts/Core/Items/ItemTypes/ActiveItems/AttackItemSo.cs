@@ -11,21 +11,33 @@ using Random = UnityEngine.Random;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems
 {
-    public enum StatusTargetGroup
+    public enum SkillTargetGroup
     {
         Targets = 0,     //지금 스킬이 잡고 있는 타겟
         Self,            //자신
         AlliesAll,       //아군 전체
         AlliesRandomOne, //랜덤 아군 1인
         EnemiesAll,      //적 전체
-        EnemiesRandomOne //랜덤 적 1인
+        EnemiesRandomOne, //랜덤 적 1인
+        AlliesByIndex, // 아군 인덱스로 1명
+        EnemiesByIndex, // 적 인덱스로 1명
+        NextAllyInOrder //플레이어 전용 다음 턴의 캐릭터
+    }
+    
+    [Serializable]
+    public struct StatusCleanseInfo
+    {
+        public StatusEffectType type; //어떤 디버프를 깎을지 (None이면 모든 디버프)
+        public SkillTargetGroup targetGroup; //자신, 아군 전체, 타겟들 등
+        public int durationTurns; //몇 턴 깎을지
+        public int percentage; //적용 확률(0~100)
     }
     
     [Serializable]
     public struct StatusEffectInfo
     {
         public StatusEffectType type; //타입
-        public StatusTargetGroup targetGroup; //어떤 대상에게 상태이상 거는지
+        public SkillTargetGroup targetGroup; //어떤 대상에게 상태이상 거는지
         public int durationTurns; //유지 턴 수
         public float power; //세기
         public int percentage; //확률
@@ -37,11 +49,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
     {
         [Header("Attack")]
         [field: SerializeField] public AttackDataSo DefaultAttackData { get; private set; }
-        [field: SerializeField] public int TargetIndex { get; private set; }
         [field: SerializeField] public float SkillDelay { get; private set; }
         
+        [Header("Main Target")]
+        [SerializeField] private SkillTargetGroup mainTargetGroup = SkillTargetGroup.EnemiesAll;
+        [SerializeField] private int mainTargetIndex;
+        
+        public SkillTargetGroup MainTargetGroup => mainTargetGroup;
+        public int MainTargetIndex => mainTargetIndex;
+        
         [Header("Flow Policy")]
-        [field: SerializeField] public TargetingMode TargetingMode { get; private set; }
         [field: SerializeField] public AttackStance DefaultStance { get; private set; } 
         [field: SerializeField] public float ApproachOffset { get; private set; }
         
@@ -50,6 +67,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
         [SerializeField] private bool useMaxHpRatioHeal;
         [SerializeField] [Range(0f, 1f)] private float maxHpHealRatio = 0.3f;
         public bool IsHealSkill => isHealSkill;
+
 
         [Header("Damage Timing")] 
         [SerializeField] private bool damageOnImpactEvent; //허용 시 애니메이션 이벤트에서 데미지 처리
@@ -61,6 +79,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
         //스킬이 거는 상태이상
         [Header("Status Effects")]
         [field :SerializeField] public StatusEffectInfo[] DefaultStatusEffect { get; private set; } 
+        [Header("Cleanse Effects")]
+        [field: SerializeField] public StatusCleanseInfo[] CleanseEffects { get; private set; }
         
         private DamageContainer _damageContainer;
 
@@ -89,49 +109,65 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
             return null;
         }
 
-        //스킬 데이터를 돌며 데미지 주기
+        //스킬 데이터를 돌며 스킬에 맞는 효과 실행
         public void ApplyDamageNow(SkillContent ctx)
         {
-            if (ctx == null || ctx.Targets == null || ctx.Targets.Count == 0)
-                return;
-            
+            if (ctx == null) return;
+
             Agent attacker = ctx.User;
-            StatusEffectController attackerStatus = attacker != null ? attacker.StatusEffectController : null;
+            if (attacker == null) return;
+
+            var mgr = BattleSkillManager.Instance;
+            if (mgr == null) return;
+
+            StatusEffectController attackerStatus = attacker.StatusEffectController;
             
+            var mainTargets = ctx.Targets;
+            if (mainTargets == null || mainTargets.Count == 0)
+                return;
+
+
+            // 1. 힐 스킬 처리
             if (isHealSkill)
             {
-                foreach (var target in ctx.Targets)
+                //BuildContext 에서 이미 확정된 mainTargets 사용
+                foreach (var target in mainTargets)
                 {
                     if (target == null) continue;
 
-                    float healAmount = 0f;
+                    float healAmount;
 
                     if (useMaxHpRatioHeal)
                     {
-                        //최대체력 비례 힐
                         float ratio = maxHpHealRatio;
                         healAmount = target.MaxHealth * ratio;
                     }
                     else
                     {
-                        //기본(공격력 = 회복량)
                         healAmount = DefaultAttackData != null ? DefaultAttackData.Damage : 0f;
                     }
 
                     target.Heal(healAmount);
                 }
-                return; //힐은 여기서 끝
+
+                //디버프 스테이터스 적용 처리
+                ApplyStatusEffects(attacker, ctx, stunProc: false);
+                ApplyCleanseEffects(attacker, ctx);
+                return;
             }
 
-            //공격력 벞디벞 반영
+
+            // 2. 데미지 스킬 처리
+            
+            // 데미지 계산
             float baseDamage = DefaultAttackData != null ? DefaultAttackData.Damage : 0f;
             float attackRate = attackerStatus != null ? attackerStatus.GetAttackRate() : 1f;
             float scaledDamage = baseDamage * attackRate;
-            
+
             bool isCritical = false;
             if (canCritical)
             {
-                float baseCrit = attacker != null ? attacker.GetBaseCritChance() : 0f;
+                float baseCrit  = attacker.GetBaseCritChance();
                 float extraCrit = attackerStatus != null ? attackerStatus.GetCritChanceModifier() : 0f;
                 float totalCrit = Mathf.Clamp01(baseCrit + extraCrit);
 
@@ -145,17 +181,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
                     }
                 }
             }
-            
+
+            // 스턴 한 번만 굴리기
             bool stunProc = false;
-            int stunRoll = Random.Range(0, 100); // 0 ~ 99
+            int stunRoll = Random.Range(0, 100); // 0~99
 
             if (DefaultStatusEffect != null)
             {
                 foreach (var status in DefaultStatusEffect)
                 {
-                    if (status.type != StatusEffectType.Stun)
-                        continue;
-                    
+                    if (status.type != StatusEffectType.Stun) continue;
+
                     if (stunRoll < status.percentage)
                     {
                         stunProc = true;
@@ -163,19 +199,20 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
                     }
                 }
             }
-            
-            _damageContainer = new DamageContainer(scaledDamage, isCritical);
 
-            //타겟에게 데미지 적용
-            foreach (AgentHealth target in ctx.Targets)
+            _damageContainer = new DamageContainer(scaledDamage, isCritical);
+            
+            foreach (var target in mainTargets)
             {
                 if (target == null) continue;
                 target.ApplyDamage(_damageContainer);
             }
 
-            //상태이상(버프/디버프/스턴/베리어) 적용
+            // 상태이상 / 디버프 제거
             ApplyStatusEffects(attacker, ctx, stunProc);
+            ApplyCleanseEffects(attacker, ctx);
         }
+
         
         private void ApplyStatusEffects(Agent attacker, SkillContent ctx, bool stunProc)
         {
@@ -190,11 +227,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
                 if (info.type == StatusEffectType.None)
                     continue;
 
-                // 스턴은 미리 굴린 결과가 false면 아예 스킵
+                //스턴은 미리 굴린 결과가 false면 스킵
                 if (info.type == StatusEffectType.Stun && !stunProc)
                     continue;
 
-                // Stun 외에도 확률을 쓰고 싶다면: percentage가 0~100 사이일 때만 처리
+                //나머지 상태이상 확률
                 if (info.type != StatusEffectType.Stun &&
                     info.percentage is > 0 and < 100)
                 {
@@ -202,8 +239,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
                     if (roll >= info.percentage)
                         continue;
                 }
-
-                List<AgentHealth> targets = ResolveStatusTargets(attacker, ctx, info, mgr);
+                
+                List<AgentHealth> targets = mgr.ResolveTargets(info.targetGroup, attacker, ctx);
                 if (targets == null || targets.Count == 0)
                     continue;
 
@@ -215,50 +252,41 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveIte
                 }
             }
         }
-
-        private List<AgentHealth> ResolveStatusTargets(
-            Agent attacker,
-            SkillContent ctx,
-            StatusEffectInfo info,
-            BattleSkillManager mgr)
+        
+        private void ApplyCleanseEffects(Agent attacker, SkillContent ctx)
         {
-            switch (info.targetGroup)
+            if (CleanseEffects == null || CleanseEffects.Length == 0) return;
+            if (attacker == null) return;
+
+            BattleSkillManager mgr = BattleSkillManager.Instance;
+            if (mgr == null) return;
+
+            foreach (var info in CleanseEffects)
             {
-                case StatusTargetGroup.Targets:
-                    //지금 스킬이 타겟으로 잡은 애들
-                    return ctx.Targets;
+                if (info.durationTurns <= 0)
+                    continue;
 
-                case StatusTargetGroup.Self:
-                    if (attacker.Health != null)
-                        return new List<AgentHealth> { attacker.Health };
-                    break;
-
-                case StatusTargetGroup.AlliesAll:
-                    return mgr.GetAlliesOf(attacker);
-
-                case StatusTargetGroup.AlliesRandomOne:
+                //확률 체크
+                if (info.percentage is > 0 and < 100)
                 {
-                    var allies = mgr.GetAlliesOf(attacker);
-                    var picked = mgr.PickRandomOne(allies);
-                    if (picked != null)
-                        return new List<AgentHealth> { picked };
-                    break;
+                    int roll = Random.Range(0, 100);
+                    if (roll >= info.percentage)
+                        continue;
                 }
 
-                case StatusTargetGroup.EnemiesAll:
-                    return mgr.GetOpponentsOf(attacker);
+                //공통 타겟 함수 사용
+                List<AgentHealth> targets = mgr.ResolveTargets(info.targetGroup, attacker, ctx);
+                if (targets == null || targets.Count == 0)
+                    continue;
 
-                case StatusTargetGroup.EnemiesRandomOne:
+                foreach (var t in targets)
                 {
-                    var enemies = mgr.GetOpponentsOf(attacker);
-                    var picked = mgr.PickRandomOne(enemies);
-                    if (picked != null)
-                        return new List<AgentHealth> { picked };
-                    break;
+                    if (t == null || t.Owner == null) continue;
+
+                    var controller = t.Owner.GetCompo<StatusEffectController>();
+                    controller?.ReduceDebuffs(info.type, info.durationTurns);
                 }
             }
-
-            return null;
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages.Maps;
+using DG.Tweening;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
@@ -10,8 +12,8 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
     public class MapManager : MonoSingleton<MapManager>
     {
         [Header("Chapter Roots (UI)")]
-        [SerializeField] private Transform chapter1Root;
-        [SerializeField] private Transform chapter2Root;
+        [SerializeField] private RectTransform chapter1Root;
+        [SerializeField] private RectTransform chapter2Root;
 
         [Header("Chapter Start Nodes")]
         [SerializeField] private List<MapSo> chapter1StartMaps = new();
@@ -19,6 +21,11 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 
         [Header("Chapter 1 Clear Nodes (엔딩 후보)")]
         [SerializeField] private List<MapSo> chapter1ClearMaps = new();
+        
+        [Header("Map Transition")]
+        [SerializeField] private float mapSlideDuration = 0.4f;
+        [SerializeField] private Vector2 mapShownPos = Vector2.zero;   // 맵이 화면에 있을 때 위치
+        [SerializeField] private Vector2 mapHiddenPos = new(0, -800f); // 화면 아래로 내려간 위치
 
         [Header("Starting Chapter")]
         [SerializeField] private int startingChapter = 1;
@@ -115,13 +122,36 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         //UI에서 클릭 시 호출
         public void OnMapClickedFromUi(MapSo map)
         {
-            if (!CanEnter(map)) return;
-            
-            _currentMapInStage = map;
-            
-            chapter1Root.gameObject.SetActive(false);
+            if (!CanEnter(map) || map == null) return;
 
-            //스테이지 메니저가 이거 받아서 처리하기
+            _currentMapInStage = map;
+
+            StartCoroutine(EnterStageRoutine(map));
+        }
+
+        private IEnumerator EnterStageRoutine(MapSo map)
+        {
+            RectTransform root = chapter1Root;
+            if (root == null) yield break;
+
+            root.gameObject.SetActive(true);
+
+            // 1) 맵을 아래로 슬라이드
+            root.anchoredPosition = mapShownPos;
+            var slideDown = root
+                .DOAnchorPos(mapHiddenPos, mapSlideDuration)
+                .SetEase(Ease.InSine);
+
+            yield return slideDown.WaitForCompletion();
+
+            if (FadeManager.Instance != null)
+            {
+                FadeManager.Instance.FadeInOut();
+                yield return new WaitForSeconds(FadeManager.Instance.fadeDuration * 2f);
+            }
+
+            // 3) 맵 UI 숨기고 실제 스테이지 진입 이벤트 쏘기
+            root.gameObject.SetActive(false);
             Bus<MapEnteredEvent>.Raise(new MapEnteredEvent(map));
         }
 
@@ -159,6 +189,34 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
             CheckChapterClear(map);
             RefreshAllNodes();
         }
+        
+        public void ShowCurrentChapterRoot(bool animated = true)
+        {
+            Transform root = null;
+
+            if (_currentChapter == 1)
+                root = chapter1Root;
+            else if (_currentChapter == 2)
+                root = chapter2Root;
+
+            if (root == null) return;
+
+            var go = root.gameObject;
+            go.SetActive(true);
+
+            if (!animated) return;
+
+            if (root is RectTransform rt)
+            {
+                // 아래에서 위로 등장
+                var originalPos = rt.anchoredPosition;
+                rt.anchoredPosition = new Vector2(originalPos.x, -Screen.height);
+
+                rt.DOAnchorPos(originalPos, 0.5f)
+                    .SetEase(Ease.OutCubic);
+            }
+        }
+        
 
         //챕터가 전부 클리어 되었는지 검사
         private void CheckChapterClear(MapSo map)

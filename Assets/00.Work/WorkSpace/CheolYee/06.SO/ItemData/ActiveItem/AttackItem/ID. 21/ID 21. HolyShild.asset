@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: ID 21. HolyShild
   m_EditorClassIdentifier: 
   itemId: 21
-  itemName: "\uD06C\uB85C\uC2A4 \uAC00\uB4DC"
+  itemName: "\uD788\uD130 \uC2E4\uB4DC"
   itemClass: 1
   icon: {fileID: 21300000, guid: d3252aab4feec0745892c0f472b5d52c, type: 3}
-  description: "\uC790\uC2E0\uC5D0\uAC8C 1\uD68C\uC6A9 \uBC29\uC5B4\uB9C9\uC744 \uB9CC\uB4E4\uC5B4
-    1\uD134\uAC04 \uBAB8\uC744 \uBCF4\uD638\uD569\uB2C8\uB2E4."
+  description: "\uD074\uB798\uC2A4 : \uC804\uC0AC\n\n\uC790\uC2E0\uC5D0\uAC8C 1\uD68C\uC6A9
+    \uBC29\uC5B4\uB9C9\uC744 \uB9CC\uB4E4\uC5B4\n1\uD134\uAC04 \uBAB8\uC744 \uBCF4\uD638\uD569\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    2\uD134"
   price: 0
   isAllowedBinding: 1
   shape: {x: 2, y: 2}
@@ -28,14 +29,19 @@ MonoBehaviour:
   - {fileID: -1542974795, guid: 7b11d1223b9f65442a19d86c775a210c, type: 3}
   - {fileID: 1534751023, guid: 7b11d1223b9f65442a19d86c775a210c, type: 3}
   - {fileID: -40799054, guid: 7b11d1223b9f65442a19d86c775a210c, type: 3}
+  isConsumable: 0
+  maxUses: 1
   cooldownTurns: 2
   skillPrefab: {fileID: 5558115182442371640, guid: f60a1e41e922aec46a6579af431755ed, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: a62c9f0c02256c24abbb25cb9f993226, type: 2}
-  <TargetIndex>k__BackingField: 0
   <SkillDelay>k__BackingField: 2
-  <TargetingMode>k__BackingField: 3
+  mainTargetGroup: 1
+  mainTargetIndex: 0
   <DefaultStance>k__BackingField: 0
   <ApproachOffset>k__BackingField: 0
+  isHealSkill: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0.3
   damageOnImpactEvent: 0
   canCritical: 1
   <DefaultStatusEffect>k__BackingField:
@@ -45,3 +51,4 @@ MonoBehaviour:
     power: 0
     percentage: 100
     stackable: 0
+  <CleanseEffects>k__BackingField: []

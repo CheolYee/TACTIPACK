@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
@@ -17,6 +16,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
     {
         public StatusEffectType type;
         public Sprite icon;
+        public string title;
+        [TextArea]
+        public string description;
     }
     
     public class HealthBarUi : MonoBehaviour
@@ -42,7 +44,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
         [SerializeField] private StatusEffectIconUi statusIconPrefab;
         [SerializeField] private StatusIconEntry[] statusIconEntries;
         
-        private Dictionary<StatusEffectType, Sprite> _statusIconMap;
+        private Dictionary<StatusEffectType, StatusIconEntry> _statusIconMap;
         private readonly Dictionary<StatusEffectType, StatusEffectIconUi> _statusIcons = new();
         
         private AgentHealth _health;
@@ -73,13 +75,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
             }
             
             //스프라이트 매핑
-            _statusIconMap = new Dictionary<StatusEffectType, Sprite>();
+            _statusIconMap = new Dictionary<StatusEffectType, StatusIconEntry>();
             if (statusIconEntries != null)
             {
                 foreach (var entry in statusIconEntries)
                 {
                     if (!_statusIconMap.ContainsKey(entry.type) && entry.icon != null)
-                        _statusIconMap.Add(entry.type, entry.icon);
+                        _statusIconMap.Add(entry.type, entry);
                 }
             }
         }
@@ -106,6 +108,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
                 _statusController.OnStatusChanged += HandleStatusChanged;
                 HandleStatusChanged(_statusController); // 초기 아이콘 세팅
             }
+        }
+        
+        private void TryGetIconEntry(StatusEffectType type, out StatusIconEntry entry)
+        {
+            if (_statusIconMap != null && _statusIconMap.TryGetValue(type, out entry)) return;
+
+            entry = default;
         }
 
         private void HandleStatusChanged(StatusEffectController controller)
@@ -145,22 +154,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
                     iconUi = Instantiate(statusIconPrefab, statusEffectRoot);
                     _statusIcons[effect.Type] = iconUi;
 
-                    Sprite sprite = GetIconSprite(effect.Type);
-                    iconUi.SetIcon(sprite, effect.RemainingTurns);
+                    TryGetIconEntry(effect.Type, out var entry);
+
+                    iconUi.SetIcon(entry.icon, effect.RemainingTurns, entry.title, entry.description);
                 }
                 else
                 {
                     iconUi.UpdateTurn(effect.RemainingTurns);
                 }
             }
-        }
-        
-        private Sprite GetIconSprite(StatusEffectType type)
-        {
-            if (_statusIconMap != null && _statusIconMap.TryGetValue(type, out var sprite))
-                return sprite;
-
-            return null;
         }
 
         public void SetName(string charName)
@@ -182,7 +184,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar
             
             if (hpText != null)
             {
-                hpText.text = currentHealth.ToString(CultureInfo.InvariantCulture);
+                hpText.text = currentHealth.ToString("N0");
             }
 
             //트윈 정리

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.SO;
 using UnityEngine;
 
 namespace _00.Work.Scripts.SO

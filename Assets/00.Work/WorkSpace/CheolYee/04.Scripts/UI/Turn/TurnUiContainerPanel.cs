@@ -70,6 +70,42 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             }
         }
         
+        public AgentHealth GetNextPlayerHealthAfter(Player player)
+        {
+            if (player == null) return null;
+            if (_slots == null || _slots.Count == 0) return null;
+
+            // 내 슬롯 인덱스 찾기
+            int startIndex = _slots.FindIndex(s => s != null && s.BoundPlayer == player);
+            if (startIndex < 0) return null;
+
+            int count = _slots.Count;
+
+            //다음 슬롯부터 한 바퀴 돌면서 살아있는 플레이어 찾기
+            for (int step = 1; step <= count; step++)
+            {
+                int idx = (startIndex + step) % count;
+                var slot = _slots[idx];
+                if (slot == null) continue;
+
+                var nextPlayer = slot.BoundPlayer;
+                if (nextPlayer == null) continue;
+
+                //죽어있으면 스킵
+                if (nextPlayer.IsDead || nextPlayer.Health == null || nextPlayer.Health.CurrentHealth <= 0f)
+                    continue;
+
+                return nextPlayer.Health;
+            }
+            
+            //뒤에 아무도 없으면 자기 자신 리턴
+            if (!player.IsDead && player.Health != null && player.Health.CurrentHealth > 0f)
+                return player.Health;
+
+            //살아있는 애가 한 명도 없으면 null
+            return null;
+        }
+        
         //슬롯 재빌드
         public void RebuildFromBattleManager()
         {

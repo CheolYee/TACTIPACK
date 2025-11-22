@@ -92,7 +92,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
     {
         [Header("Passive Item Settings")]
         [Tooltip("스탯 보정 (%)")]
-        public int cooldownTurns;
         public int healthMulti;
         public int attackMulti;
         public float critMulti;

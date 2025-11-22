@@ -28,12 +28,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             }
         }
 
-        public void SetPartyAndSpawn(List<PlayerDefaultData> partyData)
-        {
-            selectedPartyData = partyData;
-            SpawnPartyFromData(selectedPartyData);
-        }
-
         private void SpawnPartyFromData(List<PlayerDefaultData> partyData)
         {
             if (playerPrefab == null)

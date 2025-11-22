@@ -28,13 +28,13 @@ MonoBehaviour:
   - {fileID: -1993412604, guid: 06e510d885ec7f147afaee113d5013da, type: 3}
   - {fileID: -3249346109772664061, guid: 06e510d885ec7f147afaee113d5013da, type: 3}
   isConsumable: 1
-  maxUses: 1
+  maxUses: 3
   cooldownTurns: 4
   skillPrefab: {fileID: 5558115182442371640, guid: 131130818af94024db71ed32b9ed008b, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 3e59c283d86d9d34c824d816824f4fea, type: 2}
-  <TargetIndex>k__BackingField: 0
   <SkillDelay>k__BackingField: 2
-  <TargetingMode>k__BackingField: 1
+  mainTargetGroup: 2
+  mainTargetIndex: 0
   <DefaultStance>k__BackingField: 0
   <ApproachOffset>k__BackingField: 0
   isHealSkill: 1
@@ -43,3 +43,4 @@ MonoBehaviour:
   damageOnImpactEvent: 0
   canCritical: 0
   <DefaultStatusEffect>k__BackingField: []
+  <CleanseEffects>k__BackingField: []
