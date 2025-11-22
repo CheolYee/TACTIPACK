@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
+using _00.Work.WorkSpace.Hyeonjin0209._01.Scripts.System.Character;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +9,7 @@ using UnityEngine.UI;
 [Serializable]
 public struct CharacterPrefabEntry
 {
-    public CharacterType type;
+    public CharacterClass type;
     public GameObject prefab;
     public Sprite icon;
 }
@@ -18,14 +20,14 @@ public class PlayerAutoSetting : MonoBehaviour
     [SerializeField] private Transform[] SpawnPoints;//캐릭터 스폰 위치
     [SerializeField] private List<CharacterPrefabEntry> prefabEntries; // 딕셔너리
 
-    private Dictionary<CharacterType, GameObject> prefab;//프리팹 사전
-    private Dictionary<CharacterType, Sprite> sprite;//스프라이트  사전
+    private Dictionary<CharacterClass, GameObject> prefab;//프리팹 사전
+    private Dictionary<CharacterClass, Sprite> sprite;//스프라이트  사전
     private SaveData partyData; // 파티 데이터
 
     private void Start()
     {
-        prefab = new Dictionary<CharacterType, GameObject>(); // 초기화
-        sprite = new Dictionary<CharacterType, Sprite>();// 초기화
+        prefab = new Dictionary<CharacterClass, GameObject>(); // 초기화
+        sprite = new Dictionary<CharacterClass, Sprite>();// 초기화
         foreach (var e in prefabEntries)
             prefab[e.type] = e.prefab;//타입 담기(선택한 캐릭터에 따른 픠팹을 생성하기 위해서
         foreach (var o in prefabEntries)

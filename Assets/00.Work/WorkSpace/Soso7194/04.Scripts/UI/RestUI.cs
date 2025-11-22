@@ -1,4 +1,6 @@
 ﻿using System;
+using _00.Work.Resource.Scripts.Managers;
+using _00.Work.WorkSpace.JaeHun._01._Scrpits;
 using DG.Tweening;
 using TMPro;
 using Unity.VisualScripting;
@@ -24,7 +26,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             resultGroup.gameObject.SetActive(false);
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(Rest);
-            _text.text = "Rest";
+            _text.text = "휴식하기";
         }
 
         private void OnDisable()
@@ -39,14 +41,14 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         private void StartRest()
         {
-            _text.text = "Resting...";
+            _text.text = "휴식중..";
             button.onClick.RemoveAllListeners();
             OnStartFill?.Invoke();
         }
         
         private void EndRest()
         {
-            _text.text = "Result";
+            _text.text = "결과 보기";
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(Result);
         }
@@ -57,7 +59,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             resultGroup.alpha = 0f;
             resultGroup.DOFade(1f, 0.5f).onComplete += () =>
             {
-                _text.text = "Quit";
+                _text.text = "돌아가기";
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(Quit);
             };
@@ -65,11 +67,28 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         private void Quit()
         {
-            canvasGroup.DOFade(0f, 0.5f).onComplete += () =>
+            if (canvasGroup == null)
+                return;
+
+            // 연속 클릭 방지
+            button.interactable = false;
+
+            FadeManager.Instance.FadeIn(() =>
             {
                 canvasGroup.gameObject.SetActive(false);
-            };
+                button.interactable = true;
+
+                var mapMgr = MapManager.Instance;
+                if (mapMgr != null)
+                {
+                    mapMgr.CompleteCurrentMap();
+                    mapMgr.ShowCurrentChapterRoot(true);
+                }
+                
+                FadeManager.Instance.FadeOut();
+            });
         }
+
 
         private void Rest()
         {

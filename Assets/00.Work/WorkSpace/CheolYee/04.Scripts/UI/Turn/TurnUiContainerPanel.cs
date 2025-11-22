@@ -25,6 +25,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private Canvas canvas;
         [SerializeField] private VerticalLayoutGroup layoutGroup;
         
+        public bool IsTurnRunning { get; set; }
+        
         public VerticalLayoutGroup LayoutGroup => layoutGroup;
         
         private readonly List<TurnSlotUi> _slots = new();
@@ -151,17 +153,29 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
 
             PlaySwapAnimation(a.transform, b.transform);
         }
-
-        public void DebugPrintBoundSkills()
+        
+        public Coroutine StartTurnSequence()
         {
             if (_slots == null || _slots.Count == 0)
             {
                 Debug.LogWarning("TurnUiContainerPanel: 실행할 슬롯이 없습니다.");
-                return;
+                return null;
+            }
+            
+            if (IsTurnRunning)
+            {
+                Debug.LogWarning("TurnUiContainerPanel: 이미 턴 시퀀스가 실행 중입니다.");
+                return null;
             }
 
-            StartCoroutine(RunBattleTurnSequence());
-
+            return StartCoroutine(RunBattleTurnSequenceWrapper());
+        }
+        
+        private IEnumerator RunBattleTurnSequenceWrapper()
+        {
+            IsTurnRunning = true;
+            yield return RunBattleTurnSequence();
+            IsTurnRunning = false;
         }
         
         private IEnumerator RunBattleTurnSequence()
@@ -174,7 +188,21 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             //에너미 턴
             yield return RunEnemyTurnSequence();
             
+            var mgr = BattleSkillManager.Instance;
+            if (mgr != null && mgr.TryConsumeBattleResult(out var result))
+            {
+                HudManager.Instance.ShowAll();
+                Debug.Log($"===== [TurnUiContainerPanel] 전투 종료, 결과: {result} =====");
+
+                // ★ 여기서 승리/패배 이벤트 단 한 번만 발행
+                Bus<BattleResultEvent>.Raise(new BattleResultEvent(result));
+                yield break;
+            }
+
             HudManager.Instance.ShowAll();
+
+            // 전투가 아직 안 끝났으면 그때 라운드 진행 이벤트 발행
+            Bus<BattleRoundAdvancedEvent>.Raise(new BattleRoundAdvancedEvent());
 
             Debug.Log("===== [TurnUiContainerPanel] 라운드 종료 =====");
         }

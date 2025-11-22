@@ -1,4 +1,6 @@
 using System;
+using _00.Work.Resource.Scripts.Managers;
+using _00.Work.WorkSpace.JaeHun._01._Scrpits;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,11 +37,28 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         public void OnExit()
         {
+            if (panel == null)
+                return;
+
             SetIsClick(false);
-            panel.DOFade(0f, 0.5f).onComplete += () =>
+
+            // 중복 클릭 방지
+            panel.interactable = false;
+            panel.blocksRaycasts = false;
+
+            FadeManager.Instance.FadeIn(() =>
             {
                 panel.gameObject.SetActive(false);
-            };
+                
+                var mapMgr = MapManager.Instance;
+                if (mapMgr != null)
+                {
+                    mapMgr.CompleteCurrentMap();
+                    mapMgr.ShowCurrentChapterRoot();
+                }
+                
+                FadeManager.Instance.FadeOut();
+            });
         }
     }
 }

@@ -17,4 +17,4 @@ MonoBehaviour:
   nextMap:
   - {fileID: 11400000, guid: 38e77ca1ec004b34b8456f74403e6ba7, type: 2}
   isLock: 1
-  stageData: {fileID: 0}
+  stageData: {fileID: 11400000, guid: 61dd5b684e1bfe748b51f3380dcd1b50, type: 2}

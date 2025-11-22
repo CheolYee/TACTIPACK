@@ -8,7 +8,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 {
     public class Bar : MonoBehaviour
     {
-        [SerializeField] private Slider slider;
+        [SerializeField] private Image slider;
         [SerializeField] private float minFillTime = 1f; // 최소 시간
         [SerializeField] private float maxFillTime = 3f; // 최대 시간
 
@@ -17,13 +17,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         private void OnEnable()
         {
             RestUI.OnStartFill += StartFill;
-            slider.value = 0f;
+            slider.fillAmount = 0f;
         }
 
         private void OnDisable()
         {
             RestUI.OnStartFill -= StartFill;
-            slider.value = 0f;
+            slider.fillAmount = 0f;
         }
 
         public void StartFill()
@@ -40,11 +40,11 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / fillTime);
-                slider.value = t;
+                slider.fillAmount = t;
                 yield return null;
             }
 
-            slider.value = 1f;
+            slider.fillAmount = 1f;
             OnRestEnd?.Invoke();
         }
     }

@@ -19,6 +19,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
         [SerializeField] private List<AgentHealth> enemy = new();
 
         private bool _battleEnded;
+        private BattleResultType _pendingResult = BattleResultType.None;
         
         public void RegisterPlayer(AgentHealth health)
         {
@@ -54,7 +55,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             {
                 _battleEnded = true;
                 Debug.Log("[BattleSkillManager] 모든 에너미가 사망했습니다. Victory!");
-                Bus<BattleResultEvent>.Raise(new BattleResultEvent(BattleResultType.Victory));
+                _pendingResult = BattleResultType.Victory;
                 return;
             }
 
@@ -62,9 +63,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             {
                 _battleEnded = true;
                 Debug.Log("[BattleSkillManager] 모든 플레이어가 사망했습니다. Defeat...");
-                Bus<BattleResultEvent>.Raise(new BattleResultEvent(BattleResultType.Defeat));
+                _pendingResult = BattleResultType.Defeat;
             }
         }
+        
+        public bool TryConsumeBattleResult(out BattleResultType result)
+        {
+            result = BattleResultType.None;
+
+            if (!_battleEnded || _pendingResult == BattleResultType.None)
+                return false;
+
+            result = _pendingResult;
+
+            // 한 번 소비하면 다시 안 나오도록 비워둠
+            _pendingResult = BattleResultType.None;
+            return true;
+        }
+
 
         private List<AgentHealth> GetTargetsForUser(Agent user)
         {
@@ -85,18 +101,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             }
             
             return playerCompos;
-        }
-        
-        public List<Enemy> GetEnemies()
-        {
-            List<Enemy> enemyCompos = new();
-
-            foreach (var e in this.enemy)
-            {
-                enemyCompos.Add(e.Owner as Enemy);
-            }
-            
-            return enemyCompos;
         }
         
         public List<AgentHealth> GetPlayerTargets() => players.Where(t => t != null).ToList();
@@ -239,6 +243,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
                 default:
                     return new List<AgentHealth>();
             }
+        }
+        
+        public void ResetBattleState()
+        {
+            _battleEnded = false;
+
+            // 혹시 이전 전투에서 null 이 남아있을 수 있으니 한 번 정리
+            players = players.Where(h => h != null).ToList();
+            enemy   = enemy.Where(h => h != null).ToList();
         }
 
         private AgentHealth GetNextAllyInOrder(Agent user, List<AgentHealth> allies)

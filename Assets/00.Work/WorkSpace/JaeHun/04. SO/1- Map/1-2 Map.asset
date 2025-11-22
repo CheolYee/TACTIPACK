@@ -18,4 +18,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 663894eba5f98a046abe74ff4fc36332, type: 2}
   - {fileID: 11400000, guid: bcecc1f1c8bae314d864db23f65d2bb2, type: 2}
   isLock: 1
-  stageData: {fileID: 0}
+  stageData: {fileID: 11400000, guid: 61dd5b684e1bfe748b51f3380dcd1b50, type: 2}

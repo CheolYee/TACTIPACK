@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 2-1 Map
   m_EditorClassIdentifier: 
-  mapName: EnemyRoom
+  mapName: "\uC77C\uBC18 \uBC29"
   mapType: 0
   nextMap:
   - {fileID: 11400000, guid: 244e8c22f2238914291d0cbe4d270f10, type: 2}
   isLock: 0
-  stageData: {fileID: 0}
+  stageData: {fileID: 11400000, guid: 61dd5b684e1bfe748b51f3380dcd1b50, type: 2}

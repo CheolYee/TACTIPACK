@@ -5,6 +5,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem.SIdeInventoryItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -44,7 +45,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         private int _dragRotation; //드래그 중 회전(0/90/180/270)
         private int _originRotation; //회전값 저장
         private Vector2Int _lastAnchor = new(int.MinValue, int.MinValue); //유령용
-        private Vector2Int _originCell = new(int.MinValue, int.MinValue); //처음 집었던 셀
         
         
         //바인딩 모드
@@ -139,7 +139,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 inst.InitUses(so.maxUses);
             }
             
-            _originCell =  new Vector2Int(int.MinValue, int.MinValue);
             StartDrag(inst, so, 0, DragOrigin.Side, sideInventoryManager);
             _pendingRefund = true;
         }
@@ -165,6 +164,26 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
 
         private void Update()
         {
+            if (IsBlockedByTurn())
+            {
+                //드래그 중이면 강제로 취소
+                if (_dragItem != null)
+                {
+                    StopDrag();
+                }
+
+                //호버도 숨기기
+                if (hover != null)
+                {
+                    hover.Hide();
+                }
+                
+                if (_ghost != null)
+                    _ghost.Hide();
+
+                return; //입력 처리 전부 스킵
+            }
+            
             HandleInput();
 
             //호버 업데이트
@@ -288,9 +307,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                     //슬롯 배경 색 갱신(있다면)
                     if (gridSlots != null) gridSlots.RefreshColors();
 
-                    //처음 잡았던 셀 기억하기
-                    _originCell = cell;
-
                     //드래그 시작(기존 회전 유지)
                     StartDrag(picked, so, picked.rotation, DragOrigin.Grid, null);
                 }
@@ -387,6 +403,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             {
                 Debug.LogWarning("해당 위치에 배치할 수 없습니다.");
             }
+        }
+        
+        private bool IsBlockedByTurn()
+        {
+            var panel = TurnUiContainerPanel.Instance;
+            return panel != null && panel.IsTurnRunning;
         }
     }
 }

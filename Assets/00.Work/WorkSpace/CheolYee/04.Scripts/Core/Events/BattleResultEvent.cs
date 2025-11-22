@@ -3,7 +3,8 @@
     public enum BattleResultType
     {
         Victory, //승리
-        Defeat //패배
+        Defeat, //패배
+        None
     }
 
     public struct BattleResultEvent : IEvent

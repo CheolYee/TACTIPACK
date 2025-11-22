@@ -72,12 +72,12 @@ namespace _00.Work.Resource.Scripts.Managers
             });
         }
 
-        public void FadeInOut()
+        public void FadeInOut(Action onFadeComplete = null)
         {
             FadeIn(() =>
             {
                 DOTween.KillAll();
-                FadeOut();
+                FadeOut(onFadeComplete);
             });
         }
 

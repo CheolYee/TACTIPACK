@@ -4,6 +4,7 @@ using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages.Maps;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using DG.Tweening;
 using UnityEngine;
 
@@ -30,12 +31,17 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         [Header("Starting Chapter")]
         [SerializeField] private int startingChapter = 1;
         
+        private Vector2 _chapter1ShownPos;
+        private Vector2 _chapter2ShownPos;
+        private bool _rootPosCached;
+        
         private readonly Dictionary<MapSo, MapNode> _nodeViews = new();
         private readonly Dictionary<MapSo, MapNodeState> _nodeStates = new();
 
         private int _currentChapter;
         private MapSo _currentMapInStage;   //지금 전투/이벤트 중인 맵
         private MapSo _lastClearedMap; 
+        public MapSo CurrentMapInStage => _currentMapInStage;
         private void Start()
         {
             CacheNodeViews();
@@ -46,6 +52,8 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         {
             _nodeViews.Clear();
 
+            CacheRootPositions();
+            
             if (chapter1Root != null)
             {
                 MapNode[] nodes = chapter1Root.GetComponentsInChildren<MapNode>(true);
@@ -63,6 +71,19 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
                     RegisterNode(node);
                 }
             }
+        }
+        
+        private void CacheRootPositions()
+        {
+            if (_rootPosCached) return;
+
+            if (chapter1Root != null)
+                _chapter1ShownPos = chapter1Root.anchoredPosition;
+
+            if (chapter2Root != null)
+                _chapter2ShownPos = chapter2Root.anchoredPosition;
+
+            _rootPosCached = true;
         }
 
         private void RegisterNode(MapNode node)
@@ -146,13 +167,14 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 
             if (FadeManager.Instance != null)
             {
-                FadeManager.Instance.FadeInOut();
-                yield return new WaitForSeconds(FadeManager.Instance.fadeDuration * 2f);
+                
+                FadeManager.Instance.FadeIn(() =>
+                {
+                    root.gameObject.SetActive(false);
+                    Bus<MapEnteredEvent>.Raise(new MapEnteredEvent(map));
+                    FadeManager.Instance.FadeOut();
+                });
             }
-
-            // 3) 맵 UI 숨기고 실제 스테이지 진입 이벤트 쏘기
-            root.gameObject.SetActive(false);
-            Bus<MapEnteredEvent>.Raise(new MapEnteredEvent(map));
         }
 
         public void CompleteCurrentMap()
@@ -192,30 +214,41 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         
         public void ShowCurrentChapterRoot(bool animated = true)
         {
-            Transform root = null;
+            TurnUiContainerPanel.Instance.IsTurnRunning = true;
+            CacheRootPositions();   // 혹시 아직 안 했으면 한 번 캐싱
 
-            if (_currentChapter == 1)
-                root = chapter1Root;
-            else if (_currentChapter == 2)
-                root = chapter2Root;
+            RectTransform rt = null;
+            Vector2 shownPos = Vector2.zero;
 
-            if (root == null) return;
+            if (_currentChapter == 1 && chapter1Root != null)
+            {
+                rt = chapter1Root;
+                shownPos = _chapter1ShownPos;
+            }
+            else if (_currentChapter == 2 && chapter2Root != null)
+            {
+                rt = chapter2Root;
+                shownPos = _chapter2ShownPos;
+            }
 
-            var go = root.gameObject;
+            if (rt == null) return;
+
+            var go = rt.gameObject;
             go.SetActive(true);
 
-            if (!animated) return;
-
-            if (root is RectTransform rt)
+            if (!animated)
             {
-                // 아래에서 위로 등장
-                var originalPos = rt.anchoredPosition;
-                rt.anchoredPosition = new Vector2(originalPos.x, -Screen.height);
-
-                rt.DOAnchorPos(originalPos, 0.5f)
-                    .SetEase(Ease.OutCubic);
+                rt.anchoredPosition = shownPos;
+                return;
             }
+
+            // 항상 아래에서 시작해서, 캐싱해 둔 "보이는 위치"로 올라오게
+            rt.anchoredPosition = new Vector2(shownPos.x, -Screen.height);
+
+            rt.DOAnchorPos(shownPos, 0.5f)
+                .SetEase(Ease.OutCubic);
         }
+
         
 
         //챕터가 전부 클리어 되었는지 검사

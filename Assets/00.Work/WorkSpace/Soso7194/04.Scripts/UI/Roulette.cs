@@ -1,9 +1,13 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+
+// 추가
+using _00.Work.Resource.Scripts.Managers;                // FadeManager
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages;    // StageManager
+using _00.Work.WorkSpace.JaeHun._01._Scrpits;           // MapManager, MapSo
 
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 {
@@ -30,21 +34,40 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         }
 
         private ResultType _fixedResult;
-        
-        void Start()
+
+        private void Start()
         {
             DecideResultAtGameStart();
         }
 
         private void OnEnable()
         {
-            wheel.gameObject.transform.rotation = new Quaternion(0f, 0f, 45f, 0f);
-            spinButton.onClick.RemoveAllListeners();
-            spinButton.onClick.AddListener(Spin);
-            text.text = "Spin";
+            if (wheel != null)
+            {
+                // 기존 new Quaternion(...) 대신 안전하게 Euler 사용
+                wheel.rotation = Quaternion.Euler(0f, 0f, 45f);
+            }
+
+            if (spinButton != null)
+            {
+                spinButton.onClick.RemoveAllListeners();
+                spinButton.onClick.AddListener(Spin);
+                spinButton.interactable = true;
+            }
+
+            if (text != null)
+                text.text = "돌리기";
+
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 1f;
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+                canvasGroup.gameObject.SetActive(true);
+            }
         }
 
-        void DecideResultAtGameStart()
+        private void DecideResultAtGameStart()
         {
             int value = Random.Range(0, 100);
 
@@ -52,35 +75,39 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             else if (value < 90) _fixedResult = ResultType.Shop;
             else if (value < 95) _fixedResult = ResultType.Chest;
             else _fixedResult = ResultType.Rest;
-
-            Debug.Log($"[Roulette] 이번 스테이지 결과 = {_fixedResult}");
         }
 
         private void Spin()
         {
-            text.text = "Spinning...";
+            if (wheel == null || spinButton == null || text == null)
+                return;
+
+            text.text = "회전 중";
             spinButton.onClick.RemoveAllListeners();
-            
+            spinButton.interactable = false;
+
             float targetAngle = GetTargetAngle(_fixedResult);
             float finalAngle = -(targetAngle + 360f * extraSpins);
 
-            wheel.DORotate(new Vector3(0, 0, finalAngle), spinDuration, RotateMode.FastBeyond360)
+            wheel
+                .DORotate(new Vector3(0, 0, finalAngle), spinDuration, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutQuart)
                 .OnComplete(() =>
                 {
-                    Debug.Log($"[Roulette] 최종 멈춤: {_fixedResult}");
-                    text.text = "Quit";
+                    text.text = "확인";     // 결과 확정 후 확인 버튼
                     spinButton.onClick.RemoveAllListeners();
                     spinButton.onClick.AddListener(Exit);
+                    spinButton.interactable = true;
                 });
         }
 
-        float GetTargetAngle(ResultType type)
+        private float GetTargetAngle(ResultType type)
         {
             switch (type)
             {
                 case ResultType.Enemy:
-                    return 306f * Random.Range(0.2f, 0.7f); // 적 영역 중심
+                    // 적 영역 대충 가운데
+                    return 306f * Random.Range(0.2f, 0.7f);
                 case ResultType.Shop:
                     return 306f + Random.Range(6f, 12f);
                 case ResultType.Chest:
@@ -94,10 +121,57 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         private void Exit()
         {
-            canvasGroup.DOFade(0f, 0.5f).onComplete += () =>
+            if (canvasGroup == null)
+                return;
+
+            // 중복 입력 방지
+            if (!canvasGroup.interactable)
+                return;
+
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            if (spinButton != null) spinButton.interactable = false;
+
+            // 전역 페이드 인/아웃 (화면 자연스럽게 전환용)
+            FadeManager.Instance?.FadeIn(() =>
             {
                 canvasGroup.gameObject.SetActive(false);
-            };
+
+                var mapMgr   = MapManager.Instance;
+                var stageMgr = StageManager.Instance;
+
+                if (mapMgr == null || stageMgr == null)
+                    return;
+
+                MapSo currentMap = mapMgr.CurrentMapInStage;
+                if (currentMap == null)
+                    return;
+
+                switch (_fixedResult)
+                {
+                    case ResultType.Enemy:
+                        // 일반/보스 방과 동일하게 적 스폰
+                        stageMgr.StartEnemyStage(currentMap);
+                        break;
+
+                    case ResultType.Shop:
+                        stageMgr.OpenShop(currentMap);
+                        break;
+
+                    case ResultType.Chest:
+                        // 보물 = Reward 방
+                        stageMgr.OpenReward(currentMap);
+                        break;
+
+                    case ResultType.Rest:
+                        stageMgr.OpenRest(currentMap);
+                        break;
+                }
+                
+                FadeManager.Instance?.FadeOut();
+                
+            });
+
         }
     }
 }

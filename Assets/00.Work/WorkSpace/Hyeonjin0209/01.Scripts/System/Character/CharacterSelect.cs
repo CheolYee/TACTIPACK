@@ -1,45 +1,39 @@
-﻿using UnityEngine;
+﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
+using UnityEngine;
 using UnityEngine.UI;
 
-public enum CharacterType
+namespace _00.Work.WorkSpace.Hyeonjin0209._01.Scripts.System.Character
 {
-    wizard,//마법사
-    barbara,//힐러
-    darious,//전사
-    iceWizard,//마법사
-    leeYuri,//힐러
-    garen// 전사
-}
-
-public class CharacterSelect : MonoBehaviour
-{
-
-    public CharacterType characterType;
-    private Image _image;
-
-    private void Awake()
-    {
-        _image = GetComponent<Image>();
-    }
-
-    public void PointerDown()
+    public class CharacterSelect : MonoBehaviour
     {
 
-        var chmanager = CharacterSelectManager.Instance;
+        public CharacterClass characterType;
+        private Image _image;
 
-        if (chmanager.choiceCharacter.Contains(this))
+        private void Awake()
         {
-            chmanager.choiceCharacter.Remove(this);
-            _image.color = Color.white;
-            return;
+            _image = GetComponent<Image>();
         }
-        if (chmanager.choiceCharacter.Count >= 3) return;
 
-        if(!chmanager.choiceCharacter.Contains(this))
+        public void PointerDown()
         {
-            bool isSelected = chmanager.SelectCharacter(this);
-            if (isSelected)
-                _image.color = Color.gray;
+
+            var chmanager = CharacterSelectManager.Instance;
+
+            if (chmanager.choiceCharacter.Contains(this))
+            {
+                chmanager.choiceCharacter.Remove(this);
+                _image.color = Color.white;
+                return;
+            }
+            if (chmanager.choiceCharacter.Count >= 3) return;
+
+            if(!chmanager.choiceCharacter.Contains(this))
+            {
+                bool isSelected = chmanager.SelectCharacter(this);
+                if (isSelected)
+                    _image.color = Color.gray;
+            }
         }
     }
 }

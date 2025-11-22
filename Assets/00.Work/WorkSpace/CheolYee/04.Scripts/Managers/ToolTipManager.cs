@@ -57,11 +57,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             LayoutRebuilder.ForceRebuildLayoutImmediate(root);
             SetPosition(screenPos);
         }
-        
-        public void ShowAtMouse(string title, string body)
-        {
-            Show(title, body, Input.mousePosition);
-        }
 
         public void Hide()
         {

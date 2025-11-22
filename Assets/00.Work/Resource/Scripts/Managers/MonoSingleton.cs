@@ -33,7 +33,7 @@ namespace _00.Work.Scripts.Managers
                 Destroy(gameObject);
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (_instance == this)
                 _instance = null;
