@@ -3,6 +3,7 @@ using System.Linq;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
@@ -54,7 +55,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             if (!anyEnemyAlive && anyPlayerAlive)
             {
                 _battleEnded = true;
-                Debug.Log("[BattleSkillManager] 모든 에너미가 사망했습니다. Victory!");
                 _pendingResult = BattleResultType.Victory;
                 return;
             }
@@ -62,7 +62,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             if (!anyPlayerAlive && anyEnemyAlive)
             {
                 _battleEnded = true;
-                Debug.Log("[BattleSkillManager] 모든 플레이어가 사망했습니다. Defeat...");
                 _pendingResult = BattleResultType.Defeat;
             }
         }
@@ -75,8 +74,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
                 return false;
 
             result = _pendingResult;
-
-            // 한 번 소비하면 다시 안 나오도록 비워둠
+            
             _pendingResult = BattleResultType.None;
             return true;
         }
@@ -103,8 +101,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
             return playerCompos;
         }
         
-        public List<AgentHealth> GetPlayerTargets() => players.Where(t => t != null).ToList();
-        public List<AgentHealth> GetEnemyTargets() => enemy.Where(t => t != null).ToList();
+        public List<AgentHealth> GetPlayerTargets() => players.Where(IsAlive).ToList();
+        public List<AgentHealth> GetEnemyTargets() => enemy.Where(IsAlive).ToList();
         
         public List<AgentHealth> GetAlliesOf(Agent user)
         {
@@ -123,11 +121,20 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
         public AgentHealth PickRandomOne(List<AgentHealth> list)
         {
             if (list == null) return null;
-            list = list.Where(h => h != null).ToList();
+            list = list.Where(IsAlive).ToList();
             if (list.Count == 0) return null;
 
             int idx = Random.Range(0, list.Count);
             return list[idx];
+        }
+        
+        private bool IsAlive(AgentHealth h)
+        {
+            if (h == null) return false;
+            if (h.Owner == null) return false;
+            if (h.Owner.IsDead) return false;
+            if (h.CurrentHealth <= 0f) return false;
+            return true;
         }
 
         public SkillContent BuildContext(Agent user, AttackItemSo item, AttackStance? overrideStance = null)
@@ -223,11 +230,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
                 }
 
                 case SkillTargetGroup.AlliesByIndex:
+                    allies = allies.Where(IsAlive).ToList();
                     return (index >= 0 && index < allies.Count)
                         ? new List<AgentHealth> { allies[index] }
                         : new List<AgentHealth>();
 
                 case SkillTargetGroup.EnemiesByIndex:
+                    enemies = enemies.Where(IsAlive).ToList();
                     return (index >= 0 && index < enemies.Count)
                         ? new List<AgentHealth> { enemies[index] }
                         : new List<AgentHealth>();
@@ -285,6 +294,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
 
             int nextIndex = (myIndex + 1) % allies.Count;
             return allies[nextIndex];
+        }
+        
+        public void ClearAllStatusEffectsForAllAgents()
+        {
+            ClearStatusForList(players);
+        }
+        
+        private void ClearStatusForList(List<AgentHealth> list)
+        {
+            if (list == null) return;
+
+            foreach (var h in list)
+            {
+                if (h == null || h.Owner == null) continue;
+
+                var controller = h.Owner.GetCompo<StatusEffectController>();
+                controller?.ClearAllStatusEffects();
+            }
         }
     }
 }

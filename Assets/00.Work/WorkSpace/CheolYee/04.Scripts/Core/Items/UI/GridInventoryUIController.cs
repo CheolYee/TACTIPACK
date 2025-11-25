@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem.SIdeInventoryItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -146,6 +148,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         //드래그 끝
         private void StopDrag()
         {
+            SoundManager.Instance.PlaySfx(SfxId.CellClick);
             if (_pendingRefund && _dragOrigin == DragOrigin.Side && _sideManagerForRefund != null && _dragData != null)
             {
                 _sideManagerForRefund.AddItem(_dragData);
@@ -212,6 +215,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             {
                 if (!outOfBounds && Input.GetMouseButtonDown(0))
                 {
+                    SoundManager.Instance.PlaySfx(SfxId.CellClick);
                     ItemInstance picked = grid.GetItemAtCell(cell);
                     _onBindingItemSelected?.Invoke(picked);
                 }
@@ -223,6 +227,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
             //회전
             if (_dragItem != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
+                SoundManager.Instance.PlaySfx(SfxId.RotateItem);
                 _dragRotation = (_dragRotation + 90) % 360; //90도 회전
                 _lastAnchor = new Vector2Int(int.MinValue, int.MinValue); //유령 재배치 유도
             }
@@ -322,7 +327,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 return;
             }
 
-            if (!_dragIcon.gameObject.activeSelf) _dragIcon.gameObject.SetActive(true);
+            if (!_dragIcon.gameObject.activeSelf)
+            {
+                ToolTipManager.Instance?.Hide();
+                _dragIcon.gameObject.SetActive(true);
+            }
 
             //화면 좌표 그대로 따라가기
             RectTransform t = (RectTransform)_dragIcon.transform;
@@ -338,6 +347,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 _ghost.Hide();
                 return;
             }
+            
+            ToolTipManager.Instance.HideImmediate();
             
             bool ok = grid.CanPlace(_dragItem, _dragData, anchorCell, _dragRotation); //가능 여부 검사
             _ghost.SetOk(ok);
@@ -408,7 +419,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
         private bool IsBlockedByTurn()
         {
             var panel = TurnUiContainerPanel.Instance;
-            return panel != null && panel.IsTurnRunning;
+            return panel.IsTurnRunning;
         }
     }
 }

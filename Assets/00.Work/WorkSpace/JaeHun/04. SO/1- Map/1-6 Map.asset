@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: 1-6 Map
   m_EditorClassIdentifier: 
   mapName: "\uBCF4\uC0C1 \uBC29"
+  mapId: 16
   mapType: 2
   nextMap:
   - {fileID: 11400000, guid: e7b71b1aab57fb345a1d0b938960fa2c, type: 2}

@@ -99,10 +99,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         {
             actionData.LastAttackData = attackData;
             
+            if (attackData.Damage <= 0) return;
+            
             if (StatusEffectController != null &&
                 StatusEffectController.TryBlockDamage(ref attackData))
             {
-                // 막힌 경우: HP 변화 없음, 화상 추가 피해도 발생 안 함
                 return;
             }
             

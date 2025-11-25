@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using _00.Work.Resource.Scripts.Managers;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Save;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages.Maps;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;  // ★ 메인 메뉴 로드용
 
 namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 {
@@ -23,6 +26,9 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         [Header("Chapter 1 Clear Nodes (엔딩 후보)")]
         [SerializeField] private List<MapSo> chapter1ClearMaps = new();
         
+        [Header("Chapter 2 Clear Nodes (엔딩 후보)")]
+        [SerializeField] private List<MapSo> chapter2ClearMaps = new();
+        
         [Header("Map Transition")]
         [SerializeField] private float mapSlideDuration = 0.4f;
         [SerializeField] private Vector2 mapShownPos = Vector2.zero;   // 맵이 화면에 있을 때 위치
@@ -30,6 +36,14 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 
         [Header("Starting Chapter")]
         [SerializeField] private int startingChapter = 1;
+
+        [Header("Chapter Backgrounds")] // ★ 챕터별 배경
+        [SerializeField] private GameObject chapter1Background;
+        [SerializeField] private GameObject chapter2Background;
+
+        [Header("Game Clear")] //전체 클리어용
+        [SerializeField] private GameObject gameClearPanel;
+        [SerializeField] private int mainMenuSceneIndex;
         
         private Vector2 _chapter1ShownPos;
         private Vector2 _chapter2ShownPos;
@@ -42,10 +56,144 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         private MapSo _currentMapInStage;   //지금 전투/이벤트 중인 맵
         private MapSo _lastClearedMap; 
         public MapSo CurrentMapInStage => _currentMapInStage;
+
         private void Start()
         {
             CacheNodeViews();
-            Initialize();
+            
+            SoundManager.Instance.PlayBgm(BgmId.Map);
+            
+            var saveMgr = SaveManager.Instance;
+            MapProgressSaveData save = null;
+
+            if (saveMgr != null)
+            {
+                save = saveMgr.LoadMapProgress();
+            }
+
+            if (save is { nodes: { Count: > 0 } })
+            {
+                //저장된 맵 진행도 적용
+                ApplyMapProgress(save);
+            }
+            else
+            {
+                //세이브가 없으면 기본 초기 상태 생성
+                Initialize();
+            }
+        }
+
+        // 현재 챕터에 맞게 배경/루트 활성화 갱신 ★
+        private void UpdateChapterVisuals()
+        {
+            // 배경
+            if (chapter1Background != null)
+                chapter1Background.SetActive(_currentChapter == 1);
+
+            if (chapter2Background != null)
+                chapter2Background.SetActive(_currentChapter == 2);
+
+            // 맵 루트
+            if (chapter1Root != null)
+                chapter1Root.gameObject.SetActive(_currentChapter == 1);
+
+            if (chapter2Root != null)
+                chapter2Root.gameObject.SetActive(_currentChapter == 2);
+        }
+
+        // 현재 챕터의 루트 반환 ★
+        private RectTransform GetCurrentChapterRoot()
+        {
+            if (_currentChapter == 1) return chapter1Root;
+            if (_currentChapter == 2) return chapter2Root;
+            return chapter1Root != null ? chapter1Root : chapter2Root;
+        }
+        
+        //한줄딸깍 저장메서드
+        public void SaveCurrentMapProgress()
+        {
+            var saveMgr = SaveManager.Instance;
+            if (saveMgr == null) return;
+
+            var data = BuildMapProgressSaveData();
+            saveMgr.SaveMapProgress(data);
+        }
+        
+        //저장된 맵 데이터를 기반으로 맵 설정하기
+        private MapProgressSaveData BuildMapProgressSaveData()
+        {
+            var data = new MapProgressSaveData
+            {
+                currentChapter = _currentChapter,
+                lastClearedMapId = _lastClearedMap != null ? _lastClearedMap.mapId : -1
+            };
+
+            foreach (var kv in _nodeStates)
+            {
+                MapSo map = kv.Key;
+                MapNodeState state = kv.Value;
+                if (map == null) continue;
+
+                data.nodes.Add(new MapNodeSaveEntry
+                {
+                    mapId = map.mapId,
+                    state = state
+                });
+            }
+
+            return data;
+        }
+
+        private void ApplyMapProgress(MapProgressSaveData data)
+        {
+            if (data == null)
+            {
+                Debug.LogWarning("[MapManager] 적용할 맵 세이브 데이터가 없습니다.");
+                return;
+            }
+
+            //챕터 / 현재맵 정보 세팅
+            _currentChapter = data.currentChapter > 0 ? data.currentChapter : startingChapter;
+            _currentMapInStage = null; // 로드시에는 항상 맵 UI 기준에서 시작하게
+            _lastClearedMap = FindMapById(data.lastClearedMapId);
+
+            //모든 노드를 일단 Locked로 초기화
+            _nodeStates.Clear();
+            foreach (var kv in _nodeViews)
+            {
+                MapSo map = kv.Key;
+                if (map == null) continue;
+                _nodeStates[map] = MapNodeState.Locked;
+            }
+
+            //세이브에 기록된 상태들 반영
+            if (data.nodes != null)
+            {
+                foreach (var entry in data.nodes)
+                {
+                    var map = FindMapById(entry.mapId);
+                    if (map == null) continue;
+
+                    _nodeStates[map] = entry.state;
+                }
+            }
+
+            RefreshAllNodes();
+            UpdateChapterVisuals(); // ★ 로드시 챕터 비주얼 갱신
+        }
+        
+        private MapSo FindMapById(int mapId)
+        {
+            if (mapId < 0) return null;
+
+            foreach (var kv in _nodeViews)
+            {
+                MapSo map = kv.Key;
+                if (map != null && map.mapId == mapId)
+                    return map;
+            }
+
+            return null;
         }
 
         private void CacheNodeViews()
@@ -94,7 +242,7 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
             _nodeViews.TryAdd(mapSo, node);
         }
 
-        public void Initialize()
+        private void Initialize()
         {
             _nodeStates.Clear();
 
@@ -127,6 +275,7 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
             }
 
             RefreshAllNodes();
+            UpdateChapterVisuals(); // ★ 초기화 시에도 비주얼 갱신
         }
 
         public bool CanEnter(MapSo map)
@@ -145,6 +294,12 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         {
             if (!CanEnter(map) || map == null) return;
 
+            var battle = BattleSkillManager.Instance;
+            if (battle != null)
+            {
+                battle.ClearAllStatusEffectsForAllAgents();
+            }
+            
             _currentMapInStage = map;
 
             StartCoroutine(EnterStageRoutine(map));
@@ -152,7 +307,7 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 
         private IEnumerator EnterStageRoutine(MapSo map)
         {
-            RectTransform root = chapter1Root;
+            RectTransform root = GetCurrentChapterRoot(); // ★ 현재 챕터 루트 사용
             if (root == null) yield break;
 
             root.gameObject.SetActive(true);
@@ -167,7 +322,6 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 
             if (FadeManager.Instance != null)
             {
-                
                 FadeManager.Instance.FadeIn(() =>
                 {
                     root.gameObject.SetActive(false);
@@ -208,7 +362,7 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
                 }
             }
 
-            CheckChapterClear(map);
+            CheckChapterClear(map); // ★ 챕터 클리어/게임 클리어 체크
             RefreshAllNodes();
         }
         
@@ -216,6 +370,8 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
         {
             TurnUiContainerPanel.Instance.IsTurnRunning = true;
             CacheRootPositions();   // 혹시 아직 안 했으면 한 번 캐싱
+            
+            SoundManager.Instance.PlayBgm(BgmId.Map);
 
             RectTransform rt = null;
             Vector2 shownPos = Vector2.zero;
@@ -233,6 +389,8 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 
             if (rt == null) return;
 
+            UpdateChapterVisuals(); // ★ 루트/배경 동기화
+
             var go = rt.gameObject;
             go.SetActive(true);
 
@@ -249,14 +407,111 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
                 .SetEase(Ease.OutCubic);
         }
 
-        
+        // 1챕터 클리어 시 2챕터 오픈 ★
+        private void OpenChapter2()
+        {
+            _currentChapter = 2;
+
+            // 2챕터 시작 노드 열어주기 (이미 Cleared인 노드는 그대로 유지)
+            foreach (var start in chapter2StartMaps)
+            {
+                if (start == null) continue;
+
+                if (_nodeStates.TryGetValue(start, out var state) &&
+                    state == MapNodeState.Cleared)
+                    continue;
+
+                _nodeStates[start] = MapNodeState.Available;
+            }
+
+            UpdateChapterVisuals();
+        }
+
+        // 전체 게임 클리어 처리 ★
+        private void HandleGameClear()
+        {
+            Debug.Log("[MapManager] 게임 클리어!");
+
+            // 1) 세이브 전부 삭제
+            var saveMgr = SaveManager.Instance;
+            if (saveMgr != null)
+            {
+                saveMgr.DeleteAllSaves();
+            }
+
+            // 2) 맵 UI 끄기
+            if (chapter1Root != null) chapter1Root.gameObject.SetActive(false);
+            if (chapter2Root != null) chapter2Root.gameObject.SetActive(false);
+
+            // 3) 클리어 패널 표시
+            if (gameClearPanel != null)
+            {
+                gameClearPanel.SetActive(true);
+            }
+            else
+            {
+                // 패널이 없으면 바로 메인 메뉴로
+                OnGameClearConfirm();
+            }
+        }
+
+        // 클리어 패널의 버튼에서 호출하면 됨 ★
+        public void OnGameClearConfirm()
+        {
+            var fade = FadeManager.Instance;
+            if (fade != null)
+            {
+                fade.FadeToSceneAsync(mainMenuSceneIndex);
+            }
+            else
+            {
+                SceneManager.LoadScene(mainMenuSceneIndex);
+            }
+        }
 
         //챕터가 전부 클리어 되었는지 검사
         private void CheckChapterClear(MapSo map)
         {
-            if (_currentChapter == 1 && chapter1ClearMaps.Contains(map))
+            if (map == null)
             {
-                //TODO:2챕터 오픈
+                Debug.LogWarning("[MapManager] CheckChapterClear 호출됐지만 map 이 null 입니다.");
+                return;
+            }
+
+            Debug.Log($"[MapManager] CheckChapterClear : currentChapter={_currentChapter}, clearedMap={map.mapName} (id={map.mapId})");
+
+            // 1챕터 엔딩 노드 클리어 → 2챕터 오픈
+            if (_currentChapter == 1)
+            {
+                // 리스트 안에 있는지 확인 로그
+                foreach (var clearMap in chapter1ClearMaps)
+                {
+                    if (clearMap == null) continue;
+                    Debug.Log($"[MapManager] chapter1ClearMaps contains: {clearMap.mapName} (id={clearMap.mapId})");
+                }
+
+                if (chapter1ClearMaps.Contains(map))
+                {
+                    Debug.Log("[MapManager] Chapter 1 clear detected. Opening Chapter 2.");
+                    OpenChapter2();
+                    return;
+                }
+            }
+
+            // 2챕터 엔딩 노드 클리어 → 게임 클리어
+            if (_currentChapter == 2)
+            {
+                foreach (var clearMap in chapter2ClearMaps)
+                {
+                    if (clearMap == null) continue;
+                    Debug.Log($"[MapManager] chapter2ClearMaps contains: {clearMap.mapName} (id={clearMap.mapId})");
+                }
+
+                if (chapter2ClearMaps.Contains(map))
+                {
+                    Debug.Log("[MapManager] Chapter 2 clear detected. Game Clear!");
+                    HandleGameClear();
+                }
             }
         }
 

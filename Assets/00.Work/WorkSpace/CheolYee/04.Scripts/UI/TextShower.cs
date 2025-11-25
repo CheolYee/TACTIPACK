@@ -1,4 +1,5 @@
-﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+﻿using _00.Work.Resource.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -34,9 +35,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI
         {
             if (messageText == null || canvasGroup == null)
             {
-                Debug.LogWarning($"InventoryMessageUI: UI reference missing. Message = {message}");
                 return;
             }
+            
+            SoundManager.Instance.PlaySfx(SfxId.Error);
 
             messageText.text = message;
 

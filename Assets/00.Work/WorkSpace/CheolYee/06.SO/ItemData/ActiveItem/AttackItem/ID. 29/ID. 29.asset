@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 29
+  m_EditorClassIdentifier: 
+  itemId: 29
+  itemName: "\uAC70\uB300\uD55C \uC591\uB0A0\uB3C4\uB07C"
+  itemClass: 1
+  icon: {fileID: 21300000, guid: 88ba7fa5f5758b14f8b966d824925d46, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uC804\uC0AC\n\n\uC591\uB0A0\uB3C4\uB07C\uB97C
+    \uD06C\uAC8C \uD718\uB458\uB7EC\n\uC804\uCCB4 \uC801\uD55C\uD14C 30\uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD788\uACE0\n3\uD134\uB3D9\uC548 \uD655\uC815 \uCD9C\uD608\uC744 5%\uC785\uD799\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    2\uD134"
+  price: 150
+  isAllowedBinding: 1
+  shape: {x: 0, y: 0}
+  shapeOffsets:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 2, y: 1}
+  - {x: 1, y: 2}
+  - {x: 2, y: 2}
+  pivot: {x: 1, y: 1}
+  cellSprites:
+  - {fileID: 1513951439, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  - {fileID: 796213030, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  - {fileID: 1952107448, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  - {fileID: 1734818719, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  - {fileID: -1254718894, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  - {fileID: -7423419871906616886, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  - {fileID: 945025009, guid: c3ff032251756c44698adb7ecfcc4634, type: 3}
+  isConsumable: 0
+  maxUses: -1
+  cooldownTurns: 2
+  skillPrefab: {fileID: 5558115182442371640, guid: 07c5da52449d2f1479ab5ea30698783f, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 3098739b51397424991b162e7b2fafcb, type: 2}
+  <SkillDelay>k__BackingField: 2
+  <SfxId>k__BackingField: 11
+  mainTargetGroup: 4
+  mainTargetIndex: 0
+  <DefaultStance>k__BackingField: 2
+  <ApproachOffset>k__BackingField: 2
+  isHealSkill: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 1
+    targetGroup: 0
+    durationTurns: 3
+    power: 0.05
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

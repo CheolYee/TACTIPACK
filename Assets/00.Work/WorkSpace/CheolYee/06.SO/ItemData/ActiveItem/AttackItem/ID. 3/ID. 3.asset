@@ -43,11 +43,15 @@ MonoBehaviour:
   skillPrefab: {fileID: 5558115182442371640, guid: 5f4118ee52f8a0249ac6782a99affa7a, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: a0caf5fa7da276244bdf4b1ab6808f88, type: 2}
   <SkillDelay>k__BackingField: 2
-  mainTargetGroup: 8
-  mainTargetIndex: 0
+  <SfxId>k__BackingField: 37
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 8
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
   <DefaultStance>k__BackingField: 0
   <ApproachOffset>k__BackingField: 0
-  isHealSkill: 0
   useMaxHpRatioHeal: 0
   maxHpHealRatio: 0
   damageOnImpactEvent: 0

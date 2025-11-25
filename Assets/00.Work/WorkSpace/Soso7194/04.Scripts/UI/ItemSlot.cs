@@ -1,6 +1,7 @@
 ﻿using System;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
 using TMPro;
 using UnityEngine;
@@ -35,6 +36,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             itemImage.sprite = itemData.icon;
             itemName.text = itemData.itemName;
             _coin = itemData.price;
+            _isSell = false;
             
             _buttonText.text = $"{_coin.ToString()}$";
             tooltipTarget.SetText(itemData.itemName, itemData.description);
@@ -42,12 +44,10 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         
         public void OnClickButton()
         {
-            if (ShopManager.Instance.Coin > _coin && !_isSell) // 가지고 있는 코인보다 많으면
+            if (MoneyManager.Instance.Coin > _coin && !_isSell) // 가지고 있는 코인보다 많으면
             {
-                Debug.Log("아이템을 샀습니다!");
                 _buttonText.text = "매진";
-                ShopManager.Instance.Coin -= _coin;
-                Debug.Log($"남은 골드 : {ShopManager.Instance.Coin}");
+                MoneyManager.Instance.TrySpend(_coin);
                 SideInventoryManager.Instance.AddItem(_currentItem);
                 _isSell = true;
                 OnUICoinChanged?.Invoke();

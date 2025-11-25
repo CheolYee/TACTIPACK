@@ -65,7 +65,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI
         /// </summary>
         public void SetText(string newTitle, string newBody)
         {
-            Debug.Log($"SetText: {newTitle} -> {newBody}");
             title = newTitle;
             body = newBody;
 

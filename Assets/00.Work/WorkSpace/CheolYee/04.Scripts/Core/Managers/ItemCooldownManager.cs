@@ -29,6 +29,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             _trackedInstances.Add(item);
             _justStartedThisRound.Add(item);
         }
+        
+        public void RegisterFromLoad(ItemInstance item)
+        {
+            if (item == null) return;
+    
+            // 쿨타임을 추적 대상에는 넣되,
+            // "이번 라운드에 막 시작된 아이템"으로는 취급하지 않는다.
+            _trackedInstances.Add(item);
+            _justStartedThisRound.Remove(item);
+        }
 
         public void Unregister(OnItemReturnedToSideInventory item)
         {

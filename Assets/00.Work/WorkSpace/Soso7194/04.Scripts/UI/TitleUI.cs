@@ -1,7 +1,5 @@
 using _00.Work.Resource.Scripts.Managers;
-using _00.Work.Scripts.Managers;
 using DG.Tweening;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,96 +14,139 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         [SerializeField] private GameObject[] mainButtons;
         [SerializeField] private GameObject[] gameButtons;
         
-        [Header("Panel")]
-        [SerializeField] private GameObject settingPanel;
-        
-        [Header("ScrollBar")]
-        [SerializeField] private Slider sfxBar;
-        [SerializeField] private Slider bgmBar;
-        
         [Header("Text")]
-        [SerializeField] private TextMeshProUGUI titleText;
+        [SerializeField] private RectTransform titleText;
 
-        private bool _isSetting = false;
-        private bool _isStarting = false;
+        private bool _isSetting;
+        private bool _isStarting;
+        private bool _isGameButtonsAnimating;   // 🔹 게임 버튼 트윈 중인지 여부
+
+        private void StartClickSound()
+        {
+            SoundManager.Instance?.PlaySfx(SfxId.UiClick);
+        }
+        
+        private void StartClickSoundConfirm()
+        {
+            SoundManager.Instance?.PlaySfx(SfxId.UiConfirm);
+        }
+
+        // 🔹 공통 버튼 on/off 함수
+        private void SetButtonsInteractable(GameObject[] buttons, bool interactable)
+        {
+            if (buttons == null) return;
+
+            foreach (var obj in buttons)
+            {
+                if (obj == null) continue;
+                var btn = obj.GetComponent<Button>();
+                if (btn == null) continue;
+
+                btn.interactable = interactable;
+            }
+        }
 
         private void Start()
         {
-            sfxBar.value = SoundManager.Instance.GetSfxVolume();
-            bgmBar.value = SoundManager.Instance.GetBGMVolume();
-            
             Sequence seq = DOTween.Sequence();
 
-            seq.Append(titleText.transform.DOMove(titleText.transform.position + new Vector3(0,-400,0), 0.3f));
             foreach (var button in mainButtons)
             {
-                seq.Append(button.transform.DOMove(button.transform.position + new Vector3(650,0,0), 0.3f));
+                button.GetComponent<Button>().onClick.AddListener(StartClickSound);
             }
+
+            foreach (var button in gameButtons)
+            {
+                button.GetComponent<Button>().onClick.AddListener(StartClickSoundConfirm);
+            }
+
+            // 🔹 메인 버튼들 애니메이션 동안 클릭 막기
+            SetButtonsInteractable(mainButtons, false);
+
+            // 제목 내려오는 모션
+            if (titleText != null)
+            {
+                Vector2 titleStart = titleText.anchoredPosition;
+                seq.Append(
+                    titleText.DOAnchorPos(
+                        titleStart + new Vector2(0f, -400f),
+                        0.3f
+                    )
+                );
+            }
+
+            // 메인 버튼들 슬라이드
+            foreach (var button in mainButtons)
+            {
+                if (button == null) continue;
+
+                var rt = button.GetComponent<RectTransform>();
+                if (rt == null) continue;
+
+                Vector2 start = rt.anchoredPosition;
+
+                seq.Append(
+                    rt.DOAnchorPos(
+                        start + new Vector2(650f, 0f),
+                        0.3f
+                    )
+                );
+            }
+
+            // 🔹 트윈 끝났을 때 다시 클릭 가능
+            seq.OnComplete(() =>
+            {
+                SetButtonsInteractable(mainButtons, true);
+            });
         }
 
         public void StartGame()
         {
+            // 🔹 이미 애니 중이면 또 눌러도 무시
+            if (_isGameButtonsAnimating)
+                return;
+
             _isStarting = !_isStarting;
+            _isGameButtonsAnimating = true;
+
             Sequence seq = DOTween.Sequence();
 
-            if (_isStarting)
+            // 🔹 여기서는 gameButtons의 interactable 을 건드리지 않는다!
+
+            foreach (var button in gameButtons)
             {
-                foreach (var button in gameButtons)
+                if (button == null) continue;
+
+                var rt = button.GetComponent<RectTransform>();
+                if (rt == null) continue;
+
+                Vector2 current = rt.anchoredPosition;
+
+                if (_isStarting)
                 {
-                    seq.Append(button.transform.DOMove(button.transform.position + new Vector3(1000,0,0), 0.3f));
+                    seq.Append(
+                        rt.DOAnchorPos(
+                            current + new Vector2(1000f, 0f),
+                            0.3f
+                        )
+                    );
+                }
+                else
+                {
+                    seq.Append(
+                        rt.DOAnchorPos(
+                            current + new Vector2(-1000f, 0f),
+                            0.3f
+                        )
+                    );
                 }
             }
-            else
-            {
-                foreach (var button in gameButtons)
-                {
-                    seq.Append(button.transform.DOMove(button.transform.position + new Vector3(-1000,0,0), 0.3f));
-                }
-            }
-        }
 
-        public void NewGame()
-        {
-            fadeManager.SetActive(true);
-            Debug.Log("New Game");
-            // 대충 저장되어 있는 JSON 지우고 생성
-            FadeManager.Instance.FadeToSceneAsync(1);
-        }
-
-        public void LoadGame()
-        {
-            fadeManager.SetActive(true);
-            Debug.Log("Load Game");
-            // 대충 저장되어 있는 JSON 불러오기
-            /* if (// JSON 파일이 있으면)
+            seq.OnComplete(() =>
             {
-                FadeManager.Instance.FadeToScene(1);
-            }
-            else
-            {
-                // Debug.LogWarning("Can't Load JSON File");
-            } */
-        }
-
-        public void Setting()
-        {
-            _isSetting = !_isSetting;
-            Sequence seq = DOTween.Sequence();
-
-            if (_isSetting == true)
-            {
-                seq.Append(settingPanel.transform.DOMove(settingPanel.transform.position + new Vector3(-1000,0,0), 0.3f));
-            }
-            else
-            {
-                seq.Append(settingPanel.transform.DOMove(settingPanel.transform.position + new Vector3(1000,0,0), 0.3f));
-            }
-        }
-
-        public void Quit()
-        {
-            Debug.Log("Quit");
-            Application.Quit();
+                // 🔹 트윈 끝난 후 플래그만 해제
+                _isGameButtonsAnimating = false;
+            });
         }
     }
 }

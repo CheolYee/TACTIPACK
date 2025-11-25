@@ -13,6 +13,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private Image iconImage; //스킬이 들어왔을 때 보여줄 아이콘 이미지
         [SerializeField] private GameObject emptyFrame; //비어있을 때 보여줄 머시기
         [SerializeField] private Button bindButton; //바인딩 버튼 (클릭 시 바인드 모드 전환)
+        [SerializeField] private TooltipTarget tooltipTarget;
         
         public Player Owner { get; private set; } //이 스킬을 쓸 플레이어
         public AttackItemSo BoundSkill { get; private set; } //바인딩된 스킬 데이터
@@ -38,7 +39,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         {
             if (_locked && skill != null)
             {
-                Debug.Log("슬롯이 잠겨 있어 스킬 바인딩을 무시합니다.");
                 return;
             }
             
@@ -83,6 +83,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 iconImage.sprite =
                     hasSkill ? BoundSkill.icon != null ? BoundSkill.icon : null : null;
             }
+            
+            if (BoundItemInstance != null)
+                tooltipTarget.SetText(BoundSkill.itemName, BoundSkill.description);
+            else
+                tooltipTarget.SetText("바인딩",
+                    "슬롯을 클릭하여 바인딩 모드로 진입하세요.");
+                
+            
         }
 
         public void HandleBindButtonClicked()

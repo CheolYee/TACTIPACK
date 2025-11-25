@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 16
+  m_EditorClassIdentifier: 
+  itemId: 16
+  itemName: "\uC804\uC0AC\uC758 \uD669\uAE08 \uB9C1"
+  itemClass: 1
+  icon: {fileID: 5361152440749038816, guid: f12deab0c5d0217429b50b54ab824b07, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uC804\uC0AC\n\n\uBC18\uC9C0\uC5D0 \uB2F4\uACA8\uC788\uB294
+    \uD798\uC744 \uC0AC\uC6A9\uD574,\n1\uD134\uAC04 \uC790\uC2E0\uC5D0\uAC8C \uCE58\uBA85\uD0C0
+    \uD655\uB960 5% \uC99D\uAC00, \uACF5\uACA9\uB825 \uC99D\uAC00 5%\n\uBC84\uD504\uB97C
+    \uC5BB\uC2B5\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784: 2\uD134"
+  price: 50
+  isAllowedBinding: 1
+  shape: {x: 1, y: 1}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: 5361152440749038816, guid: f12deab0c5d0217429b50b54ab824b07, type: 3}
+  isConsumable: 0
+  maxUses: -1
+  cooldownTurns: 2
+  skillPrefab: {fileID: 5558115182442371640, guid: e452e01d985038c4eacad506e3342037, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 546c6fb7464a43e438523a0b04958e54, type: 2}
+  <SkillDelay>k__BackingField: 1
+  <SfxId>k__BackingField: 37
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 1
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 0
+  <DefaultStatusEffect>k__BackingField:
+  - type: 4
+    targetGroup: 1
+    durationTurns: 1
+    power: 0.05
+    percentage: 100
+    stackable: 1
+  - type: 6
+    targetGroup: 1
+    durationTurns: 1
+    power: 0.05
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

@@ -39,21 +39,21 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
         
         public void Show(string title, string body, Vector2 screenPos)
         {
-            if (root == null) return;
+            if (root == null || title == null || body == null) return;
 
             if (titleText != null)
-                titleText.text = title ?? string.Empty;
+                titleText.text = title;
 
             if (bodyText != null)
             {
                 bodyText.richText = true; //색 태그 등 사용 가능
-                bodyText.text = body ?? string.Empty;
+                bodyText.text = body;
             }
 
             root.gameObject.SetActive(true);
             _visible = true;
 
-            //레이아웃 갱신 한 프레임 이후에 위치를 다시 잡아주면 더 정확함
+            //레이아웃 갱신 한 프레임 이후에 위치를 다시 잡기
             LayoutRebuilder.ForceRebuildLayoutImmediate(root);
             SetPosition(screenPos);
         }

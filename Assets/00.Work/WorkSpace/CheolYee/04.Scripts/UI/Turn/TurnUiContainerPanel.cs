@@ -70,6 +70,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 _slots.Add(slot);
             }
+
+            RefreshSlotOrderTexts();
         }
         
         public AgentHealth GetNextPlayerHealthAfter(Player player)
@@ -130,6 +132,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             {
                 _slots[i].transform.SetSiblingIndex(i);
             }
+            
+            RefreshSlotOrderTexts();
         }
         
         public void SwapSlots(TurnSlotUi a, TurnSlotUi b)
@@ -152,6 +156,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             }
 
             PlaySwapAnimation(a.transform, b.transform);
+            RefreshSlotOrderTexts();
         }
         
         public Coroutine StartTurnSequence()
@@ -176,6 +181,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             IsTurnRunning = true;
             yield return RunBattleTurnSequence();
             IsTurnRunning = false;
+            
+            var mgr = BattleSkillManager.Instance;
+            if (mgr != null && mgr.TryConsumeBattleResult(out var result))
+            {
+                HudManager.Instance.ShowAll();
+                Debug.Log($"===== [TurnUiContainerPanel] 전투 종료, 결과: {result} =====");
+
+                Bus<BattleResultEvent>.Raise(new BattleResultEvent(result));
+            }
         }
         
         private IEnumerator RunBattleTurnSequence()
@@ -188,23 +202,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             //에너미 턴
             yield return RunEnemyTurnSequence();
             
-            var mgr = BattleSkillManager.Instance;
-            if (mgr != null && mgr.TryConsumeBattleResult(out var result))
-            {
-                HudManager.Instance.ShowAll();
-                Debug.Log($"===== [TurnUiContainerPanel] 전투 종료, 결과: {result} =====");
-
-                // ★ 여기서 승리/패배 이벤트 단 한 번만 발행
-                Bus<BattleResultEvent>.Raise(new BattleResultEvent(result));
-                yield break;
-            }
-
             HudManager.Instance.ShowAll();
-
-            // 전투가 아직 안 끝났으면 그때 라운드 진행 이벤트 발행
-            Bus<BattleRoundAdvancedEvent>.Raise(new BattleRoundAdvancedEvent());
-
+            
             Debug.Log("===== [TurnUiContainerPanel] 라운드 종료 =====");
+            
+            
         }
 
 
@@ -261,6 +263,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             SkillCameraManager.Instance.Reset();
             yield return new WaitForSeconds(0.5f);
             _waitingAgent = null;
+            
+            Bus<BattleRoundAdvancedEvent>.Raise(new BattleRoundAdvancedEvent());
         }
         private IEnumerator RunEnemyTurnSequence()
         {
@@ -309,7 +313,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             _waitingAgent = null;
             Debug.Log("[TurnUiContainerPanel] 에너미 턴 실행 끝");
             
-            Bus<BattleRoundAdvancedEvent>.Raise(new BattleRoundAdvancedEvent());
         }
 
         //스킬 종료 이벤트 버스가 오면 여기서 받기
@@ -353,6 +356,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 {
                     skillSlot.ClearBinding();
                 }
+            }
+        }
+        
+        private void RefreshSlotOrderTexts()
+        {
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                var slot = _slots[i];
+                if (slot == null) continue;
+                slot.SetOrderIndex(i + 1); // 1-based
             }
         }
     }

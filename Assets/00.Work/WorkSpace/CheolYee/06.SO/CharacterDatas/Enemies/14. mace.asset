@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 14. mace
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC911\uAC04 \uAD00\uB9AC\uC790"
+  <EnemyId>k__BackingField: 14
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 639a550e8d4aabb4aada6f3011e7d18d, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 150
+  <DefaultCritChance>k__BackingField: 10
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: 5deb477b94d79144a916430a78604e14, type: 2}
+  - {fileID: 11400000, guid: b6bbaa25e4cf1524c8719e42e5618023, type: 2}

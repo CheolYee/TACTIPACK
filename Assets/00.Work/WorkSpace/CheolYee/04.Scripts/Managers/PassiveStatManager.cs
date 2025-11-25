@@ -71,10 +71,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
                 PassiveItemSo so = kv.Key;
                 int count = kv.Value;
 
-                // healthMulti / attackMulti 는 % 단위라 가정 (20 == 20%)
-                _totals.hpRate     += so.healthMulti  * 0.01f * count;
+                //0~ 100%로 설정하면 됨
+                _totals.hpRate += so.healthMulti  * 0.01f * count;
                 _totals.attackRate += so.attackMulti  * 0.01f * count;
-                _totals.critAdd    += so.critMulti          * count;
+                _totals.critAdd += so.critMulti * 0.01f * count;
             }
 
             ApplyHpToTeam();

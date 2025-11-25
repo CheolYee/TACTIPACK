@@ -14,10 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CharacterName>k__BackingField: "\uC138\uC2E4"
   <CharacterId>k__BackingField: 2
+  characterDesc: "\uC9C1\uC5C5: \uC804\uC0AC\n\n\uAE30\uBCF8\uCCB4\uB825: 500\n\uAE30\uBCF8
+    \uD06C\uB9AC\uD2F0\uCEEC: 15%\n\n\uBD88\uD0C0\uB294 \uB4EF\uD55C \uBE68\uAC04
+    \uD3EC\uB2C8\uD14C\uC77C\uC744 \uD718\uB0A0\uB9AC\uBA70\n\uC804\uC7A5\uC744 \uAC00\uB974\uB294
+    \uC5EC\uAC80\uC0AC\uC785\uB2C8\uB2E4.\n\uD300\uC744 \uC9C0\uD0A4\uAE30 \uC704\uD574\uC11C\uB77C\uBA74\n\uB204\uAD6C\uBCF4\uB2E4
+    \uC55E\uC5D0\uC11C \uCE7C\uC744 \uBE7C\uB4DC\uB294 \uC120\uBD09 \uC804\uC0AC\uC785\uB2C8\uB2E4."
   <CharacterClass>k__BackingField: 1
   <AnimatorController>k__BackingField: {fileID: 22100000, guid: 773635d4302c46045b8603101c0cc632, type: 2}
-  <CharacterOffset>k__BackingField: {x: 0, y: -0.7}
+  <CharacterOffset>k__BackingField: {x: -0.36, y: -0.46}
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: e7ac8a3211a62414abeb3e7efda1046f, type: 3}
-  <MaxHp>k__BackingField: 150
-  <DefaultDamage>k__BackingField: 20
-  <DefaultCritChance>k__BackingField: 10
+  <CharacterBoxIcon>k__BackingField: {fileID: 21300000, guid: e891560e1ca89224e99ab840500279a4, type: 3}
+  <MaxHp>k__BackingField: 500
+  <DefaultCritChance>k__BackingField: 0.15
+  <StartItem>k__BackingField: {fileID: 11400000, guid: 1568e3f751a30a940be08831a21695ab, type: 2}

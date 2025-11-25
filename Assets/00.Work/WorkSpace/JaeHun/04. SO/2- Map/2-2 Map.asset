@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: 2-2 Map
   m_EditorClassIdentifier: 
   mapName: "\uC77C\uBC18 \uBC29"
+  mapId: 22
   mapType: 0
+  coin: 0
   nextMap:
   - {fileID: 11400000, guid: 654db25b94fc00b4eb0bad8d24677f8b, type: 2}
   - {fileID: 11400000, guid: bcecc1f1c8bae314d864db23f65d2bb2, type: 2}
   isLock: 1
-  stageData: {fileID: 11400000, guid: 61dd5b684e1bfe748b51f3380dcd1b50, type: 2}
+  stageData: {fileID: 11400000, guid: b02fc26e4c8f6f9489c658d430ec8f49, type: 2}

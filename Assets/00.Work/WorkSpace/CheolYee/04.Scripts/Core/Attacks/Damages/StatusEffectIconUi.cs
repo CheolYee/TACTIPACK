@@ -23,7 +23,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
             
             if (tooltip != null)
             {
-                string body = $"{desc}\n\n남은 턴: {remainingTurns}";
+                string body = $"{desc}";
                 tooltip.SetText(title, body);
             }
         }

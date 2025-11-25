@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 6
+  m_EditorClassIdentifier: 
+  itemId: 6
+  itemName: "\uC131\uC2A4\uB7EC\uC6B4 \uBE5B"
+  itemClass: 3
+  icon: {fileID: 21300000, guid: c76a784f7a2b78e4e9c90267b7a0a831, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uD790\uB7EC\n\n\uBE5B\uC758 \uAC00\uD638\uAC00
+    \uD30C\uD2F0\uC6D0\uB4E4\uC5D0\uAC8C \uC2A4\uBA70\uB4E4\uC5B4,\n\uD30C\uD2F0\uC6D0
+    \uC804\uC6D0 \uC2E4\uB4DC 1\uD68C\uB97C \uC5BB\uC2B5\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    2\uD134"
+  price: 250
+  isAllowedBinding: 1
+  shape: {x: 3, y: 3}
+  shapeOffsets: []
+  pivot: {x: 1, y: 1}
+  cellSprites:
+  - {fileID: -821893010, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: 389726211, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: -1973803065, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: 1176411898, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: -259841458, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: -2010985304, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: 643322391565537741, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: -1814104565, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  - {fileID: 726742388, guid: 81d6a3a5d5bc3a54e86a3995ee41f01b, type: 3}
+  isConsumable: 0
+  maxUses: 0
+  cooldownTurns: 2
+  skillPrefab: {fileID: 5558115182442371640, guid: d102582c7f5fc784b98bd49e835262ab, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 63170427abb60cd4dbf4dd580a7ce002, type: 2}
+  <SkillDelay>k__BackingField: 1
+  <SfxId>k__BackingField: 16
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 2
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 0
+  <DefaultStatusEffect>k__BackingField:
+  - type: 8
+    targetGroup: 2
+    durationTurns: 1
+    power: 0
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

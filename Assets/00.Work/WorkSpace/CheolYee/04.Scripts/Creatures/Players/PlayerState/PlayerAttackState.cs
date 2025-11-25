@@ -13,6 +13,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using DG.Tweening;
 using UnityEngine;
@@ -95,6 +96,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 yield break;
             }
             
+            SkillNameLabelUI.Instance?.ShowSkillName(item.itemName);
+            ctx.User.Renderer.SetAttackSortingHighlight(true);
+            
             //리플렉션 빌드
             StanceInvoker.BuildMap(this);
 
@@ -173,6 +177,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 yield return _moveTween.WaitForCompletion();
                 if (_isExiting) yield break;
             }
+            
+            ctx.User.Renderer.SetAttackSortingHighlight(false);
 
             HudManager.Instance?.ShowAll();
             yield return new WaitForSeconds(0.5f);
@@ -230,12 +236,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
         [StanceHandler(AttackStance.StepForward)]
         private Tween HandleStepForward(SkillContent ctx)
         {
-            Debug.Log("전진 실행");
             var from = Agent.transform.position;
             var dir  = (ctx.CastPoint - from).normalized;
             var step = from + dir * ctx.ApproachOffset;
 
-            //필요시 약간의 준비 지연을 트윈으로 처리
             var seq = DOTween.Sequence();
             seq.AppendInterval(0.5f);
             seq.Append(Agent.transform.DOMove(step, 0.5f).SetEase(Ease.OutSine));
@@ -250,7 +254,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
             SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
             SkillCameraManager.Instance.ZoomTo(7f, 1f);
             
-            return Agent.transform.DOMove(ctx.CastPoint, 0.25f).SetEase(Ease.OutSine);
+            var from = Agent.transform.position;
+            var dir  = (ctx.CastPoint - from).normalized;
+            
+            var destination = ctx.CastPoint;
+
+            if (Mathf.Abs(ctx.ApproachOffset) > 0.01f)
+            {
+                destination = ctx.CastPoint - dir * ctx.ApproachOffset;
+            }
+
+            return Agent.transform.DOMove(destination, 0.25f).SetEase(Ease.OutSine);
         }
         
     }

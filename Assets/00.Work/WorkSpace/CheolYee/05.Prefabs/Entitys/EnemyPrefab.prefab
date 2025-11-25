@@ -51,6 +51,7 @@ MonoBehaviour:
   actionData:
     <LastAttackData>k__BackingField:
       Damage: 0
+      IsCritical: 0
     <Target>k__BackingField: {fileID: 0}
     <CurrentAttackItem>k__BackingField: {fileID: 0}
     <CurrentItemInst>k__BackingField:
@@ -58,6 +59,7 @@ MonoBehaviour:
       dataId: 
       rotation: 0
       remainingCooldownTurns: 0
+      remainingUses: 0
   onAgentHit:
     m_PersistentCalls:
       m_Calls:
@@ -282,7 +284,7 @@ PrefabInstance:
     - target: {fileID: 1154516064747445456, guid: d0c964d9b7be1e84599f24fbdcddefe4, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 22100000, guid: 78803041580ee8941836dd2ee7b88352, type: 2}
+      objectReference: {fileID: 22100000, guid: dd8cd4b2552730540bfc0c3840ebe7c5, type: 2}
     - target: {fileID: 2623635424984833849, guid: d0c964d9b7be1e84599f24fbdcddefe4, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.7
@@ -357,7 +359,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 5af1e212961b3422b908c8d014152d18, type: 3}
     - target: {fileID: 6265953029601938954, guid: d0c964d9b7be1e84599f24fbdcddefe4, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 6265953029601938954, guid: d0c964d9b7be1e84599f24fbdcddefe4, type: 3}
       propertyPath: m_SortingLayerID

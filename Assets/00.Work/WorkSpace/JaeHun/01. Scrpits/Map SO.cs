@@ -1,7 +1,5 @@
-﻿using System;
-using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages;
+﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 {
@@ -15,9 +13,10 @@ namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
     {
         [Header("Map Data")]
         public string mapName;
+        public int mapId;
         public MapType mapType;
+
         public MapSo[] nextMap;
-        public bool isLock = true; //처음 시작했을 때 열려있는노드면 true
         
         [Header("Stage Data")]
         public StageDataSo stageData;

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ca6713c4e54d709acfd369c0097340, type: 3}
+  m_Name: Roan
+  m_EditorClassIdentifier: 
+  <CharacterName>k__BackingField: "\uB85C\uC5D4"
+  <CharacterId>k__BackingField: 4
+  characterDesc: "\uC9C1\uC5C5: \uB9C8\uBC95\uC0AC\n\n\uAE30\uBCF8\uCCB4\uB825: 350\n\uAE30\uBCF8
+    \uD06C\uB9AC\uD2F0\uCEEC: 20%\n\n\uC815\uCCB4\uB97C \uC54C \uC218 \uC5C6\uB294
+    \uCD08\uB85D \uD53C\uBD80\uC5D0\n\uB098\uBB34 \uAC00\uBA74\uC744 \uC4F4 \uC2E0\uBE44\uB85C\uC6B4
+    \uB9C8\uBC95\uC0AC\uC785\uB2C8\uB2E4.\n\uC232\uACFC \uBCC4\uC758 \uC5B8\uC5B4\uB97C
+    \uC74A\uC870\uB9AC\uBA70,\n\uB2E4\uC591\uD55C \uC18D\uC131\uC758 \uB9C8\uBC95\uC744
+    \uC790\uC720\uC790\uC7AC\uB85C \uB2E4\uB8F9\uB2C8\uB2E4."
+  <CharacterClass>k__BackingField: 2
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 25a4a6fa5b339e74d8e5d14ef1f4e389, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.06, y: -0.25}
+  <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 0a54ebe031dbc56438f29da34b984cb3, type: 3}
+  <CharacterBoxIcon>k__BackingField: {fileID: 21300000, guid: e6b615235e6ed814187dc2e981041208, type: 3}
+  <MaxHp>k__BackingField: 300
+  <DefaultCritChance>k__BackingField: 0.2
+  <StartItem>k__BackingField: {fileID: 11400000, guid: fe026f3002b8bb745a3f86790132e412, type: 2}

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -66,7 +67,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 // 이미지 생성
                 Image img = Instantiate(tileTemplate, parentTransform);
                 img.gameObject.SetActive(true);
-                img.raycastTarget = false;
+                img.raycastTarget = true;
                 img.sprite = sprite;
                 img.type = Image.Type.Simple;
                 img.preserveAspect = false;
@@ -82,13 +83,23 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI
                 {
                     ApplyTintToImage(img, ratio);
                 }
+                
+                SetupTooltipForTile(img, data);
 
                 tiles.Add(img);
             }
 
             _rendered[inst.instanceId] = tiles;
         }
-        
+
+        private void SetupTooltipForTile(Image img, ItemDataSo data)
+        {
+            if (img == null || data == null) return;
+
+            var tooltip = img.gameObject.GetComponent<TooltipTarget>();
+            tooltip.SetText(data.itemName, data.description);
+        }
+
         private void ApplyTintToImage(Image img, float ratio)
         {
             if (img == null) return;

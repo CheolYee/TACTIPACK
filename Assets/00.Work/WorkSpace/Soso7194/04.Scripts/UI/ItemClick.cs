@@ -22,6 +22,8 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         private void OnEnable()
         {
+            panel.interactable = true;
+            panel.blocksRaycasts = true;
             itemPanel.gameObject.SetActive(false);
         }
 
@@ -32,6 +34,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         
         public void OnClick()
         {
+            SoundManager.Instance.PlaySfx(SfxId.Chest);
             SetIsClick(true);
         }
 

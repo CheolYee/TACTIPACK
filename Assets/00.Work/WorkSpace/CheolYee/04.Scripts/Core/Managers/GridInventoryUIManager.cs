@@ -4,6 +4,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.PassiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Save;
 using TMPro;
 using UnityEngine;
 
@@ -27,6 +28,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         [Header("Render Layers")]
         [SerializeField] private PlaceItemLayerUI placeLayer;
         
+        [Header("Slot Visual")]
+        [SerializeField] private GridVisualSlotsUI slotVisual;
+        
         [Header("Consumable Visual")]
         [SerializeField] private RectTransform consumableTextPrefab;   //소모성 전용 프리팹
         [SerializeField] private Vector2 consumableMargin = new(20, 20); //위치 보정
@@ -40,6 +44,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         //각 배치된 아이템의 인스턴스 아이디를 사용되어지고 있는 셀 목록(절대 좌표)를 캐싱
         private readonly Dictionary<string, List<Vector2Int>> _occupiedMap = new();
         
+        private readonly Dictionary<ItemInstance, Vector2Int> _anchorByInstance = new();
         //인스턴스별 쿨타임 텍스트
         private readonly Dictionary<ItemInstance, RectTransform> _cooldownVisuals = new();
         
@@ -50,11 +55,311 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         private readonly Dictionary<ItemInstance, RectTransform> _consumableVisuals = new();
         private readonly Dictionary<ItemInstance, int> _consumableMaxUses = new();
         
+        // 각 인스턴스가 어떤 앵커 셀에 배치됐는지 기억
         
         //재사용을 위한 임시 버퍼
         private readonly List<Vector2Int> _tmpRotated = new();
         private readonly List<int> _tmpIndices = new();
 
+        
+        #region Save
+        
+        public GridInventorySaveData CaptureSaveData()
+        {
+            var save = new GridInventorySaveData
+            {
+                width = width,
+                height = height
+            };
+
+            if (itemDatabase == null)
+            {
+                itemDatabase = FindFirstObjectByType<ItemDatabase>();
+            }
+
+            // 그리드에서 유니크한 인스턴스들 뽑기
+            EnsureGrid();
+            int w = _cells.GetLength(0);
+            int h = _cells.GetLength(1);
+
+            var visited = new HashSet<ItemInstance>();
+
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    var inst = _cells[x, y];
+                    if (inst == null || !visited.Add(inst))
+                        continue;
+
+                    // 인스턴스의 아이템 데이터 찾기
+                    ItemDataSo data = null;
+                    if (itemDatabase != null)
+                    {
+                        data = itemDatabase.GetItemById(inst.dataId);
+                    }
+
+                    if (data == null)
+                    {
+                        Debug.LogWarning($"[GridInventory] 저장 중: ItemData 를 찾지 못했습니다. dataId={inst.dataId}");
+                        continue;
+                    }
+
+                    // anchor 추출
+                    var anchorOpt = TryFindAnchorForInstance(inst, data);
+                    if (!anchorOpt.HasValue)
+                    {
+                        Debug.LogWarning($"[GridInventory] anchor 계산 실패, inst={inst.instanceId}, dataId={inst.dataId}");
+                        continue;
+                    }
+
+                    Vector2Int anchor = anchorOpt.Value;
+
+                    var entry = new GridItemSaveEntry
+                    {
+                        dataId = inst.dataId,
+                        anchorX = anchor.x,
+                        anchorY = anchor.y,
+                        rotation = inst.rotation,
+                        remainingCooldown = inst.RemainingCooldownTurns,
+                        remainingUses = inst.HasLimitedUses ? inst.RemainingUses : -1
+                    };
+
+                    save.items.Add(entry);
+                }
+            }
+
+            return save;
+        }
+        
+        public void ApplySaveData(GridInventorySaveData save)
+        {
+            // 기존 모든 아이템 제거
+            WipeAllItems();
+
+            if (save == null || save.items == null || save.items.Count == 0)
+                return;
+
+            if (itemDatabase == null)
+            {
+                itemDatabase = FindFirstObjectByType<ItemDatabase>();
+            }
+            
+            var cooldownMgr = ItemCooldownManager.Instance;
+
+            foreach (var entry in save.items)
+            {
+                if (string.IsNullOrEmpty(entry.dataId))
+                    continue;
+
+                ItemDataSo data = itemDatabase != null
+                    ? itemDatabase.GetItemById(entry.dataId)
+                    : null;
+
+                if (data == null)
+                {
+                    Debug.LogWarning($"[GridInventory] 로드 중: ItemData 를 찾지 못했습니다. dataId={entry.dataId}");
+                    continue;
+                }
+
+                // 새 인스턴스 생성
+                var inst = new ItemInstance(entry.dataId)
+                {
+                    rotation = entry.rotation
+                };
+
+                // 소모성 사용 횟수 복원
+                if (data.isConsumable)
+                {
+                    // 기본 uses 세팅
+                    inst.InitUses(data.maxUses);
+
+                    if (entry.remainingUses >= 0)
+                    {
+                        inst.ForceSetUsesForLoad(entry.remainingUses);
+                    }
+                }
+
+                // 그리드에 배치
+                Vector2Int anchor = new Vector2Int(entry.anchorX, entry.anchorY);
+
+                if (!CanPlace(inst, data, anchor, inst.rotation))
+                {
+                    Debug.LogWarning($"[GridInventory] 저장된 위치에 배치할 수 없습니다. dataId={entry.dataId}, anchor=({anchor.x},{anchor.y})");
+                    continue;
+                }
+
+                //설치
+                Place(inst, data, anchor, inst.rotation);
+                
+                //비주얼 복원
+                if (placeLayer != null)
+                {
+                    var absCells = new List<Vector2Int>();
+                    var indices  = new List<int>();
+                    GetAbsoluteCellsWithIndex(inst, data, anchor, inst.rotation, absCells, indices);
+                    placeLayer.ShowItem(inst, data, absCells, indices, inst.rotation);
+                }
+
+                // 쿨타임 복원 (배치 후에 하는 것이 중요)
+                if (entry.remainingCooldown > 0)
+                {
+                    inst.StartCooldown(entry.remainingCooldown);
+                    cooldownMgr?.RegisterFromLoad(inst);
+                }
+            }
+
+            if (slotVisual != null)
+                slotVisual.RefreshColors();
+        }
+        
+        private void WipeAllItems()
+        {
+            EnsureGrid();
+            int w = _cells.GetLength(0);
+            int h = _cells.GetLength(1);
+
+            var visited = new HashSet<ItemInstance>();
+
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    var inst = _cells[x, y];
+                    if (inst == null || !visited.Add(inst))
+                        continue;
+
+                    Remove(inst); // 기존 Remove 로 패시브/비주얼까지 정리
+                }
+            }
+
+            // 내부 배열 초기화
+            _occupiedMap.Clear();
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    _cells[x, y] = null;
+                }
+            }
+
+            placeLayer?.ClearAll();
+            
+            if (slotVisual != null)
+                slotVisual.RefreshColors();
+        }
+        
+        public void ApplyGridInventorySave(GridInventorySaveData data)
+        {
+            if (data == null)
+            {
+                Debug.LogWarning("[GridInventoryUIManager] 적용할 그리드 세이브 데이터가 없습니다.");
+                return;
+            }
+
+            EnsureGrid();
+
+            if (itemDatabase == null)
+            {
+                itemDatabase = FindFirstObjectByType<ItemDatabase>();
+            }
+
+            if (itemDatabase == null)
+            {
+                Debug.LogError("[GridInventoryUIManager] ItemDatabase가 없어 인벤토리 로드를 할 수 없습니다.");
+                return;
+            }
+
+            // 현재 그리드가 비어있다는 가정(씬 시작 시 호출용).
+            // 혹시 남아있다면 필요에 따라 전체 초기화 함수 따로 만들어서 호출해도 됨.
+            // _cells, _occupiedMap, _anchorByInstance, placeLayer.ClearAll() 등을 정리.
+
+            foreach (var entry in data.items)
+            {
+                var so = itemDatabase.GetItemById(entry.dataId);
+                if (so == null)
+                {
+                    Debug.LogWarning($"[GridInventoryUIManager] 저장된 아이템 {entry.dataId} 를 찾을 수 없어 스킵합니다.");
+                    continue;
+                }
+
+                var inst = new ItemInstance(entry.dataId);
+
+                // 소모성 사용 횟수 복원
+                if (entry.remainingUses >= 0)
+                {
+                    inst.InitUses(entry.remainingUses);
+                }
+
+                // 쿨타임 복원 (이 안에서 이벤트도 날아감)
+                if (entry.remainingCooldown > 0)
+                {
+                    inst.StartCooldown(entry.remainingCooldown);
+                }
+
+                int rotation = entry.rotation;
+                Vector2Int anchor = new Vector2Int(entry.anchorX, entry.anchorY);
+
+                // 혹시 그리드가 바뀌어서 설치가 불가능한 경우 방어
+                if (!CanPlace(inst, so, anchor, rotation))
+                {
+                    Debug.LogWarning($"[GridInventoryUIManager] 저장 위치 {anchor}에 {entry.dataId}를 둘 수 없어 스킵합니다.");
+                    continue;
+                }
+
+                Place(inst, so, anchor, rotation);
+            }
+        }
+        
+        private Vector2Int? TryFindAnchorForInstance(ItemInstance inst, ItemDataSo data)
+        {
+            if (inst == null || data == null) return null;
+            if (!_occupiedMap.TryGetValue(inst.instanceId, out var cells) || cells == null || cells.Count == 0)
+                return null;
+
+            // 현재 이 인스턴스가 차지하고 있는 셀 집합
+            var cellSet = new HashSet<Vector2Int>(cells);
+
+            // 로컬 오프셋 및 회전된 오프셋
+            var baseOffsets = data.GetShapeOffsets();
+            if (baseOffsets == null || baseOffsets.Length == 0)
+                return null;
+
+            var rotatedOffsets = GridShapeUtil.GetRotatedOffsets(baseOffsets, inst.rotation, data.pivot);
+            if (rotatedOffsets == null || rotatedOffsets.Length == 0)
+                return null;
+
+            // 가능한 모든 (absCell, rotatedOffset) 조합에 대해 anchor 후보를 찾아보고
+            // 그 anchor 로 다시 돌렸을 때 셀 집합이 정확히 같은지 검사
+            foreach (var abs in cells)
+            {
+                foreach (var ro in rotatedOffsets)
+                {
+                    // abs = anchor + ro - pivot  =>  anchor = abs - ro + pivot
+                    Vector2Int candidateAnchor = abs - ro + data.pivot;
+
+                    bool ok = true;
+                    foreach (var off in rotatedOffsets)
+                    {
+                        var c = candidateAnchor + off - data.pivot;
+                        if (!cellSet.Contains(c))
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+
+                    if (ok)
+                    {
+                        return candidateAnchor;
+                    }
+                }
+            }
+
+            return null;
+        }
+        
+        #endregion
         
         private void Awake()
         {
@@ -471,7 +776,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             EnsureGrid();
             int w = _cells.GetLength(0);
             int h = _cells.GetLength(1);
-            return cell.x >= 0 && cell.y >= 0 && cell.x < w && cell.y < h;
+            return cell is { x: >= 0, y: >= 0 } && cell.x < w && cell.y < h;
         }
 
         //아이템을 설치할 수 있는가?
@@ -508,6 +813,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
             _occupiedMap[inst.instanceId] = absCells; //인스턴스가 설치되는 셀 목록 계산
             
             inst.rotation = rotation; //회전 상태 기록
+            
+            _anchorByInstance[inst] = anchor; //앵커 기억
             
             if (_cooldownVisuals.TryGetValue(inst, out var label) && label != null)
             {
@@ -565,7 +872,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
         {
             if (inst == null) return;
     
-            // 셀 비우기 + _occupiedMap 정리
+            //셀 비우기
             if (_occupiedMap.TryGetValue(inst.instanceId, out List<Vector2Int> cells))
             {
                 foreach (Vector2Int cell in cells)
@@ -577,6 +884,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Managers
                 }
                 _occupiedMap.Remove(inst.instanceId);
             }
+            
+            //앵커도 정리
+            _anchorByInstance.Remove(inst);
 
             // 쿨타임 비주얼까지 지울지 여부
             if (!keepCooldownVisual)

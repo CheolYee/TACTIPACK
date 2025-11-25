@@ -9,6 +9,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
         public int RemainingTurns;
         public int StackCount;
         public float Power;
+        public bool JustApplied;
 
         public StatusEffectInstance(StatusEffectType type, int duration, float power)
         {
@@ -16,6 +17,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
             RemainingTurns = duration;
             Power = power;
             StackCount = 1;
+            JustApplied = true;
         }
     }
 }

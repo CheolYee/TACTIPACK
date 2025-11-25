@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 7. leader
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC655\uAD6D \uC7A5\uAD70"
+  <EnemyId>k__BackingField: 7
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: bce6d3034fe780f41977fe6b7448db23, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 250
+  <DefaultCritChance>k__BackingField: 35
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: ce7dd6c743fc38449ba27a69df99eb7d, type: 2}
+  - {fileID: 11400000, guid: 820ec8e6518c6db4d9735fb2764c906b, type: 2}
+  - {fileID: 11400000, guid: 5a6f7bef8d340c0498f303d7259450f5, type: 2}

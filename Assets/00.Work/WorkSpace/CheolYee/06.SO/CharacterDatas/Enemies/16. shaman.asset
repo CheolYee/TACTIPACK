@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 16. shaman
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC8FC\uC220\uC0AC"
+  <EnemyId>k__BackingField: 16
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 43c015d611195a846b18282dd867a12f, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 125
+  <DefaultCritChance>k__BackingField: 5
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: d989bd3ef19c8d64b824788dca1f45db, type: 2}
+  - {fileID: 11400000, guid: b7ed74f9b5d3ff34aa60246819fe0cef, type: 2}

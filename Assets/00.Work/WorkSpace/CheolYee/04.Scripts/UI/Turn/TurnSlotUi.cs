@@ -4,6 +4,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -25,6 +26,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private Image background;
         [SerializeField] private float stunFadeDuration = 0.15f;
         [SerializeField] private float stunnedDarkFactor = 0.6f;
+        
+        [Header("Order Label")]
+        [SerializeField] private TextMeshProUGUI orderText;
         public Player BoundPlayer {get; private set;}
         public bool DraggedEnough => _draggedEnough;
         
@@ -105,6 +109,12 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 _statusController.OnStatusChanged -= HandleStatusChanged;
                 _statusController = null;
             }
+        }
+        
+        public void SetOrderIndex(int index)
+        {
+            if (orderText == null) return;
+            orderText.text = index.ToString();
         }
         private void HandleStatusChanged(StatusEffectController controller)
         {

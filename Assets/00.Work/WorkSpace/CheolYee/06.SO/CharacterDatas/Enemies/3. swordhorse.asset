@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 3. swordhorse
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC655\uAD6D \uAE30\uBCD1"
+  <EnemyId>k__BackingField: 3
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: ec1b85c3c593ffd4988f24e890fcbbba, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 200
+  <DefaultCritChance>k__BackingField: 20
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: bed26df72640d7141879796ef0b2c309, type: 2}
+  - {fileID: 11400000, guid: 7d10c73f5d13d6641a10560a176976e6, type: 2}
+  - {fileID: 11400000, guid: 5a6f7bef8d340c0498f303d7259450f5, type: 2}

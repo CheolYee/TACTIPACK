@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 17
+  m_EditorClassIdentifier: 
+  itemId: 17
+  itemName: "\uD2BC\uD2BC\uD55C \uAC74\uD2C0\uB81B"
+  itemClass: 1
+  icon: {fileID: -1392887835269128539, guid: 6a02e65d73a280846b9c9d50116495ff, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uC804\uC0AC\n\n\uAC74\uD2C0\uB81B\uC73C\uB85C
+    \uACF5\uACA9\uD558\uC5EC\n\uB79C\uB364 \uB2E8\uC77C \uC801\uC5D0\uAC8C 20\uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD78C \uD6C4,\n50% \uD655\uB960\uB85C 1\uD134\uAC04 \uACF5\uACA9\uB825
+    \uAC10\uC18C 10%\uB97C \uBD80\uC5EC\uD569\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    1\uD134"
+  price: 50
+  isAllowedBinding: 1
+  shape: {x: 1, y: 2}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: -321085927, guid: 6a02e65d73a280846b9c9d50116495ff, type: 3}
+  - {fileID: -1392887835269128539, guid: 6a02e65d73a280846b9c9d50116495ff, type: 3}
+  isConsumable: 0
+  maxUses: -1
+  cooldownTurns: 1
+  skillPrefab: {fileID: 5558115182442371640, guid: f8ca951fe34fa86488a6da1c1120279c, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: f4aacdd5e0ccb1e4da33cae82be4147e, type: 2}
+  <SkillDelay>k__BackingField: 2
+  <SfxId>k__BackingField: 38
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 5
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 2
+  <ApproachOffset>k__BackingField: 5
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 5
+    targetGroup: 0
+    durationTurns: 1
+    power: 0.1
+    percentage: 50
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

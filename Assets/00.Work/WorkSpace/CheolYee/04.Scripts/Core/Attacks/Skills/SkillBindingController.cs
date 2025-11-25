@@ -33,7 +33,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
             SetOverlayActive(false);
             
             if (cancelBindingButton != null)
-                cancelBindingButton.onClick.AddListener(CancelBinding);
+                cancelBindingButton.onClick.AddListener(CancelBindingAndClearCurrentSlot);
 
             Bus<OnItemReturnedToSideInventory>.OnEvent += HandleItemReturnedToSideInventory;
             Bus<ItemCooldownStartedEvent>.OnEvent += OnItemCooldownStarted;
@@ -42,10 +42,20 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         {
             //이벤트 해제
             if (cancelBindingButton != null)
-                cancelBindingButton.onClick.RemoveListener(CancelBinding);
+                cancelBindingButton.onClick.RemoveListener(CancelBindingAndClearCurrentSlot);
             
             Bus<OnItemReturnedToSideInventory>.OnEvent -= HandleItemReturnedToSideInventory;
             Bus<ItemCooldownStartedEvent>.OnEvent -= OnItemCooldownStarted;
+        }
+        
+        private void CancelBindingAndClearCurrentSlot()
+        {
+            if (_isBinding && _currentSkillSlot != null && _currentSkillSlot.BoundSkill != null)
+            {
+                _currentSkillSlot.ClearBinding();
+            }
+
+            CancelBinding();
         }
 
         private void HandleItemReturnedToSideInventory(OnItemReturnedToSideInventory itemData)

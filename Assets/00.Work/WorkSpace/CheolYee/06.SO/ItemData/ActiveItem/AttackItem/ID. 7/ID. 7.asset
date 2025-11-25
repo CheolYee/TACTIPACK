@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 7
+  m_EditorClassIdentifier: 
+  itemId: 7
+  itemName: "\uCE58\uC720\uC758 \uC9C0\uD321\uC774"
+  itemClass: 3
+  icon: {fileID: 21300000, guid: 844e2af31ad1dba45ba04814f9c91e89, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uD790\uB7EC\n\n\uCE58\uC720\uC758 \uC9C0\uD321\uC774\uAC00
+    \uBC1C\uB3D9\uD558\uC5EC\n\uD30C\uD2F0\uC6D0\uB4E4\uC744 \uC804\uC6D0 15% \uD68C\uBCF5\uD574\uC90D\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    2\uD134"
+  price: 150
+  isAllowedBinding: 1
+  shape: {x: 2, y: 4}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: 690221566, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: 172754508, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: -1576878564, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: 279892440, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: 1512475868, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: -2114129918, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: -7522375923004156724, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  - {fileID: -4834924250864436441, guid: 6e5bace1a85c8f44aa2f18883a3a1166, type: 3}
+  isConsumable: 0
+  maxUses: 0
+  cooldownTurns: 2
+  skillPrefab: {fileID: 5558115182442371640, guid: e544883f4cacabb4cbfbe6a2c3ba683f, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: cfd674a3d5254f245bce6a3fedcbcfbb, type: 2}
+  <SkillDelay>k__BackingField: 1.5
+  <SfxId>k__BackingField: 12
+  applyDamage: 1
+  applyHeal: 1
+  damageTargetGroup: 2
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 0
+  useMaxHpRatioHeal: 1
+  maxHpHealRatio: 0.15
+  damageOnImpactEvent: 1
+  canCritical: 0
+  <DefaultStatusEffect>k__BackingField: []
+  <CleanseEffects>k__BackingField: []

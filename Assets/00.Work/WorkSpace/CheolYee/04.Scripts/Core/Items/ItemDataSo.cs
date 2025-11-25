@@ -87,14 +87,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         public GameObject skillPrefab;
     }   
 
-    [CreateAssetMenu(fileName = "newPassiveItem", menuName = "SO/Item/PassiveItem", order = 1)]
+    [CreateAssetMenu(fileName = "PassiveItemData", menuName = "SO/Item/PassiveItem", order = 1)]
     public abstract class PassiveItemDataSo : ItemDataSo
     {
         [Header("Passive Item Settings")]
         [Tooltip("스탯 보정 (%)")]
         public int healthMulti;
         public int attackMulti;
-        public float critMulti;
+        public int critMulti;
     }
 
     public enum ItemClass

@@ -13,7 +13,6 @@ public class PartyLoader : MonoBehaviour
         {
             foreach (var c in chManager.choiceCharacter)
             {
-                data.party.Add(c.characterType);
             }
         }
 

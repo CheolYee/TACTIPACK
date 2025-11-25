@@ -1,4 +1,5 @@
 using System;
+using _00.Work.Resource.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
@@ -32,6 +33,19 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         public void Initialize(Agent agent) //초기화 함수
         {
             _owner = agent;
+        }
+        
+        //세이브 데이터를 기반으로 체력 로딩
+        public void LoadCurrentHealth(float savedCurrent)
+        {
+            float prev = _currentHealth;
+            _currentHealth = Mathf.Clamp(savedCurrent, 0, MaxHealth);
+            OnHealthChange?.Invoke(prev, _currentHealth, MaxHealth);
+            
+            if (Mathf.Approximately(_currentHealth, 0f))
+            {
+                OnDeath?.Invoke();
+            }
         }
 
         public void InitHealth(float health)
@@ -97,6 +111,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             //힐 텍스트
             if (amount > 0f && DamageTextSpawner.Instance != null)
             {
+                SoundManager.Instance.PlaySfx(SfxId.Heal);
                 DamageTextSpawner.Instance.Spawn(
                     amount,
                     false,
@@ -126,6 +141,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
                 if (statusController != null &&
                     statusController.TryBlockDamage(ref attackData))
                 {
+                    SoundManager.Instance.PlaySfx(SfxId.Barrier);
                     DamageTextSpawner.Instance.Spawn(
                         0,
                         false, 
@@ -149,6 +165,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             
             if (attackData.Damage > 0f && DamageTextSpawner.Instance != null)
             {
+                if (attackData. IsCritical)
+                    SoundManager.Instance.PlaySfx(SfxId.Critical);
+                else
+                    SoundManager.Instance.PlaySfx(SfxId.NormalHit);
+                
                 DamageTextSpawner.Instance.Spawn(
                     attackData.Damage,
                     attackData.IsCritical,
@@ -187,6 +208,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
             }
 
             _currentHealth = newHealth;
+            if (kind == DamageTextKind.Bleed)
+                SoundManager.Instance.PlaySfx(SfxId.Bleed);
             
             //크리 유무 상관없으니까 그냥 false
             if (damage > 0f && DamageTextSpawner.Instance != null)

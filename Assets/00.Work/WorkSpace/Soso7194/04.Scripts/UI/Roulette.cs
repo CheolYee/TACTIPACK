@@ -6,7 +6,8 @@ using Random = UnityEngine.Random;
 
 // 추가
 using _00.Work.Resource.Scripts.Managers;                // FadeManager
-using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages;    // StageManager
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn; // StageManager
 using _00.Work.WorkSpace.JaeHun._01._Scrpits;           // MapManager, MapSo
 
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
@@ -81,6 +82,8 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         {
             if (wheel == null || spinButton == null || text == null)
                 return;
+            
+            SoundManager.Instance.PlaySfx(SfxId.Dollimpan);
 
             text.text = "회전 중";
             spinButton.onClick.RemoveAllListeners();
@@ -151,19 +154,23 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
                 {
                     case ResultType.Enemy:
                         // 일반/보스 방과 동일하게 적 스폰
+                        TurnUiContainerPanel.Instance.IsTurnRunning = false;
                         stageMgr.StartEnemyStage(currentMap);
                         break;
 
                     case ResultType.Shop:
+                        TurnUiContainerPanel.Instance.IsTurnRunning = true;
                         stageMgr.OpenShop(currentMap);
                         break;
 
                     case ResultType.Chest:
                         // 보물 = Reward 방
+                        TurnUiContainerPanel.Instance.IsTurnRunning = true;
                         stageMgr.OpenReward(currentMap);
                         break;
 
                     case ResultType.Rest:
+                        TurnUiContainerPanel.Instance.IsTurnRunning = true;
                         stageMgr.OpenRest(currentMap);
                         break;
                 }

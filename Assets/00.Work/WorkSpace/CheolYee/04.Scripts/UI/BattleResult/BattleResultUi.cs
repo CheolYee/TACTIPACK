@@ -1,8 +1,11 @@
 ﻿using _00.Work.Resource.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
-using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Save;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
 using _00.Work.WorkSpace.JaeHun._01._Scrpits;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,8 +21,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.BattleResult
         [SerializeField] private Button victoryButton;
         [SerializeField] private Button defeatButton;
         
-        [Header("Game Over UI")]
-        [SerializeField] private GameObject gameOverRoot;
+        [Header("Reward UI")]
+        [SerializeField] private TextMeshProUGUI coinRewardText; // 승리 시 획득 골드 표시용
+        
+        [Header("Scenes")]
+        [SerializeField] private int mainMenuSceneIndex;
 
         private void OnEnable()
         {
@@ -37,6 +43,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.BattleResult
             if (defeatPanel != null) defeatPanel.SetActive(false);
             if (victoryButton != null) victoryButton.onClick.AddListener(ShowMapUI);
             if (defeatButton != null) defeatButton.onClick.AddListener(ShowGameOverUI);
+            if (coinRewardText != null) coinRewardText.gameObject.SetActive(false);
         }
 
         private void OnBattleResult(BattleResultEvent evt)
@@ -44,7 +51,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.BattleResult
             var speedMgr = BattleSpeedManager.Instance;
             if (speedMgr != null)
             {
-                speedMgr.SetNormalSpeed(); // 또는 ResetSpeed(), SetSpeed(1f) 등 네가 만든 이름대로
+                speedMgr.SetNormalSpeed();
             }
             
             switch (evt.Result)
@@ -53,18 +60,57 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.BattleResult
                     defeatPanel.SetActive(true);
                     break;
                 case BattleResultType.Victory:
+                    SoundManager.Instance.PlaySfx(SfxId.Victory);
+                    int reward = Random.Range(300, 500);
+
+                    var item = SideInventoryManager.Instance.AddRandomItem();
+                    var itemName = item.itemName;
+                    
+                    if (reward > 0)
+                    {
+                        var money = MoneyManager.Instance;
+                        if (money != null)
+                        {
+                            money.AddCoin(reward);
+                        }
+                    }
+                    
+                    if (reward > 0)
+                    {
+                        coinRewardText.gameObject.SetActive(true);
+                        coinRewardText.text = $"+{reward}G\n획득 아이템: {itemName}";
+                    }
+                    else
+                    {
+                        coinRewardText.gameObject.SetActive(false);
+                    }
+                    
                     victoryPanel.SetActive(true);
                     break;
             }
+            TurnUiContainerPanel.Instance.IsTurnRunning = true;
         }
         
         private void ShowGameOverUI()
         {
             if (victoryPanel != null) victoryPanel.SetActive(false);
             if (defeatPanel != null) defeatPanel.SetActive(false);
+            
+            var saveMgr = SaveManager.Instance;
+            if (saveMgr != null)
+            {
+                saveMgr.DeleteAllSaves();
+            }
 
-            if (gameOverRoot != null)
-                gameOverRoot.SetActive(true);
+            // 2) 타임스케일 원복
+            Time.timeScale = 1f;
+
+            // 3) 메인 메뉴로 페이드 이동
+            var fade = FadeManager.Instance;
+            if (fade != null)
+            {
+                fade.FadeToSceneAsync(mainMenuSceneIndex);
+            }
         }
         
         private void ShowMapUI()

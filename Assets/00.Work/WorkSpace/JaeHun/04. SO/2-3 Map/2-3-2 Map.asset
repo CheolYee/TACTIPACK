@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 2-3-2 Map
   m_EditorClassIdentifier: 
-  mapName: RandomRoom
+  mapName: "\uB79C\uB364 \uBC29"
+  mapId: 232
+  mapType: 4
   nextMap:
   - {fileID: 11400000, guid: ed0a5ec999b155147873eec737cd07f8, type: 2}
   - {fileID: 11400000, guid: 3af6393cbba29fa4f81406bb02868c8c, type: 2}
-  isLook: 1
-  isRandom: 1
-  cameraPosition: {x: 0, y: 0}
+  stageData: {fileID: 11400000, guid: 0eb89712b36a2c5438be1db4824a2224, type: 2}

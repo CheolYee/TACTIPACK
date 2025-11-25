@@ -43,6 +43,18 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
             remainingUses--;
             if (remainingUses < 0) remainingUses = 0;
         }
+        
+        public void ForceSetUsesForLoad(int remaining)
+        {
+            remainingUses = remaining;
+            if (remainingUses < 0)
+                remainingUses = -1; // 무제한
+        }
+
+        public void ForceSetCooldownForLoad(int remainingTurns)
+        {
+            remainingCooldownTurns = Mathf.Max(0, remainingTurns);
+        }
 
         public void StartCooldown(int cooldownTurns)
         {

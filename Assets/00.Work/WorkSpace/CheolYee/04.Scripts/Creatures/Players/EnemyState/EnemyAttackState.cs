@@ -10,6 +10,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
 using DG.Tweening;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -88,6 +89,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
                 yield break;
             }
             
+            ctx.User.Renderer.SetAttackSortingHighlight(true);
+            
+            SkillNameLabelUI.Instance?.ShowSkillName(item.itemName);
+            
             //리플렉션 빌드
             StanceInvoker.BuildMap(this);
 
@@ -112,7 +117,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
             yield return Agent.StartCoroutine(_attackExecutor.Perform(item, ctx));
             if (_isExiting) yield break;
 
-            SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, ctx.User.transform);
+            SkillCameraManager.Instance?.SetAnchor(CamAnchor.Target, ctx.User.transform);
             //만약 캐릭터가 움직이는 상태였다면
             if (ctx.Stance == AttackStance.StepForward || ctx.Stance == AttackStance.DashToTarget)
             {
@@ -123,6 +128,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
                 if (_isExiting) yield break;
             }
 
+            ctx.User.Renderer.SetAttackSortingHighlight(false);
+            
             yield return new WaitForSeconds(0.5f);
             
             //턴메니저에 보낼 스킬 종료 이벤트

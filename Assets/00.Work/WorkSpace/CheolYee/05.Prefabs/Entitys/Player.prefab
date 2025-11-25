@@ -95,6 +95,7 @@ MonoBehaviour:
   actionData:
     <LastAttackData>k__BackingField:
       Damage: 0
+      IsCritical: 0
     <Target>k__BackingField: {fileID: 0}
     <CurrentAttackItem>k__BackingField: {fileID: 0}
     <CurrentItemInst>k__BackingField:
@@ -102,6 +103,7 @@ MonoBehaviour:
       dataId: 
       rotation: 0
       remainingCooldownTurns: 0
+      remainingUses: 0
   onAgentHit:
     m_PersistentCalls:
       m_Calls:
@@ -270,6 +272,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3642683728997042014}
     m_Modifications:
+    - target: {fileID: 1154516064747445456, guid: d0c964d9b7be1e84599f24fbdcddefe4, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 3fdd5edf9b195c240816b86cdb294d30, type: 2}
     - target: {fileID: 2623635424984833849, guid: d0c964d9b7be1e84599f24fbdcddefe4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

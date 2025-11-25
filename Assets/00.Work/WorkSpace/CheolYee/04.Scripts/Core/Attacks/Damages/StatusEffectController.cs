@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _00.Work.Resource.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
@@ -136,6 +137,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                     existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, info.durationTurns);
                     existing.Power = Mathf.Max(existing.Power, info.power);
                 }
+                
+                existing.JustApplied = true;
             }
             else
             {
@@ -156,6 +159,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
 
             if (stun != null)
             {
+                SoundManager.Instance.PlaySfx(SfxId.Stun);
                 //만약 상태 이상 중 기절 상태면 여기서 True반환 후 턴 소모
                 stun.RemainingTurns--;
                 Cleanup();
@@ -170,8 +174,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
         {
             _blockedLastDamage = false;
             
-            foreach (var effect in _effects)
+            var snapshot = _effects.ToArray();
+            
+            foreach (var effect in snapshot)
             {
+                if (effect.RemainingTurns <= 0)
+                    continue;
+                
                 switch (effect.Type)
                 {
                     case StatusEffectType.Bleed:
@@ -181,22 +190,33 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                             //파워와 스택 쌓인 개수만큼 최대체력 비례 데미지
                             float ratio = effect.Power; 
                             float damage = _health.MaxHealth * ratio * effect.StackCount;
+                            
                             _health.ApplyDirectDamage(damage, DamageTextKind.Bleed);
                         }
                         break;
                 }
                 
-                //턴당 감소가 되는 애들 감소시키기
-                if (effect.Type == StatusEffectType.Bleed ||
-                    effect.Type == StatusEffectType.Burn  ||
-                    effect.Type == StatusEffectType.AttackUp  ||
-                    effect.Type == StatusEffectType.AttackDown||
-                    effect.Type == StatusEffectType.CritUp    ||
-                    effect.Type == StatusEffectType.CritDown ||
-                    effect.Type == StatusEffectType.LastStand)
+                bool isTurnBased =
+                    effect.Type == StatusEffectType.Bleed      ||
+                    effect.Type == StatusEffectType.Burn       ||
+                    effect.Type == StatusEffectType.AttackUp   ||
+                    effect.Type == StatusEffectType.AttackDown ||
+                    effect.Type == StatusEffectType.CritUp     ||
+                    effect.Type == StatusEffectType.CritDown   ||
+                    effect.Type == StatusEffectType.LastStand;
+
+                if (!isTurnBased)
+                    continue;
+                
+                //이 턴에 방금 막 실행한건 안깎아요
+                if (effect.JustApplied)
                 {
-                    effect.RemainingTurns--;
+                    effect.JustApplied = false;
+                    continue;
                 }
+
+                //처음이 아니면 1턴 감소 레츠고
+                effect.RemainingTurns--;
             }
             
             Cleanup();
@@ -215,7 +235,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
             
             if (burn != null)
             {
-                // 예시: 공격 데미지의 (Power%) * 스택 만큼 추가 피해
+                SoundManager.Instance.PlaySfx(SfxId.Burn);
                 float extra = attackData.Damage * burn.Power * burn.StackCount;
                 _health.ApplyDirectDamage(extra, DamageTextKind.Burn);
             }
@@ -236,6 +256,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
         {
             _blockedLastDamage = false;
             
+            if (attackData.Damage <= 0f)
+                return false;
+            
             //살아있는 베리어 찾기
             var barrier = _effects.FirstOrDefault(e =>
                 e.Type == StatusEffectType.Barrier && e.RemainingTurns > 0);
@@ -252,8 +275,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
                 Cleanup();
             }
             RaiseStatusChanged(); //UI 아이콘 갱신
-            
-            
 
             //실제 데미지는 0으로
             attackData.Damage = 0f;
@@ -337,6 +358,19 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
             RaiseStatusChanged();
 
             return true;
+        }
+        
+        public void ClearAllStatusEffects()
+        {
+            if (_effects.Count == 0 && !_blockedLastDamage)
+                return;
+
+            // 모든 상태이상 제거
+            _effects.Clear();
+            _blockedLastDamage = false;
+
+            // HealthBarUi 쪽에서 아이콘/툴팁 갱신하도록 이벤트 쏴주기
+            RaiseStatusChanged();
         }
     }
 }

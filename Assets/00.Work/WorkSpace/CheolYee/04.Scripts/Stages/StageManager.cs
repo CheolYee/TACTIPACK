@@ -1,4 +1,5 @@
-﻿using _00.Work.Scripts.Managers;
+﻿using _00.Work.Resource.Scripts.Managers;
+using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn;
@@ -69,24 +70,28 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Stages
 
         private void HandleRandom(MapSo map)
         {
+            SoundManager.Instance.PlayBgm(BgmId.Random);
             if (randomRoot != null)
                 randomRoot.SetActive(true);
         }
 
         public void OpenRest(MapSo map)
         {
+            SoundManager.Instance.PlayBgm(BgmId.Rest);
             if (restRoot != null)
                 restRoot.SetActive(true);
         }
 
         public void OpenReward(MapSo map)
         {
+            SoundManager.Instance.PlayBgm(BgmId.Reward);
             if (rewardRoot != null)
                 rewardRoot.SetActive(true);
         }
 
         public void OpenShop(MapSo map)
         {
+            SoundManager.Instance.PlayBgm(BgmId.Shop);
             if (shopRoot != null)
                 shopRoot.SetActive(true);
         }
@@ -100,6 +105,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Stages
 
         public void StartEnemyStage(MapSo map)
         {
+            SoundManager.Instance.PlayBgm(BgmId.Battle);
+            
             if (BattleSkillManager.Instance != null)
             {
                 BattleSkillManager.Instance.ResetBattleState();

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using _00.Work.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Save;
 using UnityEngine;
+using Random = System.Random;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
 {
@@ -26,24 +28,68 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.UI.SideItem
         
         public event Action OnInventoryChanged; //인벤이 변경되었을 때 알려주는 이벤트
 
+        #region Save
+        public SideInventorySaveData CaptureSaveData()
+        {
+            var save = new SideInventorySaveData();
+        
+            foreach (var slot in _slots.Values)
+            {
+                if (slot == null || slot.Item == null || slot.Count <= 0)
+                    continue;
+
+                var entry = new SideInventoryItemSaveEntry
+                {
+                    dataId = slot.Item.itemId,
+                    count  = slot.Count
+                };
+                save.items.Add(entry);
+            }
+
+            return save;
+        }
+
+        public ItemDataSo AddRandomItem()
+        {
+            int range = UnityEngine.Random.Range(0, itemDatabase.ItemDatabase.Count);
+            var item = itemDatabase.ItemDatabase[range];
+            AddItem(item);
+            
+            return item;
+        }
+
+        //세이브 데이터 로드
+        public void ApplySaveData(SideInventorySaveData save)
+        {
+            // 기존 인벤토리 전부 삭제
+            _slots.Clear();
+            OnInventoryChanged?.Invoke();
+
+            if (save == null || itemDatabase == null)
+                return;
+
+            foreach (var entry in save.items)
+            {
+                if (string.IsNullOrEmpty(entry.dataId) || entry.count <= 0)
+                    continue;
+
+                ItemDataSo item = itemDatabase.GetItemById(entry.dataId);
+                if (item == null)
+                {
+                    Debug.LogWarning($"[SideInventoryManager] 저장된 아이템을 찾을 수 없습니다. dataId={entry.dataId}");
+                    continue;
+                }
+
+                AddItem(item, entry.count);
+            }
+        }
+        #endregion
+
         //아이템이 허용되었는가? (사용 가능한가?)
         public bool IsAllowed(ItemDataSo item)
         {
             if (item == null || itemDatabase == null) return false; //아이템 이상하거나 베이스가 없으면 허락 안됨
             return itemDatabase.ItemDatabase.Contains(item); //아이템이 리스트에 들어있다면 true 아니면 false
-        }
-
-        //현재 아이템의 개수를 반환하는 함수
-        public int GetItemCount(ItemDataSo item)
-        {
-            if (item == null) return 0; //아이템이 등록되어있지 않다면 0개 리턴
-            return _slots.TryGetValue(item.itemId, out SideInventorySlotData slotData) ? slotData.Count : 0; //딕셔너리에서 가져올 수 있다면 그 개수를 리턴 아니면 0
-        }
-
-        //아이템이 가질 수 있는 최대 개수를 반환
-        public int GetMaxStack()
-        {
-            return defaultMaxStackItem;
         }
 
         //사이드 아이템 인벤토리에 아이템을 개수만큼 추가 후 실제로 추가된 개수를 반환 (기본 1)

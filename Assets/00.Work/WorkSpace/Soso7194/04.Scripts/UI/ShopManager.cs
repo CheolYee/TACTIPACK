@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
 using _00.Work.WorkSpace.JaeHun._01._Scrpits;
 using DG.Tweening;
 using TMPro;
@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 
 namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 {
-    public class ShopManager : MonoSingleton<ShopManager>
+    public class ShopManager : MonoBehaviour
     {
         [Header("Shop UI")]
         [SerializeField] private Image shopManu;
@@ -24,7 +24,6 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         [SerializeField] private float characterSlideOffsetX = 600f;
 
         [Header("Shop Setting")]
-        [SerializeField] private int coin;
         [SerializeField] private int resetCount = 3;
 
         [SerializeField] private AllItemDatabase item;
@@ -34,19 +33,22 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
 
         public int Coin
         {
-            get => coin;
-            set => coin = Mathf.Clamp(value, 0, int.MaxValue);
+            get => MoneyManager.Instance != null ? MoneyManager.Instance.Coin : 0;
+            set
+            {
+                if (MoneyManager.Instance != null)
+                    MoneyManager.Instance.SetCoin(value);
+            }
         }
 
         // 캐릭터의 원래 위치 저장
         private Vector3 _characterOriginalPos;
         private bool _characterPosInitialized;
+        
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
             _resetCount = resetCount;
-            Coin = coin;
 
             if (characterRect != null)
             {
@@ -64,7 +66,13 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         {
             ItemSlot.OnUICoinChanged += ChangeCoinText;
 
-            coinText.text = Coin.ToString();
+            // MoneyManager 이벤트도 구독해서 어디서든 코인 바뀌면 텍스트 갱신 ★
+            if (MoneyManager.Instance != null)
+            {
+                MoneyManager.Instance.OnCoinChanged += OnCoinChanged;
+            }
+
+            ChangeCoinText();
 
             if (canvasGroup != null)
             {
@@ -107,30 +115,56 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         private void OnDisable()
         {
             ItemSlot.OnUICoinChanged -= ChangeCoinText;
+
+            if (MoneyManager.Instance != null)
+            {
+                MoneyManager.Instance.OnCoinChanged -= OnCoinChanged;
+            }
+        }
+
+        private void OnCoinChanged(int newValue)
+        {
+            coinText.text = newValue.ToString();
         }
 
         private void ChangeCoinText()
         {
-            coinText.text = Coin.ToString();
+            int current = MoneyManager.Instance != null ? MoneyManager.Instance.Coin : 0;
+            coinText.text = current.ToString();
         }
 
         public void Reroll()
         {
-            if (_resetCount > 0)
-            {
-                _resetCount--;
-                resetText.text = _resetCount.ToString();
-                Coin -= 100;
-                ChangeCoinText();
-                SetShop();
-            }
-            else
+            if (_resetCount <= 0)
             {
                 Debug.Log("리롤 횟수를 다 썼습니다!");
+                return;
             }
+
+            var money = MoneyManager.Instance;
+            if (money == null)
+            {
+                Debug.LogWarning("[ShopManager] MoneyManager 가 없습니다.");
+                return;
+            }
+
+            const int rerollCost = 50;
+
+            if (!money.TrySpend(rerollCost))
+            {
+                Debug.Log("골드가 부족합니다!");
+                return;
+            }
+
+            _resetCount--;
+            if (resetText != null)
+                resetText.text = _resetCount.ToString();
+
+            ChangeCoinText();
+            SetShop();
         }
 
-        public void SetShop()
+        private void SetShop()
         {
             int itemCount = itemSlots.Count;
 
@@ -172,7 +206,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
                     .SetEase(Ease.InCubic));
             }
 
-            // 캐릭터: 오른쪽으로 빠지게
+            // 캐릭터: 오른쪽/왼쪽으로 빠지게 (원래 코드 유지)
             if (characterRect != null)
             {
                 if (!_characterPosInitialized)
@@ -181,7 +215,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
                     _characterPosInitialized = true;
                 }
 
-                Vector3 toPos = _characterOriginalPos + Vector3.right * characterSlideOffsetX;
+                Vector3 toPos = _characterOriginalPos + Vector3.left * characterSlideOffsetX;
 
                 // 패널과 동시에 나가도록 Join
                 seq.Join(characterRect.DOMove(toPos, 0.5f)
@@ -200,7 +234,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
                 var mapMgr = MapManager.Instance;
                 if (mapMgr != null)
                 {
-                    mapMgr.CompleteCurrentMap();          // 다음 노드 해금
+                    mapMgr.CompleteCurrentMap();      // 다음 노드 해금
                     mapMgr.ShowCurrentChapterRoot();  // 맵 UI 다시 위로 등장
                 }
             });
