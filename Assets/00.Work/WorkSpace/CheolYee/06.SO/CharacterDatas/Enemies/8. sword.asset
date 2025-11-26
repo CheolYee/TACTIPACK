@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 8. sword
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC2A4\uCF08\uB808\uD1A4"
+  <EnemyId>k__BackingField: 8
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 1c822121314f9cf4480e7e790e8d2309, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 50
+  <DefaultCritChance>k__BackingField: 5
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: 6c56582ceb5b52f45814d5bb305db02a, type: 2}
+  - {fileID: 11400000, guid: 0383add84708d2940a60db74d21d5a7d, type: 2}

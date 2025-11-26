@@ -2,7 +2,6 @@
 using System.Linq;
 using _00.Work.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.UI.HealthBar;
-using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Managers
 {

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee38ba613ba4c54f880f2771b3a6ced, type: 3}
   m_Name: CheolYeePoolList
   m_EditorClassIdentifier: 
-  items: []
+  items:
+  - {fileID: 11400000, guid: a93a2f9300e04b749888320f2f042841, type: 2}

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6011129048686507695}
   - component: {fileID: 6315882034476089282}
   - component: {fileID: 6431690828092631538}
+  - component: {fileID: 8094490119742095408}
   m_Layer: 5
   m_Name: GhostPrefab
   m_TagString: Untagged
@@ -65,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b71e799512b13644294fa0b28fa607e2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a1e98a9ee1eb260428054d07d5c11bd1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -75,3 +76,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8094490119742095408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6637986865909705339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4168e9e68864aa29d153b982511b2a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: 
+  body: 
+  showDelay: 1

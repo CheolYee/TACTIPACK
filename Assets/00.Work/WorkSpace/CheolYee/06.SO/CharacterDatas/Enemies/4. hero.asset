@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 4. hero
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uB299\uC740 \uAE30\uC0AC"
+  <EnemyId>k__BackingField: 4
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: d6afa6692bf0cdd4c84c873422420c58, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 125
+  <DefaultCritChance>k__BackingField: 30
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: 8f906972ca599fc4697d4eb3a00188e4, type: 2}
+  - {fileID: 11400000, guid: 41c12a41f090a77498e867c4403aff86, type: 2}
+  - {fileID: 11400000, guid: 5a6f7bef8d340c0498f303d7259450f5, type: 2}

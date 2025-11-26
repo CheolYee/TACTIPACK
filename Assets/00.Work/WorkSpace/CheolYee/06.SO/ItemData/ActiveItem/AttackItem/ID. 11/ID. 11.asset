@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 11
+  m_EditorClassIdentifier: 
+  itemId: 11
+  itemName: "\uC775\uC2A4\uD50C\uB85C\uC804"
+  itemClass: 2
+  icon: {fileID: 21300000, guid: 040e2c28b01d2a342a5b32a01e219079, type: 3}
+  description: "\uD074\uB798\uC2A4: \uB9C8\uBC95\uC0AC\n\n\u201C\uC554\uD751\uBCF4\uB2E4
+    \uAC80\uACE0, \uC5B4\uB460\uBCF4\uB2E4 \uC5B4\uB450\uC6B4 \uCE60\uD751\uC5D0,\n\uB098\uC758
+    \uC9C4\uD64D\uC774 \uC11E\uC774\uAE30\uB97C \uBC14\uB77C\uB178\uB77C\n\uAC01\uC131\uC758
+    \uB54C\uAC00 \uC654\uC73C\uB2C8 \uBB34\uB958\uC758 \uACBD\uACC4\uC5D0 \uB5A8\uC5B4\uC9C4\n\uC774\uCE58\uC5EC
+    \uBB34\uC5C5\uC758 \uC77C\uADF8\uB7EC\uC9D0\uC774 \uB418\uC5B4 \uB098\uD0C0\uB098\uB77C
+    \n\uC775\uC2A4\uD50C\uB85C\uC804!\u201D\n\r\n\uC804\uCCB4 \uC801\uD55C\uD14C
+    100\uB370\uBBF8\uC9C0\uB97C \uC785\uD788\uACE0.\n\uC804\uCCB4 \uC801 \uACF5\uACA9\uB825
+    \uAC10\uC18C 15%,\n15% \uB370\uBBF8\uC9C0\uB97C \uB354 \uC785\uB294 \uD654\uC0C1\uC744
+    3\uD134 \uC785\uD799\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784: 3\uD134"
+  price: 300
+  isAllowedBinding: 1
+  shape: {x: 4, y: 4}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: 1148206988, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: -673166190, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 1886195120, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 1241786585, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: -1431341116, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: -155660994, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 440137649, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 465249104, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: -986225743, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 225720281, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 1243155732, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 2041717830, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 6580700915487832212, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: -83227024, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: -1154985893, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  - {fileID: 1731041451, guid: 198facff6299e6d4a8c5c9ad039346e7, type: 3}
+  isConsumable: 0
+  maxUses: -1
+  cooldownTurns: 6
+  skillPrefab: {fileID: 5558115182442371640, guid: fed8c3aeaa500b042be9a130a61206fe, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 12d330ae07af5ef40acc338f04677973, type: 2}
+  <SkillDelay>k__BackingField: 2.5
+  <SfxId>k__BackingField: 17
+  mainTargetGroup: 4
+  mainTargetIndex: 0
+  <DefaultStance>k__BackingField: 2
+  <ApproachOffset>k__BackingField: 0
+  isHealSkill: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 2
+    targetGroup: 0
+    durationTurns: 3
+    power: 0.15
+    percentage: 100
+    stackable: 1
+  - type: 5
+    targetGroup: 0
+    durationTurns: 3
+    power: 0.15
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

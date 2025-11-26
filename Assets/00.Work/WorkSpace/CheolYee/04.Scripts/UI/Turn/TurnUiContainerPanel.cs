@@ -6,6 +6,7 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using UnityEngine;
@@ -24,8 +25,9 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private Canvas canvas;
         [SerializeField] private VerticalLayoutGroup layoutGroup;
         
+        public bool IsTurnRunning { get; set; }
+        
         public VerticalLayoutGroup LayoutGroup => layoutGroup;
-        public RectTransform Content => content;
         
         private readonly List<TurnSlotUi> _slots = new();
 
@@ -68,37 +70,50 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 _slots.Add(slot);
             }
+
+            RefreshSlotOrderTexts();
+        }
+        
+        public AgentHealth GetNextPlayerHealthAfter(Player player)
+        {
+            if (player == null) return null;
+            if (_slots == null || _slots.Count == 0) return null;
+
+            // 내 슬롯 인덱스 찾기
+            int startIndex = _slots.FindIndex(s => s != null && s.BoundPlayer == player);
+            if (startIndex < 0) return null;
+
+            int count = _slots.Count;
+
+            //다음 슬롯부터 한 바퀴 돌면서 살아있는 플레이어 찾기
+            for (int step = 1; step <= count; step++)
+            {
+                int idx = (startIndex + step) % count;
+                var slot = _slots[idx];
+                if (slot == null) continue;
+
+                var nextPlayer = slot.BoundPlayer;
+                if (nextPlayer == null) continue;
+
+                //죽어있으면 스킵
+                if (nextPlayer.IsDead || nextPlayer.Health == null || nextPlayer.Health.CurrentHealth <= 0f)
+                    continue;
+
+                return nextPlayer.Health;
+            }
+            
+            //뒤에 아무도 없으면 자기 자신 리턴
+            if (!player.IsDead && player.Health != null && player.Health.CurrentHealth > 0f)
+                return player.Health;
+
+            //살아있는 애가 한 명도 없으면 null
+            return null;
         }
         
         //슬롯 재빌드
         public void RebuildFromBattleManager()
         {
             Build();
-        }
-        
-        //슬롯 추가
-        public void AddPlayerSlot(Player player)
-        {
-            if (player == null) return;
-            if (slotPrefab == null || content == null) return;
-
-            //이미 슬롯이 있으면 중복으로 추가하지 않음
-            if (_slots.Exists(s => s.BoundPlayer == player))
-                return;
-
-            TurnSlotUi slot = Instantiate(slotPrefab, content);
-            slot.name = $"[Turn UI Slot] : {player.CharacterData.name}";
-                
-            slot.Initialize(this, canvas);
-            slot.BindPlayer(player);
-                
-            var skillSlot = slot.GetSkillSlot();
-            if (skillSlot != null)
-            {
-                skillBindingController.RegisterSkillSlot(skillSlot);
-            }
-                
-            _slots.Add(slot);
         }
         
         //플레이어 슬롯 지우기
@@ -117,24 +132,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             {
                 _slots[i].transform.SetSiblingIndex(i);
             }
-        }
-
-        private void Clear()
-        { 
-            foreach (var s in _slots)
-            {
-                if (s != null) Destroy(s.gameObject);
-            }
-            _slots.Clear();
-        }
-        public List<Player> GetCurrentOrder()
-        {
-            List<Player> order = new List<Player>(_slots.Count);
-            foreach (var s in _slots)
-            {
-                order.Add(s.BoundPlayer);
-            }
-            return order;
+            
+            RefreshSlotOrderTexts();
         }
         
         public void SwapSlots(TurnSlotUi a, TurnSlotUi b)
@@ -157,18 +156,40 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             }
 
             PlaySwapAnimation(a.transform, b.transform);
+            RefreshSlotOrderTexts();
         }
-
-        public void DebugPrintBoundSkills()
+        
+        public Coroutine StartTurnSequence()
         {
             if (_slots == null || _slots.Count == 0)
             {
                 Debug.LogWarning("TurnUiContainerPanel: 실행할 슬롯이 없습니다.");
-                return;
+                return null;
+            }
+            
+            if (IsTurnRunning)
+            {
+                Debug.LogWarning("TurnUiContainerPanel: 이미 턴 시퀀스가 실행 중입니다.");
+                return null;
             }
 
-            StartCoroutine(RunBattleTurnSequence());
+            return StartCoroutine(RunBattleTurnSequenceWrapper());
+        }
+        
+        private IEnumerator RunBattleTurnSequenceWrapper()
+        {
+            IsTurnRunning = true;
+            yield return RunBattleTurnSequence();
+            IsTurnRunning = false;
+            
+            var mgr = BattleSkillManager.Instance;
+            if (mgr != null && mgr.TryConsumeBattleResult(out var result))
+            {
+                HudManager.Instance.ShowAll();
+                Debug.Log($"===== [TurnUiContainerPanel] 전투 종료, 결과: {result} =====");
 
+                Bus<BattleResultEvent>.Raise(new BattleResultEvent(result));
+            }
         }
         
         private IEnumerator RunBattleTurnSequence()
@@ -182,8 +203,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             yield return RunEnemyTurnSequence();
             
             HudManager.Instance.ShowAll();
-
+            
             Debug.Log("===== [TurnUiContainerPanel] 라운드 종료 =====");
+            
+            
         }
 
 
@@ -204,6 +227,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 Player player = slot.BoundPlayer;
                 if (player == null) continue; //플레이어가 없어도 넘기기
+                
+                //스턴 상태 파악
+                if (player.StatusEffectController && player.StatusEffectController.OnTurnStart())
+                {
+                    Debug.LogWarning($"{player.CharacterData.CharacterName}는 기절 상태로 턴을 스킵합니다.");
+                    player.StatusEffectController.OnTurnEnd();
+                    continue;
+                }
 
                 if (player.IsDead || player.Health == null || player.Health.CurrentHealth <= 0f)
                 {
@@ -223,12 +254,17 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 
                 //이벤트가 와서 스킬이 모두 끝날 때 까지 대기
                 yield return new WaitUntil(() => !_waitingForSkill);
+                
+                //행동 후 턴 종료
+                player.StatusEffectController.OnTurnEnd();
             }
             
             yield return new WaitForSeconds(0.5f);
             SkillCameraManager.Instance.Reset();
             yield return new WaitForSeconds(0.5f);
             _waitingAgent = null;
+            
+            Bus<BattleRoundAdvancedEvent>.Raise(new BattleRoundAdvancedEvent());
         }
         private IEnumerator RunEnemyTurnSequence()
         {
@@ -249,6 +285,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 // 죽은 적은 스킵
                 if (enemy.IsDead)
                     continue;
+                
+                //스턴 확인
+                bool sturned = enemy.StatusEffectController && enemy.StatusEffectController.OnTurnStart();
+                if (sturned)
+                {
+                    Debug.Log($"[TurnUiContainerPanel] 에너미 {enemy.name} 는 기절 상태로 턴 스킵합니다.");
+                    enemy.StatusEffectController.OnTurnEnd();
+                    continue;
+                }
 
                 Debug.Log($"[TurnUiContainerPanel] 에너미 턴 {i + 1} : {enemy.name} 스킬 실행");
 
@@ -258,6 +303,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 enemy.StartTurn();
 
                 yield return new WaitUntil(() => !_waitingForSkill);
+                
+                enemy.StatusEffectController.OnTurnEnd();
             }
 
             yield return new WaitForSeconds(0.5f);
@@ -265,6 +312,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             yield return new WaitForSeconds(0.5f);
             _waitingAgent = null;
             Debug.Log("[TurnUiContainerPanel] 에너미 턴 실행 끝");
+            
         }
 
         //스킬 종료 이벤트 버스가 오면 여기서 받기
@@ -295,6 +343,30 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
 
             seq.Append(a.DOScale(originalScaleA, duration));
             seq.Join(b.DOScale(originalScaleB, duration));
+        }
+        public void ClearBindingForItem(ItemInstance inst)
+        {
+            if (inst == null) return;
+
+            foreach (var slot in _slots)
+            {
+                if (slot == null) continue;
+                var skillSlot = slot.GetSkillSlot();
+                if (skillSlot != null && skillSlot.BoundItemInstance == inst)
+                {
+                    skillSlot.ClearBinding();
+                }
+            }
+        }
+        
+        private void RefreshSlotOrderTexts()
+        {
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                var slot = _slots[i];
+                if (slot == null) continue;
+                slot.SetOrderIndex(i + 1); // 1-based
+            }
         }
     }
 }

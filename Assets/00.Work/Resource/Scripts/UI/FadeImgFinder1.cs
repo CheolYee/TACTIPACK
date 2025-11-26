@@ -8,7 +8,6 @@ namespace _00.Work.Resource.Manager
     {
         private void Awake()
         {
-            FadeManager.Instance.fadeImage = gameObject.GetComponent<Image>();
             FadeManager.Instance.FadeOut();
         }
     }

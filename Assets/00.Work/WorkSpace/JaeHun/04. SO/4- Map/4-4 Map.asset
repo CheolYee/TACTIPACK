@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 4-4 Map
   m_EditorClassIdentifier: 
-  mapName: EnemyRoom
+  mapName: "\uC77C\uBC18 \uBC29"
+  mapId: 44
+  mapType: 0
   nextMap:
   - {fileID: 11400000, guid: a8cb3ee5ef7dae5469f784685fd357f3, type: 2}
   - {fileID: 11400000, guid: ea11d8d8601022c448a9f508aa923df3, type: 2}
   - {fileID: 11400000, guid: 0294aedec5c08844aa089205bee5fc18, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: 28.97, y: 48.41}
+  stageData: {fileID: 11400000, guid: 977238e5a34d7d340aeb3b44c0cce73b, type: 2}

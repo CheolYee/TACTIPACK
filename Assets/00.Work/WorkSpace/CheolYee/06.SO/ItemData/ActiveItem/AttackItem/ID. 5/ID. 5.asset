@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 5
+  m_EditorClassIdentifier: 
+  itemId: 5
+  itemName: "\uC815\uD654\uC758 \uD5A5\uB85C"
+  itemClass: 3
+  icon: {fileID: 2088880021, guid: 32d606537f42f8544b4f4ce683e80961, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uD790\uB7EC\n\n\uC544\uAD70 \uC601\uC6C5\uB4E4\uC5D0\uAC8C
+    \uAC78\uB824\uC788\uB294\n\uBAA8\uB4E0 \uB514\uBC84\uD504 \uD6A8\uACFC\uC758
+    \uD134\uC218\uB97C 3 \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    2\uD134"
+  price: 250
+  isAllowedBinding: 1
+  shape: {x: 2, y: 3}
+  shapeOffsets: []
+  pivot: {x: 0, y: 1}
+  cellSprites:
+  - {fileID: -763105339, guid: b35579362c295fb43a7ab86ebfb726a6, type: 3}
+  - {fileID: -2065486023, guid: b35579362c295fb43a7ab86ebfb726a6, type: 3}
+  - {fileID: 1515312277, guid: b35579362c295fb43a7ab86ebfb726a6, type: 3}
+  - {fileID: 219892378, guid: b35579362c295fb43a7ab86ebfb726a6, type: 3}
+  - {fileID: 643322391565537741, guid: b35579362c295fb43a7ab86ebfb726a6, type: 3}
+  - {fileID: -1367017, guid: b35579362c295fb43a7ab86ebfb726a6, type: 3}
+  isConsumable: 0
+  maxUses: 0
+  cooldownTurns: 2
+  skillPrefab: {fileID: 5558115182442371640, guid: 5c53a6f1e752a84499b3f1e56a2865a7, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: e1f992bf7ce590548bceed220feea7fb, type: 2}
+  <SkillDelay>k__BackingField: 1
+  <SfxId>k__BackingField: 37
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 2
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 0
+  <DefaultStatusEffect>k__BackingField: []
+  <CleanseEffects>k__BackingField:
+  - type: 1
+    targetGroup: 2
+    durationTurns: 3
+    percentage: 100
+  - type: 2
+    targetGroup: 2
+    durationTurns: 3
+    percentage: 100
+  - type: 3
+    targetGroup: 2
+    durationTurns: 3
+    percentage: 100
+  - type: 5
+    targetGroup: 2
+    durationTurns: 3
+    percentage: 100
+  - type: 7
+    targetGroup: 2
+    durationTurns: 3
+    percentage: 100

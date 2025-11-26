@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 10
+  m_EditorClassIdentifier: 
+  itemId: 10
+  itemName: "\uB0A1\uC740 \uB9C8\uB825 \uC99D\uD3ED\uC758 \uC11C"
+  itemClass: 2
+  icon: {fileID: 1349463163, guid: 98989d19e7de3fb4d9c07fd70ad57060, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uB9C8\uBC95\uC0AC\n\n\uAC74\uB4E4\uAE30\uB9CC
+    \uD574\uB3C4 \uBD80\uC154\uC9C8\uAC70 \uAC19\uC740 \uCC45\uC744 \uC774\uC6A9\uD574\n\uD300
+    \uC804\uCCB4\uC5D0\uAC8C 2\uD134\uAC04\n\uACF5\uACA9\uB825 \uC99D\uAC00 10%,
+    \uCE58\uBA85\uD0C0 \uD655\uB960 \uC99D\uAC00 10% \uBC84\uD504\uB97C \uC90D\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    2\uD134"
+  price: 150
+  isAllowedBinding: 1
+  shape: {x: 2, y: 2}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: -421569985, guid: 046b5dacbd082244ca17d02e0431f194, type: 3}
+  - {fileID: -889952183, guid: 046b5dacbd082244ca17d02e0431f194, type: 3}
+  - {fileID: -2284034377961251053, guid: 046b5dacbd082244ca17d02e0431f194, type: 3}
+  - {fileID: -1102577261, guid: 046b5dacbd082244ca17d02e0431f194, type: 3}
+  isConsumable: 0
+  maxUses: -1
+  cooldownTurns: 2
+  skillPrefab: {fileID: 5558115182442371640, guid: db67c9afe6d3e8f4996b168f78da991b, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 0711a791f1c6c4f4c8ab6cdf67315e1e, type: 2}
+  <SkillDelay>k__BackingField: 2
+  <SfxId>k__BackingField: 37
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 2
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 0
+  <ApproachOffset>k__BackingField: 5
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 0
+  canCritical: 0
+  <DefaultStatusEffect>k__BackingField:
+  - type: 4
+    targetGroup: 2
+    durationTurns: 2
+    power: 0.1
+    percentage: 100
+    stackable: 1
+  - type: 6
+    targetGroup: 2
+    durationTurns: 2
+    power: 0.1
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

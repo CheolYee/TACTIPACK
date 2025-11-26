@@ -47,8 +47,14 @@ TagManager:
   - name: Skills
     uniqueID: 3734322121
     locked: 0
+  - name: DamageText
+    uniqueID: 2914790505
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Map
+    uniqueID: 481195733
     locked: 0
   m_RenderingLayers:
   - Default

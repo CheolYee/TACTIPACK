@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using _00.Work.Resource.Scripts.SO;
 using _00.Work.Scripts.Managers;
 using _00.Work.Scripts.SO;
 using UnityEngine;
-using IPoolable = _00.Work.Scripts.SO.IPoolable;
+using IPoolable = _00.Work.Resource.Scripts.SO.IPoolable;
 
 namespace _00.Work.Resource.Scripts.Managers
 {

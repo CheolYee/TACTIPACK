@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52fefade449a4f13bdf13234f527bbe4, type: 3}
+  m_Name: ID. 30
+  m_EditorClassIdentifier: 
+  itemId: 30
+  itemName: "\uD798\uC758 \uBB3C\uC57D"
+  itemClass: 0
+  icon: {fileID: 21300000, guid: b70a37969ac06044797b54fe33b49bdd, type: 3}
+  description: "\uD328\uC2DC\uBE0C \uC544\uC774\uD15C\n\n\uBB3C\uC57D\uC744 \uC18C\uC9C0\uB9CC\uD574\uB3C4
+    \uD30C\uD2F0\uC6D0 \uC804\uC6D0 \uACF5\uACA9\uB825\uC774 5% \uC99D\uAC00\uD55C\uB2E4."
+  price: 75
+  isAllowedBinding: 0
+  shape: {x: 1, y: 2}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: 276262529, guid: 2cfeb01c4ef1a6243bbba2e5629ee479, type: 3}
+  - {fileID: 5448686437460225705, guid: 2cfeb01c4ef1a6243bbba2e5629ee479, type: 3}
+  isConsumable: 0
+  maxUses: 0
+  healthMulti: 0
+  attackMulti: 5
+  critMulti: 0

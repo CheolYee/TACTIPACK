@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _00.Work.Scripts.SO
+namespace _00.Work.Resource.Scripts.SO
 {
     public interface IPoolable
     {

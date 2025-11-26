@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: shaman_BUDU
+  m_EditorClassIdentifier: 
+  itemId: 1601
+  itemName: "\uBD80\uB450\uC220"
+  itemClass: 0
+  icon: {fileID: 21300000, guid: f8bd991ddd9bf1b4ba4ad0539eb4d2af, type: 3}
+  description: 
+  price: 0
+  isAllowedBinding: 1
+  shape: {x: 1, y: 1}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: -1014955219, guid: 8b883649bf0d0fa49b260edaf292b648, type: 3}
+  isConsumable: 0
+  maxUses: 0
+  cooldownTurns: 0
+  skillPrefab: {fileID: 5558115182442371640, guid: 3778c73f8727fb94ea82bf221fa0379e, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: c5d8e093936f075499fffa075a0b7369, type: 2}
+  <SkillDelay>k__BackingField: 1.5
+  <SfxId>k__BackingField: 15
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 5
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
+  <DefaultStance>k__BackingField: 2
+  <ApproachOffset>k__BackingField: 8
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 5
+    targetGroup: 4
+    durationTurns: 1
+    power: 0.05
+    percentage: 60
+    stackable: 1
+  - type: 7
+    targetGroup: 4
+    durationTurns: 1
+    power: 0.05
+    percentage: 60
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

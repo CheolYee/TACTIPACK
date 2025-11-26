@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ca6713c4e54d709acfd369c0097340, type: 3}
+  m_Name: Mina
+  m_EditorClassIdentifier: 
+  <CharacterName>k__BackingField: "\uBBF8\uB098"
+  <CharacterId>k__BackingField: 5
+  characterDesc: "\uC9C1\uC5C5: \uD790\uB7EC\n\n\uAE30\uBCF8\uCCB4\uB825: 300\n\uAE30\uBCF8
+    \uD06C\uB9AC\uD2F0\uCEEC: 15%\n\n\uC6D0\uB798\uB294 \uD3C9\uBC94\uD55C \uBA54\uC774\uB4DC\uC600\uC9C0\uB9CC,\n\uC8FC\uC778\uB2D8\uC744
+    \uC9C0\uD0A4\uAE30 \uC704\uD574 \uC804\uD22C\uB97C \uC775\uD614\uC2B5\uB2C8\uB2E4.\n\uB2E8\uC815\uD55C
+    \uBA54\uC774\uB4DC \uBCF5\uC7A5\uC73C\uB85C \uC804\uC7A5\uC744 \uB204\uBE44\uBA70\n\uC9C8\uC11C
+    \uC815\uC5F0\uD558\uAC8C \uC544\uAD70\uC758 \uC0DD\uBA85\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4."
+  <CharacterClass>k__BackingField: 3
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 3fdd5edf9b195c240816b86cdb294d30, type: 2}
+  <CharacterOffset>k__BackingField: {x: 0.09, y: -0.15}
+  <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 6c1e403ffef01ae42a0186f6f89c4d85, type: 3}
+  <CharacterBoxIcon>k__BackingField: {fileID: 21300000, guid: 6bab814ccb180904fa458abd5cfc2ccd, type: 3}
+  <MaxHp>k__BackingField: 300
+  <DefaultCritChance>k__BackingField: 0.15
+  <StartItem>k__BackingField: {fileID: 11400000, guid: 675504e02a8c5064882ce5b8668e4167, type: 2}

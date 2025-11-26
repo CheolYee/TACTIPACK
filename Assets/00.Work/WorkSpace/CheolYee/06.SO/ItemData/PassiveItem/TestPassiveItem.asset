@@ -24,7 +24,8 @@ MonoBehaviour:
   pivot: {x: 0, y: 0}
   cellSprites:
   - {fileID: 21300000, guid: ce78f7d8d44604c228345c2d58fa2da4, type: 3}
-  cooldownTurns: 0
-  healthMulti: 0
+  isConsumable: 0
+  maxUses: 1
+  healthMulti: 20
   attackMulti: 0
   critMulti: 0

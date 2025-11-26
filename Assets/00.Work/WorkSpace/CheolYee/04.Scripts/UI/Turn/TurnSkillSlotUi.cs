@@ -3,7 +3,6 @@ using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
@@ -14,14 +13,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         [SerializeField] private Image iconImage; //스킬이 들어왔을 때 보여줄 아이콘 이미지
         [SerializeField] private GameObject emptyFrame; //비어있을 때 보여줄 머시기
         [SerializeField] private Button bindButton; //바인딩 버튼 (클릭 시 바인드 모드 전환)
-        [SerializeField] private Image cooldownMask; //쿨타임 표시용
+        [SerializeField] private TooltipTarget tooltipTarget;
         
         public Player Owner { get; private set; } //이 스킬을 쓸 플레이어
         public AttackItemSo BoundSkill { get; private set; } //바인딩된 스킬 데이터
         public ItemInstance BoundItemInstance { get; private set; } //인벤 위에 올려져있는 아이템 인스턴스
 
         public event Action<TurnSkillSlotUi> OnRequestBind; //바인딩 시작 알리기
-        public event Action<TurnSkillSlotUi, AttackItemSo> OnRequestUse; //외부에 보내는 이 스킬 사용하겠다 알리기
+        
+        private bool _locked; //슬롯 잠금 여부 확인
+        public bool IsLocked => _locked;
 
         private void Awake()
         {
@@ -36,10 +37,28 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
         //공격 스킬 바인딩
         public void SetBoundSkill(AttackItemSo skill, ItemInstance inst = null)
         {
+            if (_locked && skill != null)
+            {
+                return;
+            }
+            
             BoundSkill = skill;
             BoundItemInstance = inst;
 
             RefreshVisual();
+        }
+        
+        //슬롯을 잠궈요
+        public void SetLocked(bool locked)
+        {
+            if (_locked == locked)
+                return;
+
+            _locked = locked;
+
+            //버튼 입력 막기
+            if (bindButton != null)
+                bindButton.interactable = !locked;
         }
 
         //바인딩을 제거한다
@@ -48,14 +67,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
             BoundSkill = null;
             BoundItemInstance = null;
             RefreshVisual();
-        }
-
-        //바인딩된 스킬을 사용해달라고 요청하기
-        public void RequestUseSkill()
-        {
-            if (BoundSkill == null || Owner == null) return;
-            
-            OnRequestUse?.Invoke(this, BoundSkill);
         }
 
         //비주얼 재설정
@@ -72,16 +83,24 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.UI.Turn
                 iconImage.sprite =
                     hasSkill ? BoundSkill.icon != null ? BoundSkill.icon : null : null;
             }
-
-            if (cooldownMask != null)
-            {
-                cooldownMask.fillAmount = 0f;
-                cooldownMask.enabled = false;
-            }
+            
+            if (BoundItemInstance != null)
+                tooltipTarget.SetText(BoundSkill.itemName, BoundSkill.description);
+            else
+                tooltipTarget.SetText("바인딩",
+                    "슬롯을 클릭하여 바인딩 모드로 진입하세요.");
+                
+            
         }
 
         public void HandleBindButtonClicked()
         {
+            if (_locked)
+            {
+                Debug.Log("슬롯이 잠겨있어 바인드를 무시했습니다.");
+                return;
+            }
+            
             OnRequestBind?.Invoke(this);
         }
     }

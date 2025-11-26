@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 6. wizard
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uC655\uAD6D \uB9C8\uBC95\uC0AC"
+  <EnemyId>k__BackingField: 6
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: 94c68c324aeae4a4397ade3ec5ea4894, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 100
+  <DefaultCritChance>k__BackingField: 5
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: 2ad7a7423e6595e42b0bcb0ea3412d5e, type: 2}
+  - {fileID: 11400000, guid: 9c12330c4419c7543bd598a2eee799eb, type: 2}
+  - {fileID: 11400000, guid: 5a6f7bef8d340c0498f303d7259450f5, type: 2}

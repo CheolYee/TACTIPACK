@@ -1,7 +1,9 @@
 ﻿using System;
 using _00.Work.Resource.Scripts.Managers;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.FeedBacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using DG.Tweening;
 using UnityEngine;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
@@ -10,7 +12,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
     {
         User,
         Target,
-        CastPoint
+        CastPoint,
+        UserToTarget
     }
     public class SkillEffectController : MonoBehaviour, ISkillHandler
     {
@@ -23,42 +26,129 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         
         [Header("LifeTime Fallback")]
         public float fallbackDuration;
+        
+        [Header("Feedback")]
+        [SerializeField] private FeedBackSystem feedBackSystem;
+        [SerializeField] private bool isFeedbackActive;
+        
+        [Header("User Target Move")]
+        [SerializeField] private float moveDuration = 0.4f;
+        [SerializeField] private Ease moveEase = Ease.OutQuad;
 
+        private Tween _moveTween;
+        
         private SkillContent _ctx;
         private AttackItemSo _item;
         private bool _completed;
         private bool _impacted;
 
+        private bool _arrivalDamageApplied;
 
         public void Init(SkillContent ctx, AttackItemSo item)
         {
             _ctx = ctx;
             _item = item;
             
-            Vector2 pos = GetAnchorPosition(ctx, anchor);
-            Vector2 offset = localOffset;
-            
-            if (mirrorX && ctx.User.TryGetComponent(out AgentRenderer ar) && ar.LookToTheLeft)
+            if (anchor == EffectSpawnAnchor.UserToTarget)
             {
-                offset.x = -offset.x;
+                Vector2 offset = localOffset;
+
+                // 좌우 반전
+                if (mirrorX && ctx.User.TryGetComponent(out AgentRenderer ar) && ar.LookToTheLeft)
+                {
+                    offset.x = -offset.x;
+                }
+
+                // 시작 위치: User
+                Vector3 start = ctx.User.transform.position;
+                // 도착 위치: Target 또는 CastPoint
+                Vector3 end = GetUserToTargetEndPosition(ctx);
+
+                // 시작 위치 세팅
+                transform.localPosition = start + (Vector3)offset;
+
+                if (TryGetComponent(out AnimationEventRelay relay))
+                {
+                    relay.Handler = this;
+                }
+
+                // 카메라 앵커 설정
+                SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
+                SkillCameraManager.Instance.ZoomTo(8f);
+                
+                Vector3 destination = end + (Vector3)offset;
+
+                // User → Target 이동 + 도착 시 데미지
+                _moveTween = transform
+                    .DOMove(destination, moveDuration)
+                    .SetEase(moveEase)
+                    .OnComplete(() =>
+                    {
+                        _moveTween = null;
+                        AnimApplyDamageNow(); // 도착 순간 데미지
+                        NotifyEnd(); // 이펙트 종료
+                    });
+
+                return; // UserToTarget는 여기서 끝
             }
             
-            transform.localPosition = pos + offset;
-
-            if (TryGetComponent(out AnimationEventRelay relay))
+            Vector2 pos = GetAnchorPosition(ctx, anchor);
+            Vector2 baseOffset = localOffset;
+            
+            if (mirrorX && ctx.User.TryGetComponent(out AgentRenderer agentRenderer) && agentRenderer.LookToTheLeft)
             {
-                relay.Handler = this;
+                baseOffset .x = -baseOffset.x;
+            }
+            
+            transform.localPosition = pos + baseOffset;
+
+            if (TryGetComponent(out AnimationEventRelay relayDefault))
+            {
+                relayDefault.Handler = this;
             }
 
         }
+        
+        private void OnDestroy()
+        {
+            _moveTween?.Kill();
+        }
+        
+        private Vector3 GetUserToTargetEndPosition(SkillContent ctx)
+        {
+            // 타겟이 여러 명이면 CastPoint(중앙)
+            if (ctx.Targets is { Count: > 1 })
+            {
+                return ctx.CastPoint;
+            }
+
+            // 타겟이 1명만 있으면 그 타겟 위치
+            if (ctx.Targets is { Count: 1 } && ctx.Targets[0] != null)
+            {
+                return ctx.Targets[0].transform.position;
+            }
+
+            // 타겟이 없으면 그냥 시전자 위치
+            return ctx.User.transform.position;
+        }
         private void Update()
         {
+            if (anchor == EffectSpawnAnchor.UserToTarget)
+                return;
+            
             //애니메이션 이벤트가 없는 경우 사용
             if (!_completed && fallbackDuration > 0)
             {
                 fallbackDuration -= Time.deltaTime;
                 if (fallbackDuration <= 0) NotifyEnd();
             }
+        }
+
+        public void PlayFeedback()
+        {
+            if (!isFeedbackActive || feedBackSystem == null) return;
+            
+            feedBackSystem.PlayFeedback();
         }
 
         public void NotifyImpact() //애니메이션 시작을 알리는 함수
@@ -84,6 +174,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
         }
 
         //스폰 위치에 따라 고정 위치를 찾고, 카메라를 설정함
+        
         private Vector3 GetAnchorPosition(SkillContent ctx, EffectSpawnAnchor spawnAnchor)
         {
             switch (spawnAnchor)
@@ -92,15 +183,28 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Skills
                     SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
                     SkillCameraManager.Instance.ZoomTo(8f);
                     return ctx.User.transform.position;
+                    
                 case EffectSpawnAnchor.Target:
                     SkillCameraManager.Instance.SetAnchor(CamAnchor.Target, transform);
                     SkillCameraManager.Instance.ZoomTo(8f);
-                    return (ctx.Targets != null && ctx.Targets.Count > 0) 
-                        ? ctx.Targets[0].transform.position 
-                        : ctx.User.transform.position;
+
+                    if (ctx.Targets is { Count: > 1 })
+                    {
+                        return ctx.CastPoint;
+                    }
+
+                    if (ctx.Targets is { Count: 1 } && ctx.Targets[0] != null)
+                    {
+                        return ctx.Targets[0].transform.position;
+                    }
+
+                    return ctx.User.transform.position;
+
                 case EffectSpawnAnchor.CastPoint:
-                default:
                     return ctx.CastPoint;
+                case EffectSpawnAnchor.UserToTarget:
+                default:
+                    return ctx.User.transform.position;
             }
         }
     }

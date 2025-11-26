@@ -7,7 +7,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
     public class AgentRenderer : MonoBehaviour, IAgentComponent, IAgentRenderer, IAnimationTrigger
     {
         [field: SerializeField] public bool LookToTheLeft { get; set; } //처음 시작 시 왼쪽을 보는가 아닌가
-        
+        [SerializeField] private int attackSortingBoost = 50;
         public event Action OnAnimationEnd; //애니메이션 종료 이벤트
         public event Action OnAnimationFire; //타격 시점 이벤트
         public float FacingDirection { get; private set; } = 1f; //보는 방향 (기본 우측)
@@ -17,11 +17,16 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         private Animator _animator; //애니메이터
         private SpriteRenderer _spriteRenderer; //렌더러
         
+        private int _baseSortingOrder;
+        private bool _highlighting;
+        
         public void Initialize(Agent agent) //초기화
         {
             _agent = agent;
             _animator = GetComponent<Animator>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            
+            _baseSortingOrder = _spriteRenderer.sortingOrder;
             
             if (LookToTheLeft) Flip();
         }
@@ -29,6 +34,23 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
         {
             _animator.runtimeAnimatorController = characterDataAnimatorController;
             transform.position = (Vector2)_agent.transform.position + characterOffset;
+        }
+        
+        public void SetAttackSortingHighlight(bool enable)
+        {
+            if (_spriteRenderer == null) return;
+            if (enable == _highlighting) return;
+
+            _highlighting = enable;
+
+            if (enable)
+            {
+                _spriteRenderer.sortingOrder = _baseSortingOrder + attackSortingBoost;
+            }
+            else
+            {
+                _spriteRenderer.sortingOrder = _baseSortingOrder;
+            }
         }
 
         //파라미터 오버로딩

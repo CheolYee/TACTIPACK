@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using _00.Work.WorkSpace.Hyeonjin0209._01.Scripts.System.Character;
 using _00.Work.WorkSpace.Soso7194._04.Scripts.Enemy;
 using NUnit.Framework;
 using Unity.VisualScripting;

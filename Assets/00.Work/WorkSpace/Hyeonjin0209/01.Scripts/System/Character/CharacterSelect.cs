@@ -1,45 +1,47 @@
-﻿using UnityEngine;
+﻿using _00.Work.Resource.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
+using UnityEngine;
 using UnityEngine.UI;
 
-public enum CharacterType
+namespace _00.Work.WorkSpace.Hyeonjin0209._01.Scripts.System.Character
 {
-    wizard,//마법사
-    barbara,//힐러
-    darious,//전사
-    iceWizard,//마법사
-    leeYuri,//힐러
-    garen// 전사
-}
-
-public class CharacterSelect : MonoBehaviour
-{
-
-    public CharacterType characterType;
-    private Image _image;
-
-    private void Awake()
-    {
-        _image = GetComponent<Image>();
-    }
-
-    public void PointerDown()
+    public class CharacterSelect : MonoBehaviour
     {
 
-        var chmanager = CharacterSelectManager.Instance;
-
-        if (chmanager.choiceCharacter.Contains(this))
+        [Header("Character Data")]
+        [SerializeField] private PlayerDefaultData characterData;
+        [SerializeField] private TooltipTarget tooltipTarget;
+        [SerializeField] private ItemPreviewSlot itemPreviewSlot;
+        
+        private Image _image;
+        
+        public PlayerDefaultData CharacterData => characterData;
+        public int CharacterId => characterData != null ? characterData.CharacterId : 0;
+        
+        private void Awake()
         {
-            chmanager.choiceCharacter.Remove(this);
-            _image.color = Color.white;
-            return;
+            _image = GetComponent<Image>();
+            _image.sprite = characterData.CharacterBoxIcon;
+            
+            tooltipTarget.SetText(characterData.CharacterName, characterData.characterDesc);
+            itemPreviewSlot.Initialize(characterData.StartItem);
         }
-        if (chmanager.choiceCharacter.Count >= 3) return;
 
-        if(!chmanager.choiceCharacter.Contains(this))
+        public void PointerDown()
         {
-            bool isSelected = chmanager.SelectCharacter(this);
-            if (isSelected)
-                _image.color = Color.gray;
+            var chManager = CharacterSelectManager.Instance;
+            if (chManager == null)
+                return;
+
+            SoundManager.Instance.PlaySfx(SfxId.UiConfirm);
+            
+            bool selected = chManager.SelectCharacter(this);
+
+            if (_image != null)
+            {
+                _image.color = selected ? Color.gray : Color.white;
+            }
         }
     }
 }

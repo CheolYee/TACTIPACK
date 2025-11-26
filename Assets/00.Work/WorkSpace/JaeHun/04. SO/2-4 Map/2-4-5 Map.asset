@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 2-4-5 Map
   m_EditorClassIdentifier: 
-  mapName: RewordRoom
+  mapName: "\uBCF4\uC0C1 \uBC29"
+  mapId: 245
+  mapType: 2
+  coin: 0
   nextMap:
   - {fileID: 11400000, guid: 63bfb19cd9e20a44c992efe78981b115, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: -1, y: 48.7}
+  isLock: 1
+  stageData: {fileID: 0}

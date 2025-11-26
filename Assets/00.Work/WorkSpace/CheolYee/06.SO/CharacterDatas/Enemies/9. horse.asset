@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65ee2dfd5eb42db838db5b9876c632f, type: 3}
+  m_Name: 9. horse
+  m_EditorClassIdentifier: 
+  <EnemyName>k__BackingField: "\uACE0\uB300 \uAE30\uBCD1"
+  <EnemyId>k__BackingField: 9
+  <AnimatorController>k__BackingField: {fileID: 22100000, guid: a0a7359f3a42b2442906bdfffa1c235d, type: 2}
+  <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
+  <MaxHp>k__BackingField: 100
+  <DefaultCritChance>k__BackingField: 10
+  <Attacks>k__BackingField:
+  - {fileID: 11400000, guid: f5a85e01efcf8424f9c15d49cc29ecf1, type: 2}
+  - {fileID: 11400000, guid: c56fb8342b9827840930aff618afe4ec, type: 2}
+  - {fileID: 11400000, guid: 0383add84708d2940a60db74d21d5a7d, type: 2}

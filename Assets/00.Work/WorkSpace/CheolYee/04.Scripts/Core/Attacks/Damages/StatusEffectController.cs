@@ -1,0 +1,376 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using _00.Work.Resource.Scripts.Managers;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
+using UnityEngine;
+
+namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks.Damages
+{
+    public class StatusEffectController : MonoBehaviour, IAgentComponent, IAfterInitialize
+    {
+        private Agent _owner;
+        private AgentHealth _health;
+        
+        private readonly List<StatusEffectInstance> _effects = new();
+        
+        public IReadOnlyList<StatusEffectInstance> ActiveEffects => _effects;
+        
+        public event Action<StatusEffectController> OnStatusChanged;
+        public bool IsStunned =>
+            _effects.Any(e => e.Type == StatusEffectType.Stun && e.RemainingTurns > 0);
+        
+        private bool _blockedLastDamage; //보호막이 공격을 방어했는가?
+        
+        public void Initialize(Agent agent)
+        {
+            _owner = agent;
+        }
+        
+        public void AfterInitialize()
+        {
+            _health = _owner.Health;
+        }
+        
+        /// <summary>
+        /// 데미지 계산기
+        /// </summary>
+        public float GetAttackRate()
+        {
+            float up = 0f;
+            float down = 0f;
+
+            foreach (StatusEffectInstance e in _effects)
+            {
+                if (e.RemainingTurns <= 0) continue;
+
+                switch (e.Type)
+                {
+                    case StatusEffectType.AttackUp:
+                        up += e.Power * e.StackCount;
+                        break;
+                    case StatusEffectType.AttackDown:
+                        down += e.Power * e.StackCount;
+                        break;
+                }
+            }
+            
+            float passiveUp = 0f;
+            var psm = PassiveStatManager.Instance;
+            if (psm != null && _owner != null)
+                passiveUp = psm.GetAttackUpFor(_owner);
+
+            float result = 1f + up - down + passiveUp;
+            //공격력 0 밑으로는 내려가면 안돼요!!!!!!!!!!!!!!!!!!!!!!!
+            return Mathf.Max(0f, result);
+        }
+        
+        /// <summary>
+        /// 치명타 확률 보정치 (0.15f = +15%)
+        /// 합연산
+        /// </summary>
+        public float GetCritChanceModifier()
+        {
+            float up = 0f;
+            float down = 0f;
+
+            foreach (var e in _effects)
+            {
+                if (e.RemainingTurns <= 0) continue;
+
+                switch (e.Type)
+                {
+                    case StatusEffectType.CritUp:
+                        up += e.Power * e.StackCount;
+                        break;
+                    case StatusEffectType.CritDown:
+                        down += e.Power * e.StackCount;
+                        break;
+                }
+            }
+            
+            float passiveCrit = 0f;
+            var psm = PassiveStatManager.Instance;
+            if (psm != null && _owner != null)
+                passiveCrit = psm.GetCritAddFor(_owner);
+
+            return up - down + passiveCrit;
+        }
+        
+        
+        /// <summary>
+        /// 스킬에서 상태이상 걸 때 사용함
+        /// </summary>
+        public void AddStatus(StatusEffectInfo info)
+        {
+            //만약 없거나 지속시간이 0보다 작거나 같으면 리턴
+            if (info.type == StatusEffectType.None) return;
+            
+            //남은 턴이 0보다 작다면
+            if (info.durationTurns <= 0)
+                return;
+            
+            //보호막이 막았으면
+            if (_blockedLastDamage && IsDebuff(info.type)) return;
+            
+            //만약 현재 있는 상태이상중 같은게 있는지 확인 후 저장
+            StatusEffectInstance existing = _effects.FirstOrDefault(e => e.Type == info.type);
+
+            if (existing != null)
+            {
+                if (info.type == StatusEffectType.Barrier)
+                {
+                    //리메이닝 턴을 남은 턴수로
+                    existing.RemainingTurns += info.durationTurns;
+                    existing.Power = info.power; //필요하면 파워도 갱신
+                }
+                //만약 중첩 가능이라면
+                if (info.stackable)
+                {
+                    //중첩 개수 올려주고, 지속 턴을 합쳐요
+                    existing.StackCount++;
+                }
+                else //중첩 불가라면 남은 턴과 파워 갱신만
+                {
+                    existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, info.durationTurns);
+                    existing.Power = Mathf.Max(existing.Power, info.power);
+                }
+                
+                existing.JustApplied = true;
+            }
+            else
+            {
+                _effects.Add(new StatusEffectInstance(info.type, info.durationTurns, info.power));
+            }
+            RaiseStatusChanged();
+            
+        }
+
+        /// <summary>
+        /// 자신 턴 시작 시 호출
+        /// </summary>
+        public bool OnTurnStart()
+        {
+            var stun = _effects.FirstOrDefault(e => 
+                e.Type == StatusEffectType.Stun 
+                && e.RemainingTurns > 0);
+
+            if (stun != null)
+            {
+                SoundManager.Instance.PlaySfx(SfxId.Stun);
+                //만약 상태 이상 중 기절 상태면 여기서 True반환 후 턴 소모
+                stun.RemainingTurns--;
+                Cleanup();
+                RaiseStatusChanged();
+                return true;
+            }
+            
+            return false;
+        }
+
+        public void OnTurnEnd()
+        {
+            _blockedLastDamage = false;
+            
+            var snapshot = _effects.ToArray();
+            
+            foreach (var effect in snapshot)
+            {
+                if (effect.RemainingTurns <= 0)
+                    continue;
+                
+                switch (effect.Type)
+                {
+                    case StatusEffectType.Bleed:
+                        if (effect.RemainingTurns > 0 && _health != null)
+                        {
+                            //턴이 존재하고 체력이 있으면
+                            //파워와 스택 쌓인 개수만큼 최대체력 비례 데미지
+                            float ratio = effect.Power; 
+                            float damage = _health.MaxHealth * ratio * effect.StackCount;
+                            
+                            _health.ApplyDirectDamage(damage, DamageTextKind.Bleed);
+                        }
+                        break;
+                }
+                
+                bool isTurnBased =
+                    effect.Type == StatusEffectType.Bleed      ||
+                    effect.Type == StatusEffectType.Burn       ||
+                    effect.Type == StatusEffectType.AttackUp   ||
+                    effect.Type == StatusEffectType.AttackDown ||
+                    effect.Type == StatusEffectType.CritUp     ||
+                    effect.Type == StatusEffectType.CritDown   ||
+                    effect.Type == StatusEffectType.LastStand;
+
+                if (!isTurnBased)
+                    continue;
+                
+                //이 턴에 방금 막 실행한건 안깎아요
+                if (effect.JustApplied)
+                {
+                    effect.JustApplied = false;
+                    continue;
+                }
+
+                //처음이 아니면 1턴 감소 레츠고
+                effect.RemainingTurns--;
+            }
+            
+            Cleanup();
+            RaiseStatusChanged();
+        }
+        
+        //화상 추가피해
+        public void OnDamaged(DamageContainer attackData)
+        {
+            if (_health == null) return;
+            if (attackData.Damage <= 0) return;
+
+            StatusEffectInstance burn = 
+                _effects.FirstOrDefault(e 
+                    => e.Type == StatusEffectType.Burn && e.RemainingTurns > 0);
+            
+            if (burn != null)
+            {
+                SoundManager.Instance.PlaySfx(SfxId.Burn);
+                float extra = attackData.Damage * burn.Power * burn.StackCount;
+                _health.ApplyDirectDamage(extra, DamageTextKind.Burn);
+            }
+        }
+
+        private void RaiseStatusChanged()
+        {
+            OnStatusChanged?.Invoke(this);
+        }
+
+        private void Cleanup()
+        {
+            _effects.RemoveAll(e => e.RemainingTurns <= 0);
+        }
+
+        //베리어 처리
+        public bool TryBlockDamage(ref DamageContainer attackData)
+        {
+            _blockedLastDamage = false;
+            
+            if (attackData.Damage <= 0f)
+                return false;
+            
+            //살아있는 베리어 찾기
+            var barrier = _effects.FirstOrDefault(e =>
+                e.Type == StatusEffectType.Barrier && e.RemainingTurns > 0);
+
+            if (barrier == null)
+                return false;
+
+            //히트 하나 소모
+            barrier.RemainingTurns--;
+
+            //아이콘과 리스트 정리
+            if (barrier.RemainingTurns <= 0)
+            {
+                Cleanup();
+            }
+            RaiseStatusChanged(); //UI 아이콘 갱신
+
+            //실제 데미지는 0으로
+            attackData.Damage = 0f;
+            attackData.IsCritical = false; // 크리라 해도 막혔으니 의미 없음
+
+            _blockedLastDamage = true;
+            
+            return true;
+        }
+        
+        //받은 타입이 디버프인지 판별하기
+        private bool IsDebuff(StatusEffectType type)
+        {
+            switch (type)
+            {
+                case StatusEffectType.Bleed:
+                case StatusEffectType.Burn:
+                case StatusEffectType.Stun:
+                case StatusEffectType.AttackDown:
+                case StatusEffectType.CritDown:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        
+        /// <summary>
+        /// 디버프 턴을 감소시킨다.
+        /// targetType == StatusEffectType.None 이면 모든 디버프 대상
+        /// </summary>
+        public bool ReduceDebuffs(StatusEffectType targetType, int reduceTurns)
+        {
+            if (reduceTurns <= 0) return false;
+
+            bool changed = false;
+
+            foreach (var effect in _effects)
+            {
+                if (effect.RemainingTurns <= 0) continue;
+                if (!IsDebuff(effect.Type)) continue;
+
+                // 특정 타입만 지우고 싶으면 type 매칭
+                if (targetType != StatusEffectType.None && effect.Type != targetType)
+                    continue;
+
+                effect.RemainingTurns -= reduceTurns;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                Cleanup();
+                RaiseStatusChanged();
+            }
+
+            return changed;
+        }
+        
+        //무적버프 처리기계
+        public bool TryApplyLastStand(float prevHealth, ref float newHealth)
+        {
+            //이미 죽어있거나(이상 상황 방지), 이번 공격이 치명타가 아니면 무시
+            if (prevHealth <= 0f) return false;
+            if (newHealth > 0f) return false;
+
+            //살아 있는 라스트 스탠드 버프 찾기
+            var lastStand = _effects.FirstOrDefault(e =>
+                e.Type == StatusEffectType.LastStand && e.RemainingTurns > 0);
+
+            if (lastStand == null)
+                return false;
+
+            //여기서 버프 발동: 체력을 1로 고정
+            newHealth = 1f;
+
+            //버프 턴 1 감소 (원하면 여기서 바로 0으로 만들어도 됨)
+            lastStand.RemainingTurns--;
+
+            //리스트/아이콘 정리
+            Cleanup();
+            RaiseStatusChanged();
+
+            return true;
+        }
+        
+        public void ClearAllStatusEffects()
+        {
+            if (_effects.Count == 0 && !_blockedLastDamage)
+                return;
+
+            // 모든 상태이상 제거
+            _effects.Clear();
+            _blockedLastDamage = false;
+
+            // HealthBarUi 쪽에서 아이콘/툴팁 갱신하도록 이벤트 쏴주기
+            RaiseStatusChanged();
+        }
+    }
+}

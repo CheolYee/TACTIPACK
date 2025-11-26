@@ -2,6 +2,7 @@
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Effects;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Events;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
@@ -76,19 +77,28 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
             
             ChangeState(EnemyStates.DEATH);
         }
+        //크리티컬 확률 계산기
+        public override float GetBaseCritChance()
+        {
+            return EnemyData != null ? EnemyData.DefaultCritChance : 0f;
+        }
 
+        public void Attack(AttackItemSo ite, ItemInstance inst = null)
+        {
+            ChangeState(EnemyStates.ATTACK);
+        }
 
-        public void Attack(AttackItemSo item)
+        private void SetRandomAttackSkill()
         {
             int randomAttack = Random.Range(0, EnemyData.Attacks.Count);
             actionData.CurrentAttackItem = EnemyData.Attacks[randomAttack];
             currentSkill = EnemyData.Attacks[randomAttack];
-            
-            ChangeState(EnemyStates.ATTACK);
         }
-        
+
         public void StartTurn()
         {
+            SetRandomAttackSkill();
+            
             if (currentSkill == null)
             {
                 Debug.LogWarning($"{name} : defaultSkill 이 비어있어서 턴을 바로 종료합니다.");

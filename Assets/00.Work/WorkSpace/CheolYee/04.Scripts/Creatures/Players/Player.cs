@@ -1,5 +1,6 @@
 ﻿using _00.Work.WorkSpace.CheolYee._04.Scripts.Agents;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Attacks;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items.ItemTypes.ActiveItems;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.FSMSystem;
 using _00.Work.WorkSpace.CheolYee._04.Scripts.Managers;
@@ -15,7 +16,6 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         [SerializeField] private StateListSo playerStateList;
         
         private AgentStateMachine _stateMachine;
-        
         public AgentState CurrentState => _stateMachine.CurrentState;
 
         protected override void AfterInitializeComponent()
@@ -44,6 +44,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
         private void Start()
         {
             ChangeState(PlayerStates.IDLE);
+        }
+        
+        public override float GetBaseCritChance() //크리티컬 오버라이딩
+        {
+            return CharacterData != null ? CharacterData.DefaultCritChance : 0f;
         }
 
         private void Update()
@@ -77,10 +82,10 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players
             ChangeState(PlayerStates.DEATH);
         }
 
-        public void Attack(AttackItemSo item)
+        public void Attack(AttackItemSo item, ItemInstance inst)
         {
             actionData.CurrentAttackItem = item;
-            
+            actionData.CurrentItemInst = inst;
             ChangeState(PlayerStates.ATTACK);
         }
 

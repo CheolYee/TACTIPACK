@@ -27,6 +27,13 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
 
         [Header("Image By Cell")]
         public List<Sprite> cellSprites;
+        
+        [Header("Consumable Settings")]
+        [Tooltip("소모성 아이템 여부")]
+        public bool isConsumable = false;
+
+        [Tooltip("소모성일 때 한 인스턴스가 사용할 수 있는 최대 횟수")]
+        public int maxUses = 1;
 
 
         //shapeOffsets가 비어 있으면 사각형 셀로 변환하여 반환
@@ -80,15 +87,14 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Core.Items
         public GameObject skillPrefab;
     }   
 
-    [CreateAssetMenu(fileName = "newPassiveItem", menuName = "SO/Item/PassiveItem", order = 1)]
+    [CreateAssetMenu(fileName = "PassiveItemData", menuName = "SO/Item/PassiveItem", order = 1)]
     public abstract class PassiveItemDataSo : ItemDataSo
     {
         [Header("Passive Item Settings")]
         [Tooltip("스탯 보정 (%)")]
-        public int cooldownTurns;
         public int healthMulti;
         public int attackMulti;
-        public float critMulti;
+        public int critMulti;
     }
 
     public enum ItemClass

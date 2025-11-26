@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 1-9 Map
   m_EditorClassIdentifier: 
-  mapName: BossRoom
+  mapName: "\uBCF4\uC2A4 \uBC29"
+  mapId: 19
+  mapType: 5
   nextMap:
   - {fileID: 11400000, guid: a414e1c4a911e79488ab41c01e386383, type: 2}
   - {fileID: 11400000, guid: f6404cf3997a03a48a9afc8b793c0429, type: 2}
   - {fileID: 11400000, guid: ec24df8ff43274e46a45726c156eb46d, type: 2}
   - {fileID: 11400000, guid: 3f2955797e23b9048ae11fdd4f365238, type: 2}
   - {fileID: 11400000, guid: de888debd75e712419bc1d3c076da50f, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: 28.97, y: 48.41}
+  stageData: {fileID: 11400000, guid: 15bdf8ca66597c94899864cb97cc41fd, type: 2}

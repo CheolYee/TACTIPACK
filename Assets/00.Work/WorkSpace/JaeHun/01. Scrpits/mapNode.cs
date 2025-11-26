@@ -1,77 +1,176 @@
-﻿using DG.Tweening;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.Stages.Maps;
+using _00.Work.WorkSpace.CheolYee._04.Scripts.UI;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class MapNode : MonoBehaviour
+namespace _00.Work.WorkSpace.JaeHun._01._Scrpits
 {
-    [SerializeField] private Button mapButton;
-    [SerializeField] private MapSO mapData;
-
-    private Tween pulseTween; // DOTween 트윈 저장
-    private Vector3 originalScale; // 원래 크기 저장
-
-    private void Start()
+    public class MapNode : MonoBehaviour
     {
-        if (transform.localScale.x < 0.5f)
-            transform.localScale = Vector3.one;
+        [SerializeField] private Button mapButton;
+        [SerializeField] private MapSo mapData;
+        
+        private TooltipTarget _tooltipTarget;
 
-        originalScale = transform.localScale;
-        mapButton.onClick.AddListener(OnClickMap); // 버튼 이벤트에 자동 등록
-        UpdateVisual();
-    }
+        private Tween _pulseTween; // DOTween 트윈 저장
+        private Vector3 _originalScale; // 원래 크기 저장
+        
+        private const float PulseScaleMultiplier = 1.08f;
+        private const float PulseDuration = 0.6f;
 
-    private void OnDisable()
-    {
-        pulseTween?.Kill(); // 비활성화 시 꺼주기
-    }
+        public MapSo MapData => mapData;
 
-    public void UpdateVisual()
-    {
-        mapButton.interactable = !mapData.isLook;  // 만약 isLook가 true면 애도 true, false면 애도 false
-
-        bool shouldPulse = !mapData.isLook && HasNextMapOpened();
-
-        if (shouldPulse)
-            StartPulse();
-        else
-            StopPulse();
-    }
-
-    private bool HasNextMapOpened()
-    {
-        // 다음 맵 중 하나라도 isLook이 true면 true 반환
-        if (mapData.nextMap == null || mapData.nextMap.Length == 0)
-            return false;
-
-        foreach (var next in mapData.nextMap)
+        private void Awake()
         {
-            if (next != null && next.isLook)
-                return true;
+            _tooltipTarget = GetComponent<TooltipTarget>();
         }
-        return false;
-    }
 
-    private void StartPulse()
-    {
-        // 이미 트윈이 실행 중이면 중복 방지
-        if (pulseTween != null && pulseTween.IsActive()) return;
+        private void Start()
+        {
+            if (transform.localScale.x < 0.5f)
+                transform.localScale = Vector3.one;
 
-        // 커졌다 작아졌다 반복 (1배 → 1.15배 → 1배)
-        pulseTween = transform.DOScale(originalScale * 1.15f, 0.7f)
-            .SetLoops(-1, LoopType.Yoyo)
-            .SetEase(Ease.InOutSine);
-    }
+            _originalScale = transform.localScale;
+            mapButton.onClick.AddListener(OnClickMap); // 버튼 이벤트에 자동 등록
+            RefreshVisual();
+        }
 
-    private void StopPulse()
-    {
-        pulseTween?.Kill();
-        transform.localScale = originalScale;
-    }
+        private void OnDisable()
+        {
+            StopPulse();
+        }
+        public void RefreshVisual()
+        {
+            if (MapManager.Instance == null || mapData == null) return;
 
-    private void OnClickMap()
-    {
-        if (mapData.isLook) return; // 잠겨있으면 클릭 못하게 만들기
+            var state = MapManager.Instance.GetNodeState(mapData);
 
-        MapManager.Instance.OnMapClicked(mapData);
+            //활성 상태면 켜주기
+            mapButton.interactable = state == MapNodeState.Available;
+
+            switch (state)
+            {
+                case MapNodeState.Available:
+                    StartPulse();
+                    break;
+                case MapNodeState.Locked:
+                case MapNodeState.Cleared:
+                    StopPulse();
+                    break;
+            }
+            
+            UpdateTooltip();
+        }
+
+        private void UpdateTooltip()
+        {
+            if (_tooltipTarget == null || mapData == null)
+                return;
+
+            string title = string.IsNullOrEmpty(mapData.mapName)
+                ? "알 수 없는 맵"
+                : mapData.mapName;
+
+            string body = BuildTooltipBody(mapData);
+
+            // TooltipTarget 안의 SetText 사용
+            _tooltipTarget.SetText(title, body);
+        }
+
+        private string BuildTooltipBody(MapSo map)
+        {
+            var sb = new StringBuilder();
+
+            // 전투 방인지 판별 (일반 + 랜덤)
+            bool isCombatMap = map.mapType == MapType.Enemy ||
+                               map.mapType == MapType.Random;
+            
+            if (!isCombatMap)
+                return sb.ToString();
+
+            var stage = map.stageData;
+            if (stage == null || stage.enemies == null || stage.enemies.Count == 0)
+                return sb.ToString();
+
+            // 빈 줄 하나
+            sb.AppendLine();
+
+            // EnemyId 기준으로 묶기
+            var groups = new Dictionary<int, (EnemyDefaultData data, int count)>();
+
+            foreach (var entry in stage.enemies)
+            {
+                if (entry == null || entry.enemyData == null)
+                    continue;
+
+                var data = entry.enemyData;
+                int id = data.EnemyId;
+
+                if (!groups.TryGetValue(id, out var current))
+                {
+                    groups[id] = (data, 1);
+                }
+                else
+                {
+                    groups[id] = (current.data, current.count + 1);
+                }
+            }
+            
+            foreach (var kv in groups.Values)
+            {
+                var data = kv.data;
+                int count = kv.count;
+
+                string enemyName = string.IsNullOrEmpty(data.EnemyName)
+                    ? $"Enemy {data.EnemyId}"
+                    : data.EnemyName;
+
+                sb.AppendLine($"{enemyName} x {count}");
+            }
+
+            return sb.ToString();
+        }
+
+        private void StartPulse()
+        {
+            if (_pulseTween != null)
+            {
+                _pulseTween.Kill();
+                _pulseTween = null;
+            }
+
+            transform.localScale = _originalScale;
+
+            _pulseTween = transform
+                .DOScale(_originalScale * PulseScaleMultiplier, PulseDuration)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine);
+        }
+
+        private void StopPulse()
+        {
+            if (_pulseTween != null)
+            {
+                _pulseTween.Kill();
+                _pulseTween = null;
+            }
+
+            transform.localScale = _originalScale;
+        }
+
+        private void OnClickMap()
+        {
+            if (MapManager.Instance == null) return;
+            if (!MapManager.Instance.CanEnter(mapData)) return;
+            
+            MapManager.Instance.OnMapClickedFromUi(mapData);
+        }
+
     }
 }

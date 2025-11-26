@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097bb6801c9f4fb7b7a0a498bc6e4ccc, type: 3}
+  m_Name: ID. 37
+  m_EditorClassIdentifier: 
+  itemId: 37
+  itemName: "\uC6CC\uB9AC\uC5B4 \uC775\uC2A4\uD50C\uB85C\uC804"
+  itemClass: 1
+  icon: {fileID: 8864844090386700087, guid: 3053c0b8ee88c6a4d935c7fb21763a0a, type: 3}
+  description: "\uD074\uB798\uC2A4 : \uC804\uC0AC\n\n\u201C\uC804\uC7A5\uC744 \uC9C0\uBC30\uD558\uB294
+    \uAC15\uCCA0\uC758 \uC655\uC774\uC5EC, \uC804\uC7C1\uC758 \uAD49\uC74C\uC744
+    \uAC08\uB9DD\uD558\uB294 \uC790\uC5EC,\r\n\uB0B4 \uC55E\uC744 \uB9C9\uB294 \uBAA8\uB4E0
+    \uC801\uC744 \uC9D3\uBC1F\uB3C4\uB85D \uADF8 \uD798\uC744 \uD574\uBC29\uD558\uC5EC\uB77C!\r\n\uC6B4\uC678\uCC3D\uCC9C\uC758
+    \uCD5C\uADF9\uCE58\uC778 \uC774 \uC21C\uAC04,\r\n\uB545\uC744 \uAC00\uB974\uB294
+    \uC804\uC0AC\uC758 \uD3EC\uD6A8\uB85C,\r\n\uC7A0\uB4E4\uC5B4\uC788\uB358 \uC804\uC7A5\uC758
+    \uD568\uC131\uC744 \uB418\uC0B4\uB9AC\uB9AC\uB2E4!\r\n\uC6CC\uB9AC\uC5B4 \uC775\uC2A4\uD50C\uB85C\uC804!!!!!!!\u201D\n\n\uC804\uCCB4
+    \uC801\uD55C\uD14C 50\uB370\uBBF8\uC9C0\uB97C \uC785\uD788\uACE0,\n\uD655\uC815\uC801\uC73C\uB85C
+    \uBAA8\uB4E0 \uC544\uAD70\uC774 2\uD134\uB3D9\uC548\n\uACF5\uACA9\uB825 \uC99D\uAC00,
+    \uCE58\uBA85\uD0C0 \uD655\uB960 15% \uBC84\uD504\uB97C \uC5BB\uC2B5\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
+    5\uD134"
+  price: 300
+  isAllowedBinding: 1
+  shape: {x: 4, y: 4}
+  shapeOffsets: []
+  pivot: {x: 0, y: 0}
+  cellSprites:
+  - {fileID: -447862898, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -913191296, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -663688243, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 2048869782, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 1911572822, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -1543139299, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 206726084, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 1904872151, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 1207588391, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -1492075958, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -524495682, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 1192870639, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 8864844090386700087, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: 1792785005, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -1544874015, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  - {fileID: -259873520, guid: cffb5c611a7cc2243806283b69e956b5, type: 3}
+  isConsumable: 0
+  maxUses: -1
+  cooldownTurns: 5
+  skillPrefab: {fileID: 5558115182442371640, guid: 4b1ba4ac5786e1b46ae99a290f2d4147, type: 3}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 206a0833bc378424a8449601889ff0a9, type: 2}
+  <SkillDelay>k__BackingField: 2.5
+  <SfxId>k__BackingField: 19
+  mainTargetGroup: 4
+  mainTargetIndex: 0
+  <DefaultStance>k__BackingField: 2
+  <ApproachOffset>k__BackingField: 0
+  isHealSkill: 0
+  useMaxHpRatioHeal: 0
+  maxHpHealRatio: 0
+  damageOnImpactEvent: 1
+  canCritical: 1
+  <DefaultStatusEffect>k__BackingField:
+  - type: 4
+    targetGroup: 2
+    durationTurns: 2
+    power: 0.15
+    percentage: 100
+    stackable: 1
+  - type: 6
+    targetGroup: 2
+    durationTurns: 2
+    power: 0.15
+    percentage: 100
+    stackable: 1
+  <CleanseEffects>k__BackingField: []

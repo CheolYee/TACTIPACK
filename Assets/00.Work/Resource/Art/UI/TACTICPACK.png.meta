@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 4dfad9e7470fc994a9c88b2d0b27b1d0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8561971676996708279
+    second: TACTICPACK_0
+  - first:
+      213: 7998675559535599220
+    second: TACTICPACK_1
+  - first:
+      213: 4946296491248278774
+    second: TACTICPACK_2
+  - first:
+      213: 6701362512318828738
+    second: TACTICPACK_3
+  - first:
+      213: 5049481840956817006
+    second: TACTICPACK_4
+  - first:
+      213: 8188307569087140013
+    second: TACTICPACK_5
+  - first:
+      213: 3928491004412557988
+    second: TACTICPACK_6
+  - first:
+      213: -7902717856442983835
+    second: TACTICPACK_7
+  - first:
+      213: 5758367563220377554
+    second: TACTICPACK_8
+  - first:
+      213: -1484861790425726371
+    second: TACTICPACK_9
+  - first:
+      213: -1678919552662513831
+    second: TACTICPACK_10
+  - first:
+      213: 5702066063506038489
+    second: TACTICPACK_11
+  - first:
+      213: -24875752772262845
+    second: TACTICPACK_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TACTICPACK_0
+      rect:
+        serializedVersion: 2
+        x: 1501
+        y: 195
+        width: 86
+        height: 262
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b7285080eb32d670800000000000000
+      internalID: 8561971676996708279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_1
+      rect:
+        serializedVersion: 2
+        x: 1605
+        y: 457
+        width: 102
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47ed7b7ea01010f60800000000000000
+      internalID: 7998675559535599220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_2
+      rect:
+        serializedVersion: 2
+        x: 1725
+        y: 191
+        width: 86
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fc5d92c376c4a440800000000000000
+      internalID: 4946296491248278774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_3
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 147
+        width: 142
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c012e913b5000d50800000000000000
+      internalID: 6701362512318828738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_4
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 147
+        width: 162
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6e34062bfc531640800000000000000
+      internalID: 5049481840956817006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_5
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 145
+        width: 142
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da0d41fb956b2a170800000000000000
+      internalID: 8188307569087140013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_6
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 147
+        width: 140
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4aaf35521cdc48630800000000000000
+      internalID: 3928491004412557988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_7
+      rect:
+        serializedVersion: 2
+        x: 747
+        y: 147
+        width: 48
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56a549edaf7e35290800000000000000
+      internalID: -7902717856442983835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_8
+      rect:
+        serializedVersion: 2
+        x: 827
+        y: 147
+        width: 142
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dfd1e32ac4d9ef40800000000000000
+      internalID: 5758367563220377554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_9
+      rect:
+        serializedVersion: 2
+        x: 967
+        y: 147
+        width: 162
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d52cf199116b46be0800000000000000
+      internalID: -1484861790425726371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_10
+      rect:
+        serializedVersion: 2
+        x: 1145
+        y: 145
+        width: 142
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 957d719ef8743b8e0800000000000000
+      internalID: -1678919552662513831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_11
+      rect:
+        serializedVersion: 2
+        x: 1311
+        y: 147
+        width: 146
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9de5619bfdec12f40800000000000000
+      internalID: 5702066063506038489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TACTICPACK_12
+      rect:
+        serializedVersion: 2
+        x: 1517
+        y: 83
+        width: 280
+        height: 366
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3442d7872af97aff0800000000000000
+      internalID: -24875752772262845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TACTICPACK_0: 8561971676996708279
+      TACTICPACK_1: 7998675559535599220
+      TACTICPACK_10: -1678919552662513831
+      TACTICPACK_11: 5702066063506038489
+      TACTICPACK_12: -24875752772262845
+      TACTICPACK_2: 4946296491248278774
+      TACTICPACK_3: 6701362512318828738
+      TACTICPACK_4: 5049481840956817006
+      TACTICPACK_5: 8188307569087140013
+      TACTICPACK_6: 3928491004412557988
+      TACTICPACK_7: -7902717856442983835
+      TACTICPACK_8: 5758367563220377554
+      TACTICPACK_9: -1484861790425726371
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

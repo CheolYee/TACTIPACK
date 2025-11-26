@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 553fc2a6e419c034dbeefeddc2ff47bb, type: 3}
   m_Name: 2-4-3 Map
   m_EditorClassIdentifier: 
-  mapName: ShopRoom
+  mapName: "\uC0C1\uC810 \uBC29"
+  mapId: 243
+  mapType: 1
+  coin: 0
   nextMap:
   - {fileID: 11400000, guid: 356beb9b5ce34824fa07da0c1ad91c4a, type: 2}
   - {fileID: 11400000, guid: dc26fb66cd48a3a429fce8a9977eb3f6, type: 2}
-  isLook: 1
-  isRandom: 0
-  cameraPosition: {x: 29.01, y: 68.7}
+  isLock: 1
+  stageData: {fileID: 0}
