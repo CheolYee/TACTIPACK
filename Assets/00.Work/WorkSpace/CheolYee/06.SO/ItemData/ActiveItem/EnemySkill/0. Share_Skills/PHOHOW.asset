@@ -16,7 +16,8 @@ MonoBehaviour:
   itemName: "\uD3EC\uD6A8"
   itemClass: 0
   icon: {fileID: 21300000, guid: f8bd991ddd9bf1b4ba4ad0539eb4d2af, type: 3}
-  description: 
+  description: "\uB79C\uB364 \uB2E8\uC77C \uD0C0\uAC9F\uC5D0\uAC8C 1\uD134\uB3D9\uC548
+    \uCE58\uBA85\uD0C0 \uD655\uB960\uC744 10% \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4."
   price: 0
   isAllowedBinding: 1
   shape: {x: 1, y: 1}

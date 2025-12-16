@@ -51,7 +51,7 @@ MonoBehaviour:
   canCritical: 1
   <DefaultStatusEffect>k__BackingField:
   - type: 3
-    targetGroup: 1
+    targetGroup: 0
     durationTurns: 2
     power: 0
     percentage: 60

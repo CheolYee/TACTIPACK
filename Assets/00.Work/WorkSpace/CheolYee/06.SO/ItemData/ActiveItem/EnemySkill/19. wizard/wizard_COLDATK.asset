@@ -16,7 +16,8 @@ MonoBehaviour:
   itemName: "\uCC28\uAC00\uC6B4 \uACB0\uC815"
   itemClass: 0
   icon: {fileID: 21300000, guid: f8bd991ddd9bf1b4ba4ad0539eb4d2af, type: 3}
-  description: 
+  description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uC5BC\uC74C \uACB0\uC815\uC744 \uB0A0\uB824
+    55\uC758 \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
   price: 0
   isAllowedBinding: 1
   shape: {x: 1, y: 1}
@@ -31,11 +32,14 @@ MonoBehaviour:
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 1674f2c5e89503447a1e197712cc9c77, type: 2}
   <SkillDelay>k__BackingField: 1
   <SfxId>k__BackingField: 14
-  mainTargetGroup: 4
-  mainTargetIndex: 0
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 4
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
   <DefaultStance>k__BackingField: 2
   <ApproachOffset>k__BackingField: 8
-  isHealSkill: 0
   useMaxHpRatioHeal: 0
   maxHpHealRatio: 0
   damageOnImpactEvent: 1

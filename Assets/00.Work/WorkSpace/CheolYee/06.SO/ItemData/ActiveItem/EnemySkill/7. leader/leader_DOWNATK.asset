@@ -16,7 +16,8 @@ MonoBehaviour:
   itemName: "\uB0B4\uB824\uCC0D\uAE30"
   itemClass: 0
   icon: {fileID: 21300000, guid: f8bd991ddd9bf1b4ba4ad0539eb4d2af, type: 3}
-  description: 
+  description: "\uB79C\uB364 \uB2E8\uC77C \uD0C0\uAC9F\uC5D0\uAC8C \uCEE4\uB2E4\uB780
+    \uB300\uAC80\uC744 \uB0B4\uB9AC\uCC0D\uC5B4\n90\uC758 \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
   price: 0
   isAllowedBinding: 1
   shape: {x: 1, y: 1}
@@ -28,7 +29,7 @@ MonoBehaviour:
   maxUses: 0
   cooldownTurns: 0
   skillPrefab: {fileID: 5558115182442371640, guid: 9b18cf3ffc5630f43a0f38054a04f216, type: 3}
-  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: ba39ba8f0bc1de349a5319c917e3535c, type: 2}
+  <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 4f5ea1155a8f81844944235d6dcfe68e, type: 2}
   <SkillDelay>k__BackingField: 1
   <SfxId>k__BackingField: 11
   applyDamage: 1

@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43a96005a38d49889bf713b5a8b15d60, type: 3}
-  m_Name: ID. 42 Attack
+  m_Name: wolf_raider_NATK_ATK 1
   m_EditorClassIdentifier: 
   <Damage>k__BackingField: 40

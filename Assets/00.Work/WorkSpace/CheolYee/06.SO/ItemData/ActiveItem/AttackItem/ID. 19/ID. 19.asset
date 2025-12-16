@@ -17,7 +17,7 @@ MonoBehaviour:
   itemClass: 1
   icon: {fileID: -408397330, guid: 2021b200eb84f0348ae3227a7496cdb7, type: 3}
   description: "\uD074\uB798\uC2A4 : \uC804\uC0AC\n\n\uB871\uC18C\uB4DC\uB85C \uC801\uC744
-    \uCC14\uB7EC\n\uB9E8 \uC55E\uC758 \uC801\uC5D0\uAC8C 40\uB370\uBBF8\uC9C0\uB97C
+    \uCC14\uB7EC\n\uB9E8 \uC55E\uC758 \uC801\uC5D0\uAC8C 60\uB370\uBBF8\uC9C0\uB97C
     \uC785\uD78C \uD6C4,\n3\uD134\uB3D9\uC548 \uD655\uC815 \uCD9C\uD608\uC744 10%\uC785\uD799\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784:
     2\uD134"
   price: 150

@@ -2168,19 +2168,19 @@ Canvas:
   m_GameObject: {fileID: 765279661}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1983073001}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 481195733
+  m_SortingOrder: 1000
   m_TargetDisplay: 0
 --- !u!224 &765279666
 RectTransform:
@@ -10367,7 +10367,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 2.5, y: 9.675}
+  m_AnchoredPosition: {x: 2.5, y: 9.674999}
   m_SizeDelta: {x: 100, y: 0.6500006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &2763535142833667259
@@ -10633,7 +10633,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 21.6}
+  m_AnchoredPosition: {x: 0, y: 21.600006}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &3327902265961937248
@@ -11321,7 +11321,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 2.5, y: 9.675}
+  m_AnchoredPosition: {x: 2.5, y: 9.674999}
   m_SizeDelta: {x: 100, y: 0.6500006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4184556721130137625
@@ -13547,7 +13547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b58eed4221ba0964096894abd64c164d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shopManu: {fileID: 7852289173663873046}
+  shopMenuRect: {fileID: 3135831091643202493}
   coinText: {fileID: 7213434385073413221}
   resetText: {fileID: 6082968607234669053}
   canvasGroup: {fileID: 1278908697032081455}

@@ -8,7 +8,7 @@ using UnityEngine.Events;
 
 namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Agents
 {
-    public class Agent : MonoBehaviour, IDamageable
+    public abstract class Agent : MonoBehaviour, IDamageable
     {
         protected Dictionary<Type, IAgentComponent> ComponentDict; //Agent 컴포넌트 시스템을 담을 딕셔너리
         

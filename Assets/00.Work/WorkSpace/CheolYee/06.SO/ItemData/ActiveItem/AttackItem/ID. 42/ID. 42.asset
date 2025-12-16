@@ -18,8 +18,8 @@ MonoBehaviour:
   icon: {fileID: 1279417740, guid: 498570335b7165a449c0bed962895b8a, type: 3}
   description: "\uD074\uB798\uC2A4 : \uD790\uB7EC\n\n\uB54C\uB85C\uB294 \uB9DE\uB294\uAC8C
     \uAC00\uC7A5 \uD6D9\uB96D\uD55C \uB300\uD654 \uC218\uB2E8\uC774\uC8E0.\r\n\uBAA8\uB4E0
-    \uC801\uC5D0\uAC8C 25\uC758 \uD53C\uD574\uB97C \uC785\uD788\uACE0\r\n60% \uD655\uB960\uB85C
-    1\uD134\uAC04 \uAE30\uC808\uC2DC\uD0B5\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784: 4\uD134"
+    \uC801\uC5D0\uAC8C 40\uC758 \uD53C\uD574\uB97C \uC785\uD788\uACE0\r\n60% \uD655\uB960\uB85C
+    1\uD134\uAC04 \uAE30\uC808\uC2DC\uD0B5\uB2C8\uB2E4.\n\n\uCFE8\uD0C0\uC784: 3\uD134"
   price: 200
   isAllowedBinding: 1
   shape: {x: 0, y: 0}
@@ -42,7 +42,7 @@ MonoBehaviour:
   - {fileID: -1296629124, guid: a2b2e86246e9ad84597a57e2572c2946, type: 3}
   isConsumable: 0
   maxUses: 0
-  cooldownTurns: 4
+  cooldownTurns: 3
   skillPrefab: {fileID: 5558115182442371640, guid: 3ae2b6f0e43724d4787b87aef803c331, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 594bc89ee2a663e44a1a46fa8580f8da, type: 2}
   <SkillDelay>k__BackingField: 2

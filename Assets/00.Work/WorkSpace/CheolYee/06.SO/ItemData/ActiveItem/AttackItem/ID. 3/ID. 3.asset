@@ -39,7 +39,7 @@ MonoBehaviour:
   - {fileID: 1070482116, guid: 9638be040414ba646aaf62c8c72a685e, type: 3}
   isConsumable: 1
   maxUses: 1
-  cooldownTurns: 4
+  cooldownTurns: 0
   skillPrefab: {fileID: 5558115182442371640, guid: 5f4118ee52f8a0249ac6782a99affa7a, type: 3}
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: a0caf5fa7da276244bdf4b1ab6808f88, type: 2}
   <SkillDelay>k__BackingField: 2

@@ -62,7 +62,7 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.PlayerState
                 _agentRenderer = Player.GetCompo<AgentRenderer>();
                 _attackExecutor = Player.GetCompo<AttackExecutor>();
                 _skillManager = Object.FindFirstObjectByType<BattleSkillManager>();
-                _itemDatabase   = Object.FindFirstObjectByType<ItemDatabase>();
+                _itemDatabase = Object.FindFirstObjectByType<ItemDatabase>();
             }
             catch (NullReferenceException e)
             {

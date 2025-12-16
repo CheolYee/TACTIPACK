@@ -159,6 +159,8 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Players.EnemyState
             // 트윈 정리
             _moveTween?.Kill();
             _moveTween = null;
+            
+            Enemy.PlanNextSkill();
 
             base.Exit();
         }

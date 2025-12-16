@@ -15,20 +15,15 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         [SerializeField] private Image itemImage;
         [SerializeField] private TextMeshProUGUI itemName;
         [SerializeField] private Button itemButton;
+        [SerializeField] private TextMeshProUGUI buttonText;
         [SerializeField] private TooltipTarget tooltipTarget;
         
         public static Action OnUICoinChanged;
         
         private int _coin = 10;
-        private TextMeshProUGUI _buttonText;
         private bool _isSell;
 
         private ItemDataSo _currentItem;
-        
-        private void Awake()
-        {
-            _buttonText = itemButton.GetComponentInChildren<TextMeshProUGUI>();
-        }
 
         public void Initialize(ItemDataSo itemData)
         {
@@ -38,7 +33,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
             _coin = itemData.price;
             _isSell = false;
             
-            _buttonText.text = $"{_coin.ToString()}$";
+            buttonText.text = $"{_coin.ToString()}$";
             tooltipTarget.SetText(itemData.itemName, itemData.description);
         }
         
@@ -46,7 +41,7 @@ namespace _00.Work.WorkSpace.Soso7194._04.Scripts.UI
         {
             if (MoneyManager.Instance.Coin > _coin && !_isSell) // 가지고 있는 코인보다 많으면
             {
-                _buttonText.text = "매진";
+                buttonText.text = "매진";
                 MoneyManager.Instance.TrySpend(_coin);
                 SideInventoryManager.Instance.AddItem(_currentItem);
                 _isSell = true;

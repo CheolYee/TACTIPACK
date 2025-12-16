@@ -6,11 +6,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Save
 {
     public class SaveManager : MonoSingleton<SaveManager>
     {
-        private const string PartyFileName   = "party.json";
-        private const string MapFileName     = "map.json";
-        private const string GridFileName    = "grid_inventory.json";
-        private const string SideFileName    = "side_inventory.json";
-        private const string ShopFileName    = "shop.json";
+        private const string PartyFileName = "party.json";
+        private const string MapFileName = "map.json";
+        private const string GridFileName = "grid_inventory.json";
+        private const string SideFileName = "side_inventory.json";
+        private const string ShopFileName = "shop.json";
 
         protected override void Awake()
         {

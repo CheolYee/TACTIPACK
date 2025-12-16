@@ -17,7 +17,7 @@ MonoBehaviour:
   <AnimatorController>k__BackingField: {fileID: 22100000, guid: d6afa6692bf0cdd4c84c873422420c58, type: 2}
   <CharacterOffset>k__BackingField: {x: -0.4, y: 0}
   <MaxHp>k__BackingField: 125
-  <DefaultCritChance>k__BackingField: 30
+  <DefaultCritChance>k__BackingField: 0.3
   <Attacks>k__BackingField:
   - {fileID: 11400000, guid: 8f906972ca599fc4697d4eb3a00188e4, type: 2}
   - {fileID: 11400000, guid: 41c12a41f090a77498e867c4403aff86, type: 2}

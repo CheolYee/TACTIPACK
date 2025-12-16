@@ -588,6 +588,7 @@ MonoBehaviour:
   itemImage: {fileID: 8809735769388088945}
   itemName: {fileID: 7176392591083501836}
   itemButton: {fileID: 1713741935827727000}
+  buttonText: {fileID: 4465686276998258839}
   tooltipTarget: {fileID: 487130738895094606}
 --- !u!114 &3640103591141618768
 MonoBehaviour:

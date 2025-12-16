@@ -16,7 +16,10 @@ MonoBehaviour:
   itemName: "\uC7A5\uC545"
   itemClass: 0
   icon: {fileID: 21300000, guid: f8bd991ddd9bf1b4ba4ad0539eb4d2af, type: 3}
-  description: 
+  description: "\uC804\uC7A5\uC744 \uC7A5\uC545\uD558\uC5EC \uBAA8\uB4E0 \uC0C1\uB300\uC758
+    \uACF5\uACA9\uB825\uACFC \uD06C\uB9AC\uD2F0\uCEEC \uD655\uB960\uC744 10% \uAC10\uC18C\uC2DC\uD0A4\uACE0,
+    \uD300\uC6D0\uC758 \uACF5\uACA9\uB825\uACFC \uD06C\uB9AC\uD2F0\uCEEC \uD655\uB960\uC744
+    10% \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
   price: 0
   isAllowedBinding: 1
   shape: {x: 1, y: 1}
@@ -31,11 +34,14 @@ MonoBehaviour:
   <DefaultAttackData>k__BackingField: {fileID: 11400000, guid: 3eb5ca16a66365c42ad4e4efbe13334a, type: 2}
   <SkillDelay>k__BackingField: 1.5
   <SfxId>k__BackingField: 37
-  mainTargetGroup: 1
-  mainTargetIndex: 0
+  applyDamage: 1
+  applyHeal: 0
+  damageTargetGroup: 4
+  damageTargetIndex: 0
+  healTargetGroup: 2
+  healTargetIndex: 0
   <DefaultStance>k__BackingField: 0
   <ApproachOffset>k__BackingField: 0
-  isHealSkill: 0
   useMaxHpRatioHeal: 0
   maxHpHealRatio: 0
   damageOnImpactEvent: 1
@@ -56,13 +62,13 @@ MonoBehaviour:
   - type: 4
     targetGroup: 2
     durationTurns: 1
-    power: 0.15
+    power: 0.1
     percentage: 100
     stackable: 1
   - type: 6
     targetGroup: 2
     durationTurns: 1
-    power: 0.05
+    power: 0.1
     percentage: 100
     stackable: 1
   <CleanseEffects>k__BackingField: []

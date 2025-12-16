@@ -23,7 +23,11 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         [Header("Skill")]
         [SerializeField] private AttackItemSo currentSkill; 
         
+        [field: SerializeField] public AttackItemSo PlannedSkill { get; private set; }
+        
         private AgentStateMachine _stateMachine;
+        
+        public AttackItemSo CurrentSkill => currentSkill;
         
         protected override void AfterInitializeComponent()
         {
@@ -46,16 +50,30 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
             Health.HealthBarInstance.SetName(EnemyData.EnemyName);
             
             BattleSkillManager.Instance.RegisterEnemy(Health);
+            
+            PlanNextSkill();
         }
         
         private void Start()
         {
             ChangeState(EnemyStates.IDLE);
         }
+        
 
         private void Update()
         {
             _stateMachine.UpdateMachine();
+        }
+        public void PlanNextSkill()
+        {
+            if (EnemyData == null || EnemyData.Attacks == null || EnemyData.Attacks.Count == 0)
+            {
+                PlannedSkill = null;
+                return;
+            }
+
+            int randomAttack = Random.Range(0, EnemyData.Attacks.Count);
+            PlannedSkill = EnemyData.Attacks[randomAttack];
         }
 
         public void ChangeState(EnemyStates newState)
@@ -87,17 +105,15 @@ namespace _00.Work.WorkSpace.CheolYee._04.Scripts.Creatures.Enemies
         {
             ChangeState(EnemyStates.ATTACK);
         }
-
-        private void SetRandomAttackSkill()
-        {
-            int randomAttack = Random.Range(0, EnemyData.Attacks.Count);
-            actionData.CurrentAttackItem = EnemyData.Attacks[randomAttack];
-            currentSkill = EnemyData.Attacks[randomAttack];
-        }
-
         public void StartTurn()
         {
-            SetRandomAttackSkill();
+            if (PlannedSkill == null)
+            {
+                PlanNextSkill();
+            }
+            
+            currentSkill = PlannedSkill;
+            actionData.CurrentAttackItem = currentSkill;
             
             if (currentSkill == null)
             {

@@ -26,5 +26,5 @@ MonoBehaviour:
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 2de2714a8d2351d408f3ee2f47c101d0, type: 3}
   <CharacterBoxIcon>k__BackingField: {fileID: 21300000, guid: 5b6812d6f1e513845b668d22240c40f7, type: 3}
   <MaxHp>k__BackingField: 400
-  <DefaultCritChance>k__BackingField: 25
+  <DefaultCritChance>k__BackingField: 0.25
   <StartItem>k__BackingField: {fileID: 11400000, guid: a0ac180c6204bb74abacee50e2af6471, type: 2}
